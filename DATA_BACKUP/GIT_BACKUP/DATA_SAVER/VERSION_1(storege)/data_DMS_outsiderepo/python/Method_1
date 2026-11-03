@@ -1,0 +1,42 @@
+CREATE OR REPLACE FUNCTION dmsr.bank_validator(b_name VARCHAR) 
+RETURNS BOOLEAN AS $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM dmsr.banks WHERE dmsr.banks.bname = b_name) THEN
+        RETURN FALSE;
+    END IF;
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP FUNCTION dmsr.bank_validator(character varying)
+
+
+CREATE OR REPLACE FUNCTION dmsr.bank_validator_writer(
+    bname VARCHAR,
+    baddr VARCHAR,
+    binfo jsonb,
+    eby integer,
+    eid integer
+)
+RETURNS boolean AS $$
+DECLARE
+bevt dmsr.bevts := 'BANK_ONBOARDED';
+BEGIN
+    IF NOT dmsr.bank_validator(bname) THEN
+        RETURN FALSE;
+    END IF;
+	INSERT INTO dmsr.banks (bname,baddr,bevt, binfo, eby, eid) 
+             VALUES (bname, baddr, bevt, binfo, eby, eid);
+	RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+
+EXPLAIN ANALYZE
+SELECT dmsr.bank_validator_writer(
+    'SBI20234', 
+    '1st Main Road, City X', 
+    '{"name": "John Doe", "designation": "Manager", "phno": "+919876543211", "email": "john.doe@sbi.com"}'::jsonb, 
+    1, 
+    28
+);

@@ -1,0 +1,518 @@
+openapi: 3.0.3
+info:
+  title: user-ms
+  description: |-
+
+  contact:
+    email: bharghava.k@tibilsolutions.com
+  version: 1.0.0
+
+servers:
+  - url: http://api.example.com/v1
+    description: Optional server description, e.g. Main (production) server
+
+
+
+tags:
+
+  - name: user-ms
+    description: Access to user
+
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+
+  schemas:
+    ConfigBody:
+      properties:
+        cname:
+          type: string
+        data:
+          type: array
+          items:
+            properties:
+              rname:
+                type: string
+              config:
+                type: object
+
+    Actions:
+      properties:
+        aname:
+          type: string
+    SuccessResponse:
+      properties:
+        code:
+          type: number
+        data:
+          type: array
+      example:
+        code: 2000
+        data:
+          - rid: 1
+            message: "ROLE CREATED"
+    SuccessResponseNoRoleCreated:
+      properties:
+        code:
+          type: number
+        message:
+          type: array
+      example:
+        code: 1000
+        message: "ROLE NOT CREATED"
+    FailureError:
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+      example:
+        code: 4000
+        message: "ERROR OCCURED"
+
+
+paths:
+
+  /user/session:
+    post:
+      tags:
+        - login
+      summary: user login
+      description: ''
+      operationId: usersLogin
+
+      requestBody:
+        description: request body
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "9876543211"
+                password:
+                  type: string
+                  example: "Msb@776655"
+      
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+              examples:
+                successfulLogin:
+                  summary: "on success login"
+                  value:
+                    code: 2000
+                    data:
+                      access_token: "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJBRWFPNWFLYkk1TWdUSHlQUXJVMGRfNWJ6Z3hyQ09WNndRM2t5OV.eyJleHAiOjE3NDk3MDkwMjIsImlhdCI6MTc0OTYyMjYyMiwianRpIjoiMGFjN2RjM2ItZjBiMS00Z"
+                      expires_in: 8640
+                      refresh_token: "eyJhbGciOiJIUzUxMiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI0YWQ1ODFmMS0zNjA4LTQxZGQtOWIwMy0zYWQ2NWY2YjRlMWQifQ.eyJleHAiOjE3NDk3MDkwMjIsIml"
+                
+                     
+                    
+
+
+
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 4000
+                  message:
+                    type: string
+                    example: Invalid user credentials.
+    delete:
+      tags:
+        - logout
+      summary: user logout
+      description: ''
+      operationId: logout
+      security:
+        - bearerAuth: [ ]
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+                  message:
+                    type: string
+                    example: logout successfull
+
+        '400':
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 4001
+                  message:
+                    type: string
+                    example: invalid/Token
+
+  
+
+  
+  
+
+
+ 
+  
+  /user/registration:
+    post:
+      tags:
+        - user-ms
+      summary: Register User
+      description: ''
+      operationId: registerUser
+      requestBody:
+        description: request body
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                identifier:
+                  type: string
+                  example: "9876543211"
+                email:
+                  type: string
+                  example: "abc@gmail.com"
+
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+
+                  data:
+                    type: object
+                    properties:
+                      identification:
+                        type: string
+                        example: "sbjdfbdsjfb234325"
+                      message:
+                        type: string
+                        example: otp Sent Successfully
+              examples:
+                userAlreadyOnboarded:
+                  summary: "User already onboarded"
+                  value:
+                    code: 2000
+                    data: "USER EXISTS"
+                onboardUserInKeycloak:
+                  summary: "Onboard user if it exists in registry"
+                  value:
+                    code: 2001
+                    data: "SUCCESSFULLY USER CREATED"  
+                noDeviceFoundInregistry:
+                  summary: "No Device found in registry"
+                  value:
+                    code: 1000
+                    data: "INVALID USER"  
+
+
+        '400':
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 4000
+                  message:
+                    type: string
+                    example: Error occured
+  
+
+  /user/otp:
+    post:
+      tags:
+        - user-ms
+      summary: generate otp
+      description: ''
+      operationId: generateotp
+      requestBody:
+        description: request body
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                identifier:
+                  type: string
+                  example: "9876543211"
+                email:
+                  type: string
+                  example: "abc@gmail.com"
+
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+
+                  data:
+                    type: string
+                    example: OTP GENERATED
+                    
+                        
+
+
+
+        '400':
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 4000
+                  message:
+                    type: string
+                    example: OTP GENERATION FAILED
+
+
+    put:
+      tags:
+        - user-ms
+      summary: validate otp
+      description: ''
+      operationId: validateOtp
+      requestBody:
+        description: request body
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                otp:
+                  type: string
+                  example: 265632
+                identifier:
+                  type: string
+                  example: "9876543211"
+
+
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            reset_password:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+                  data:
+                    type: object
+              examples:
+                accountSetupCompleted:
+                  summary: "Account setup completed"
+                  value:
+                    code: 2000
+                    data:
+                      acccountSetupComplete: true
+                accountSetupNotCompleted:
+                  summary: "Account setup required"
+                  value:
+                    code: 2000
+                    data:
+                        acccountSetupComplete: false
+                        access_token: "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJUWVpDdm1NRmM5QmdGUU1rYWF3UFNJVDhITUYxd0tFcFZ6aHNRNTdmS0k4In0"
+                        refresh_token: "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJUWVpDdm1NRmM5QmdGUU1rYWF3UFNJVDhITUYxd0tFcFZ6aHNRNTdmS0k4In0"
+            
+
+
+        '400':
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 4000
+                  message:
+                    type: string
+                    example: invalid/missing otp
+  
+  /user/pin:
+    post:
+      tags:
+        - user-ms
+      summary: create PIN for user
+      description: ''
+      operationId: create PIN
+      requestBody:
+        description: request body
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "9876543211"
+                newPassword:
+                  type: string
+                  example: "Msb@998877"
+                
+
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+                  data:
+                    type: string
+                    example: "PASSWORD SUCCESSFULLY UPDATED"
+              examples:
+                passwordUpdatedSuccess:
+                  summary: "Password successfully updated"
+                  value:
+                    code: 2000
+                    data: PASSWORD SUCCESSFULLY UPDATED
+                passwordUpdateFailure:
+                  summary: "Password update failure"
+                  value:
+                    code: 1000
+                    data: INVALID USER
+                      
+
+
+        '400':
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 4000
+                  message:
+                    type: string
+                    example: invalid/missing username
+
+
+
+   
+  
+
+
+  /user/dtypes/get:
+    post:
+      tags:
+        - user-roles
+      summary: To get available dtypes
+      description: ''
+      operationId: getAvailabledTypes
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+          example: "Bearer <token>"
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+                  data:
+                    type: string
+                    example:
+                      - "STD"
+                      - "MSB"
+
+        '400':
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 4000
+                  message:
+                    type: string
+                    example: invalid/missing uuid
+
+  
+ 
+ 
+
+
+
+  
+
+
+
+
+
+
+

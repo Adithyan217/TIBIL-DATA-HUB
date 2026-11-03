@@ -1,0 +1,20 @@
+2025-03-04 15:46:36,193 :INFO : API_TEST_LOG :***********************API Test Start*****************************
+2025-03-04 15:46:36,193 :INFO : API_TEST_LOG :***********************API Request Made*****************************
+2025-03-04 15:46:37,371 :INFO : API_TEST_LOG :*********************** Response Received *****************************
+2025-03-04 15:46:37,371 :INFO : API_TEST_LOG :Success: Status code is 201 as expected.
+2025-03-04 15:46:37,372 :INFO : API_TEST_LOG :*********************** Status Code Asserted *****************************
+2025-03-04 15:46:37,372 :INFO : API_TEST_LOG :Success: All expected keys ['code', 'event_id', 'message'] found in response.
+2025-03-04 15:46:37,372 :INFO : API_TEST_LOG :***********************Response Keys Asserted*****************************
+2025-03-04 15:46:37,372 :INFO : API_TEST_LOG :Success: Expected key-value pairs are present in the actual response.
+2025-03-04 15:46:37,372 :INFO : API_TEST_LOG :***********************Response Body Asserted*****************************
+2025-03-04 15:46:37,372 :INFO : API_TEST_LOG :***********************API Test Ends*****************************
+2025-03-04 15:46:37,382 :INFO : API_TEST_LOG :***********************API Test Start*****************************
+2025-03-04 15:46:37,382 :INFO : API_TEST_LOG :***********************API Request Made*****************************
+2025-03-04 15:46:38,376 :INFO : API_TEST_LOG :*********************** Response Received *****************************
+2025-03-04 15:46:38,376 :INFO : API_TEST_LOG :Success: Status code is 201 as expected.
+2025-03-04 15:46:38,376 :INFO : API_TEST_LOG :*********************** Status Code Asserted *****************************
+2025-03-04 15:46:38,377 :INFO : API_TEST_LOG :Success: All expected keys ['code', 'event_id', 'message'] found in response.
+2025-03-04 15:46:38,377 :INFO : API_TEST_LOG :***********************Response Keys Asserted*****************************
+2025-03-04 15:46:38,377 :INFO : API_TEST_LOG :Success: Expected key-value pairs are present in the actual response.
+2025-03-04 15:46:38,377 :INFO : API_TEST_LOG :***********************Response Body Asserted*****************************
+2025-03-04 15:46:38,377 :INFO : API_TEST_LOG :***********************API Test Ends*****************************

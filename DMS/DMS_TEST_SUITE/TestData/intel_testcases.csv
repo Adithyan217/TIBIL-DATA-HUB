@@ -1,0 +1,16 @@
+Test ID,Test Case,request_type,endpoint,request,response,assertion_function,expected_status,to_replace_in_req,add_to_context_from_res,add_to_context_from_req,delay
+TI001,Valid Context,POST,/intel/metrics/get,"{
+  ""context"": ""banks""
+}","{
+  ""code"": 2000,
+  ""message"": [
+    {
+      ""bank_cnt"": 13,
+      ""branch_cnt"": 31,
+      ""merchant_cnt"": 115
+    }
+  ]
+}",status_code.assert_status_code,200,,,,0
+TI002,Invalid Context,POST,/intel/metrics/get,"{
+  ""context"": ""abc""
+}","{""code"":2000,""message"":""NO RECORDS""}",status_code.assert_status_code,200,,,,0

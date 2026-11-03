@@ -1,0 +1,13 @@
+
+        INSERT INTO registry.temp_recon_csv (merchant_name, mobile_no, device_serial_number, acc_no)
+        VALUES
+        ('Jones-Reid', '1302982124', 'SN42069509', 'AC8845690665'),
+('Hernandez, Gutierrez and Barker', '7296999489', 'SN19866727', 'AC7736283517'),
+('Jones-Roman', '2849983897', 'SN69798122', 'AC3970534755'),
+('Reed, Frye and Carr', '2735317970', 'SN84843663', 'AC2021453070'),
+('Wu Group', '5239896745', 'SN39532337', 'AC6929258971'),
+('Marshall LLC', '6210862458', 'SN44423144', 'AC4456552451'),
+('Vazquez, Rice and Cooper', '3912820423', 'SN15167416', 'AC4999529325'),
+('Adams, Guerrero and Smith', '4771292303', 'SN80978285', 'AC9259357160'),
+('Zhang and Sons', '5301827207', 'SN17424848', 'AC4564656714'),
+('Wright Group', '1887409779', 'SN58829956', 'AC5741440144');

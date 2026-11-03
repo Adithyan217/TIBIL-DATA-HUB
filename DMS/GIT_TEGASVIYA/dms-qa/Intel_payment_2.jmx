@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan">
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group">
+        <stringProp name="ThreadGroup.num_threads">${__P(Threads, 1)}</stringProp>
+        <intProp name="ThreadGroup.ramp_time">1</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">false</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">1</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request">
+          <stringProp name="HTTPSampler.domain">${__P(Host,d38lz221fk59mg.cloudfront.net)}</stringProp>
+          <stringProp name="HTTPSampler.port">${__P(Port,)}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/intel/payments/aggregate</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;event&quot;: &quot;PAYMENT_PROCESSED&quot;,&#xd;
+  &quot;rdetails&quot;: {&#xd;
+    &quot;status&quot;: [&#xd;
+      1,&#xd;
+      1,&#xd;
+      0&#xd;
+    ],&#xd;
+    &quot;values&quot;: [&#xd;
+      [&#xd;
+        1,&#xd;
+        1,&#xd;
+        &quot;success&quot;,&#xd;
+        1,&#xd;
+        1,&#xd;
+        ${amt},&#xd;
+        &quot;imei1&quot;&#xd;
+      ]&#xd;
+    ],&#xd;
+    &quot;headers&quot;: [&#xd;
+      &quot;row_id&quot;,&#xd;
+      &quot;status&quot;,&#xd;
+      &quot;msg&quot;,&#xd;
+      &quot;bid&quot;,&#xd;
+      &quot;brid&quot;,&#xd;
+      &quot;amt&quot;,&#xd;
+      &quot;imei&quot;&#xd;
+    ]&#xd;
+  }&#xd;
+}&#xd;
+</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJBRWFPNWFLYkk1TWdUSHlQUXJVMGRfNWJ6Z3hyQ09WNndRM2t5OVVqN3ZjIn0.eyJleHAiOjE3NTczOTc1OTMsImlhdCI6MTc1NzMxMTE5MywianRpIjoiOWFmOTYzNjMtNjJiZi00MThjLTgwNTktNWU4ZWFjYzFkOGEwIiwiaXNzIjoiaHR0cHM6Ly93OGZhYXZwYmNuLmFwLXNvdXRoLTEuYXdzYXBwcnVubmVyLmNvbS9yZWFsbXMvdWF0LWRtcyIsImF1ZCI6WyJpbnRlbC1tcyIsInJlZ2lzdHJ5LW1zIiwid29ya2Zsb3ctbXMiLCJhY2NvdW50Il0sInN1YiI6IjA1ZDY5ODg1LTllOWQtNDhlOC04NjczLTNiYTRkMTFmYmYyMCIsInR5cCI6IkJlYXJlciIsImF6cCI6InVzZXItbXMiLCJzaWQiOiJkMTA1YWNhMi0wMGE0LTQxMGMtYTRiZi1kYjUwNTdiMTkyZTEiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbIi8qIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIiwiZGVmYXVsdC1yb2xlcy11YXQtZG1zIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiaW50ZWwtbXMiOnsicm9sZXMiOlsiRE1TIEFkbWluIl19LCJ1c2VyLW1zIjp7InJvbGVzIjpbIkRNUyBBZG1pbiJdfSwicmVnaXN0cnktbXMiOnsicm9sZXMiOlsiRE1TIEFkbWluIl19LCJ3b3JrZmxvdy1tcyI6eyJyb2xlcyI6WyJETVMgQWRtaW4iXX0sImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpbCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJuYW1lIjoidmludXRhIGgiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJ2aW51dGEuaGVnZGVAdGliaWxzb2x1dGlvbnMuY29tIiwiZ2l2ZW5fbmFtZSI6InZpbnV0YSIsImZhbWlseV9uYW1lIjoiaCIsImVtYWlsIjoidmludXRhLmhlZ2RlQHRpYmlsc29sdXRpb25zLmNvbSJ9.EqJHfTRoLVsVSPHJ7jA4CG12PcgBFik7eEwap8byWFdq2zYM_GEuqh351HuoGbwhTPavxP6FHfZewNDvU3pAi2ONTo60BzAG-N6XkkU36rs2g-uWN4kpgWM8F0-wVyvIPXlVRwpdz2KjUWCYpAQFiGi9Zpa-2Vp3o2cdjSRMmZ0GhoHs8nCxRZWRJKQZdddyh09KqGUO5ABdTRzDBoPSJE45rTjM7WrWETVwj48lxbBaK5mFfUWDrq9eOasB9uq855mNeXHbi0_4XC8_S_9dlBWbkWn6jTxJr9Icvzmn7inncvXPDGyirm_y9NEa7t29iOzkp7Rn-qrBpTnWEqBVsg</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor">
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">int threadId = ctx.getThreadNum()      // Unique per user
+int iteration = vars.getIteration()    // Unique per thread loop
+
+int counter = (threadId * iteration)   // Global-ish counter
+
+int amt = counter + 1
+int imei = (counter / 10) + 1
+int brid = (counter / 100) + 1
+int bid = (counter / 1000) + 1
+
+vars.put(&quot;amt&quot;, amt.toString())
+vars.put(&quot;imei&quot;, imei.toString())
+vars.put(&quot;brid&quot;, brid.toString())
+vars.put(&quot;bid&quot;, bid.toString())
+</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223PreProcessor>
+          <hashTree/>
+          <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
+            <boolProp name="ResultCollector.error_logging">false</boolProp>
+            <objProp>
+              <name>saveConfig</name>
+              <value class="SampleSaveConfiguration">
+                <time>true</time>
+                <latency>true</latency>
+                <timestamp>true</timestamp>
+                <success>true</success>
+                <label>true</label>
+                <code>true</code>
+                <message>true</message>
+                <threadName>true</threadName>
+                <dataType>true</dataType>
+                <encoding>false</encoding>
+                <assertions>true</assertions>
+                <subresults>true</subresults>
+                <responseData>false</responseData>
+                <samplerData>false</samplerData>
+                <xml>false</xml>
+                <fieldNames>true</fieldNames>
+                <responseHeaders>false</responseHeaders>
+                <requestHeaders>false</requestHeaders>
+                <responseDataOnError>false</responseDataOnError>
+                <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                <assertionsResultsToSave>0</assertionsResultsToSave>
+                <bytes>true</bytes>
+                <sentBytes>true</sentBytes>
+                <url>true</url>
+                <threadCounts>true</threadCounts>
+                <idleTime>true</idleTime>
+                <connectTime>true</connectTime>
+              </value>
+            </objProp>
+            <stringProp name="filename"></stringProp>
+          </ResultCollector>
+          <hashTree/>
+          <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report">
+            <boolProp name="ResultCollector.error_logging">false</boolProp>
+            <objProp>
+              <name>saveConfig</name>
+              <value class="SampleSaveConfiguration">
+                <time>true</time>
+                <latency>true</latency>
+                <timestamp>true</timestamp>
+                <success>true</success>
+                <label>true</label>
+                <code>true</code>
+                <message>true</message>
+                <threadName>true</threadName>
+                <dataType>true</dataType>
+                <encoding>false</encoding>
+                <assertions>true</assertions>
+                <subresults>true</subresults>
+                <responseData>false</responseData>
+                <samplerData>false</samplerData>
+                <xml>false</xml>
+                <fieldNames>true</fieldNames>
+                <responseHeaders>false</responseHeaders>
+                <requestHeaders>false</requestHeaders>
+                <responseDataOnError>false</responseDataOnError>
+                <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                <assertionsResultsToSave>0</assertionsResultsToSave>
+                <bytes>true</bytes>
+                <sentBytes>true</sentBytes>
+                <url>true</url>
+                <threadCounts>true</threadCounts>
+                <idleTime>true</idleTime>
+                <connectTime>true</connectTime>
+              </value>
+            </objProp>
+            <stringProp name="filename"></stringProp>
+          </ResultCollector>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

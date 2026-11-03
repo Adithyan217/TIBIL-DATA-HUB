@@ -1,0 +1,1063 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
+      <stringProp name="TestPlan.comments"></stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="false">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">5</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">false</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="Once Only Controller" enabled="true"/>
+        <hashTree>
+          <net.xmeter.samplers.ConnectSampler guiclass="net.xmeter.gui.ConnectSamplerUI" testclass="net.xmeter.samplers.ConnectSampler" testname="MQTT Connect" enabled="true">
+            <stringProp name="mqtt.server">soundbox-mqtt.tibilprojects.com</stringProp>
+            <stringProp name="mqtt.port">1883</stringProp>
+            <stringProp name="mqtt.version">3.1</stringProp>
+            <stringProp name="mqtt.conn_timeout">100</stringProp>
+            <stringProp name="mqtt.protocol">TCP</stringProp>
+            <stringProp name="mqtt.ws_path"></stringProp>
+            <boolProp name="mqtt.dual_ssl_authentication">false</boolProp>
+            <stringProp name="mqtt.clientcert_file_path"></stringProp>
+            <stringProp name="mqtt.clientcert_password"></stringProp>
+            <stringProp name="mqtt.user_name"></stringProp>
+            <stringProp name="mqtt.password"></stringProp>
+            <stringProp name="mqtt.client_id_prefix">mqttx_0cfe3bb9</stringProp>
+            <boolProp name="mqtt.client_id_suffix">true</boolProp>
+            <stringProp name="mqtt.conn_keep_alive">300</stringProp>
+            <stringProp name="mqtt.conn_attampt_max">0</stringProp>
+            <stringProp name="mqtt.reconn_attampt_max">0</stringProp>
+            <stringProp name="mqtt.conn_clean_session">true</stringProp>
+          </net.xmeter.samplers.ConnectSampler>
+          <hashTree>
+            <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+              <boolProp name="ResultCollector.error_logging">false</boolProp>
+              <objProp>
+                <name>saveConfig</name>
+                <value class="SampleSaveConfiguration">
+                  <time>true</time>
+                  <latency>true</latency>
+                  <timestamp>true</timestamp>
+                  <success>true</success>
+                  <label>true</label>
+                  <code>true</code>
+                  <message>true</message>
+                  <threadName>true</threadName>
+                  <dataType>true</dataType>
+                  <encoding>false</encoding>
+                  <assertions>true</assertions>
+                  <subresults>true</subresults>
+                  <responseData>false</responseData>
+                  <samplerData>false</samplerData>
+                  <xml>false</xml>
+                  <fieldNames>true</fieldNames>
+                  <responseHeaders>false</responseHeaders>
+                  <requestHeaders>false</requestHeaders>
+                  <responseDataOnError>false</responseDataOnError>
+                  <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                  <assertionsResultsToSave>0</assertionsResultsToSave>
+                  <bytes>true</bytes>
+                  <sentBytes>true</sentBytes>
+                  <url>true</url>
+                  <threadCounts>true</threadCounts>
+                  <idleTime>true</idleTime>
+                  <connectTime>true</connectTime>
+                </value>
+              </objProp>
+              <stringProp name="filename"></stringProp>
+            </ResultCollector>
+            <hashTree/>
+          </hashTree>
+          <net.xmeter.samplers.PubSampler guiclass="net.xmeter.gui.PubSamplerUI" testclass="net.xmeter.samplers.PubSampler" testname="MQTT Publiser" enabled="true">
+            <stringProp name="mqtt.topic_name">test/test</stringProp>
+            <stringProp name="mqtt.qos_level">2</stringProp>
+            <boolProp name="mqtt.add_timestamp">false</boolProp>
+            <stringProp name="mqtt.message_type">String</stringProp>
+            <stringProp name="mqtt.message_type_fixed_length">1024</stringProp>
+            <stringProp name="mqtt.message_to_sent">Demo test 1 </stringProp>
+            <boolProp name="mqtt.retained_message">false</boolProp>
+          </net.xmeter.samplers.PubSampler>
+          <hashTree>
+            <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+              <boolProp name="ResultCollector.error_logging">false</boolProp>
+              <objProp>
+                <name>saveConfig</name>
+                <value class="SampleSaveConfiguration">
+                  <time>true</time>
+                  <latency>true</latency>
+                  <timestamp>true</timestamp>
+                  <success>true</success>
+                  <label>true</label>
+                  <code>true</code>
+                  <message>true</message>
+                  <threadName>true</threadName>
+                  <dataType>true</dataType>
+                  <encoding>false</encoding>
+                  <assertions>true</assertions>
+                  <subresults>true</subresults>
+                  <responseData>false</responseData>
+                  <samplerData>false</samplerData>
+                  <xml>false</xml>
+                  <fieldNames>true</fieldNames>
+                  <responseHeaders>false</responseHeaders>
+                  <requestHeaders>false</requestHeaders>
+                  <responseDataOnError>false</responseDataOnError>
+                  <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                  <assertionsResultsToSave>0</assertionsResultsToSave>
+                  <bytes>true</bytes>
+                  <sentBytes>true</sentBytes>
+                  <url>true</url>
+                  <threadCounts>true</threadCounts>
+                  <idleTime>true</idleTime>
+                  <connectTime>true</connectTime>
+                </value>
+              </objProp>
+              <stringProp name="filename"></stringProp>
+            </ResultCollector>
+            <hashTree/>
+          </hashTree>
+          <net.xmeter.samplers.DisConnectSampler guiclass="net.xmeter.gui.DisConnectSamplerUI" testclass="net.xmeter.samplers.DisConnectSampler" testname="MQTT DisConnect" enabled="true"/>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="false">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">false</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <net.xmeter.samplers.ConnectSampler guiclass="net.xmeter.gui.ConnectSamplerUI" testclass="net.xmeter.samplers.ConnectSampler" testname="MQTT Connect" enabled="true">
+          <stringProp name="mqtt.server">soundbox-mqtt.tibilprojects.com</stringProp>
+          <stringProp name="mqtt.port">1883</stringProp>
+          <stringProp name="mqtt.version">3.1</stringProp>
+          <stringProp name="mqtt.conn_timeout">100</stringProp>
+          <stringProp name="mqtt.protocol">TCP</stringProp>
+          <stringProp name="mqtt.ws_path"></stringProp>
+          <boolProp name="mqtt.dual_ssl_authentication">false</boolProp>
+          <stringProp name="mqtt.clientcert_file_path">-----BEGIN CERTIFICATE----- MIIDVTCCAj2gAwIBAgIUOJgbx+6eTF6nt5mL6EQKG1gbzJowDQYJKoZIhvcNAQEL BQAwOjE4MDYGA1UEAwwvZWMyLTEzLTIzNS05LTguYXAtc291dGgtMS5jb21wdXRl LmFtYXpvbmF3cy5jb20wHhcNMjQxMDA3MDYyMDA4WhcNMjUxMDA3MDYyMDA4WjA6 MTgwNgYDVQQDDC9lYzItMTMtMjM1LTktOC5hcC1zb3V0aC0xLmNvbXB1dGUuYW1h em9uYXdzLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAI/mBsds TLmqTMnaiVCx5fERQebAjZMmHu6In7OJWdXyQITn4fpnRfPa4zeLnOfWpwNOpcHK DH2Ps4yXEnDH7abnwqclS87nJgV62fTzN0+fNB4qP2yi0jSNagVWJQ4Vpisz0zQt NGg9EJOMJ/GQLw22lCvUfzy2s/np8iBTMz70ZnrH63rdvpRWrxBBeyytU2TXmkXo IQ/YHeV5EIQKECGgYgqktNSk3SznbI6JZki2oBf+nVd+yj47A2aLbarE9ben9OcT BpeKwkZigHvyJyLnpG8kZfq6JUFAUtPQJ5KVwew0rB7vcJGsg9PcJybvn4w8aevD wbu2xTKHxIwv3F8CAwEAAaNTMFEwHQYDVR0OBBYEFF9n80InpExq6+7nUlrrrWuc MPlSMB8GA1UdIwQYMBaAFF9n80InpExq6+7nUlrrrWucMPlSMA8GA1UdEwEB/wQF MAMBAf8wDQYJKoZIhvcNAQELBQADggEBAIxD079m7CgPt0rZJPNMo0MltpOgGEm+ zOE9bwQwJGGDFquYSwEVbO10UZqqpYKeuHbAkPZn3fnraInE2HBKFj8hyoQbcPr5 PTGMRJVOolThLfgsHrjUA+ptGAztOzu2RdUShB/N35AX1ZfLXS7M87FRYt1wrGXP 9lor3bnsl3XlmJzKXoVguEscAupPluQn0KAS70vIo0101H5zxUsEN1/VJxGzUelt z++O1QyGb9SM/rX83bJua9ijoNj0C0gJkS4/spXhmpG6kkQEeYwoJ/Hl5e40Ia/t hUZ36V/IHl+XjsfgSHulAH73tH5tk+VUeckJObZ5Yrk9QxeiCgMHMBU= -----END CERTIFICATE-----</stringProp>
+          <stringProp name="mqtt.clientcert_password">-----BEGIN PRIVATE KEY----- MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCP5gbHbEy5qkzJ 2olQseXxEUHmwI2TJh7uiJ+ziVnV8kCE5+H6Z0Xz2uM3i5zn1qcDTqXBygx9j7OM lxJwx+2m58KnJUvO5yYFetn08zdPnzQeKj9sotI0jWoFViUOFaYrM9M0LTRoPRCT jCfxkC8NtpQr1H88trP56fIgUzM+9GZ6x+t63b6UVq8QQXssrVNk15pF6CEP2B3l eRCEChAhoGIKpLTUpN0s52yOiWZItqAX/p1Xfso+OwNmi22qxPW3p/TnEwaXisJG YoB78ici56RvJGX6uiVBQFLT0CeSlcHsNKwe73CRrIPT3Ccm75+MPGnrw8G7tsUy h8SML9xfAgMBAAECggEAJWdKPc31x5Dvssw+Qx5qwZWVxrAoXKZdBe23bUh3dHgq syE/CQKNGUy9IPQGTfDqqp5n0Y5+Xqjap+Gg5nXhXTAC1cWJBffpVyVOwC/0IZsl Re3/XHKaJxTXCRoSOa4A6lvnOznA1JOC2odk3pJ22J6rtxTeGd73uy9HQ4W83VDv 6Gc+y5pJhohjBf21Uzbef/ChaFOUlaTsYrC+NPpb3xQ2/h62d9Z8ZWgtWYneoE9c 5Q/ir0zee2NFt66ZSQ5bj5k7JXDQ4xRs3W4YBo6D74P+ST18EMZ0WHdzfCQKGg8w n2j4s6guktFDhjb7fsVDVniAvYjV5RV/YFgHiCQeuQKBgQDJiY5h0VNovJu/P3zm 8N5hYSymiJwIK59USqgO+XQHMOtuMPtpEmtYTFzOb+PPzHtB4nhDwMVvRvd2fgUV e0BGJLPZoWPW5o4ZDkN6u7umtSQlMdxg5VgqAJp3fFguIeCPknCUuL8FwmTBgA6V ++mPFWRV400Kxc2v/prqBIlVYwKBgQC2yP4o2txTVfNjX86sS1/VX8G20SoPdzOx T3rOwFUSV1S6WTjwSmxPTefiZUokA+OG5fDATTMGPBw8Y7vQbcyZmpsZp3TQJUh2 ZagCgpNOdejrYGPRHPqiBKUEFqFnETOCxVd32o1BiwqHxYLps3cpnCFw8yzzjeGu o9EVfyo71QKBgBK1lmY2TIv4lmzWs/2sdriLkN2U6QdJJW1p0NgzCDZysCh2m6BR eW2lCSiQ8pEj5n1jTM7dYnbGG8sAP/CSlJDub1PQy7fzh1WEIXePXghH4KcjTdYg 9GJR1AUrofQGaRZq/dCQpgse1MOx46jAzhneXoYqp8hMPKAN/suiyC0JAoGADmIQ hdx6+9/GkCpI1Av2VY78aktZOPBTU/+CFWTTDOdsVmGQ9m+UyETEG2+G/wCDVekg IbGxcysluabLb6JEOE4PKFyh94MHibGEH/ZwavsiQetKz3itTDR7W7AAMWEMIZ0v vdGnzeGICZkELSmfFdogU4f/IIconBpt6HgiNaUCgYEAmbmi4ow3rzxrwyUH+wcK tgebII/FPO6gDL2lNi8cmq07GLBFH3CDMmM4XedncFMeQ9BZTbEdxsCVIMZcubLQ SJ2XZZSk6PQUCx2yjejIC1eZhfE+pcuM2qgO37E6sltmhz7M6ju1qThyuk0himAl iOGSewoNRbSYoYkZIQZPJvY= -----END PRIVATE KEY-----</stringProp>
+          <stringProp name="mqtt.user_name"></stringProp>
+          <stringProp name="mqtt.password"></stringProp>
+          <stringProp name="mqtt.client_id_prefix">mqttx_0cfe3bb9</stringProp>
+          <boolProp name="mqtt.client_id_suffix">true</boolProp>
+          <stringProp name="mqtt.conn_keep_alive">300</stringProp>
+          <stringProp name="mqtt.conn_attampt_max">0</stringProp>
+          <stringProp name="mqtt.reconn_attampt_max">0</stringProp>
+          <stringProp name="mqtt.conn_clean_session">true</stringProp>
+        </net.xmeter.samplers.ConnectSampler>
+        <hashTree>
+          <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+            <boolProp name="ResultCollector.error_logging">false</boolProp>
+            <objProp>
+              <name>saveConfig</name>
+              <value class="SampleSaveConfiguration">
+                <time>true</time>
+                <latency>true</latency>
+                <timestamp>true</timestamp>
+                <success>true</success>
+                <label>true</label>
+                <code>true</code>
+                <message>true</message>
+                <threadName>true</threadName>
+                <dataType>true</dataType>
+                <encoding>false</encoding>
+                <assertions>true</assertions>
+                <subresults>true</subresults>
+                <responseData>false</responseData>
+                <samplerData>false</samplerData>
+                <xml>false</xml>
+                <fieldNames>true</fieldNames>
+                <responseHeaders>false</responseHeaders>
+                <requestHeaders>false</requestHeaders>
+                <responseDataOnError>false</responseDataOnError>
+                <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                <assertionsResultsToSave>0</assertionsResultsToSave>
+                <bytes>true</bytes>
+                <sentBytes>true</sentBytes>
+                <url>true</url>
+                <threadCounts>true</threadCounts>
+                <idleTime>true</idleTime>
+                <connectTime>true</connectTime>
+              </value>
+            </objProp>
+            <stringProp name="filename"></stringProp>
+          </ResultCollector>
+          <hashTree/>
+        </hashTree>
+        <net.xmeter.samplers.SubSampler guiclass="net.xmeter.gui.SubSamplerUI" testclass="net.xmeter.samplers.SubSampler" testname="MQTT Sub" enabled="true">
+          <stringProp name="mqtt.topic_name">testtopic/TestDemo</stringProp>
+          <stringProp name="mqtt.qos_level">2</stringProp>
+          <boolProp name="mqtt.add_timestamp">false</boolProp>
+          <boolProp name="mqtt.debug_response">true</boolProp>
+          <stringProp name="mqtt.sample_condition">specified elapsed time (ms)</stringProp>
+          <stringProp name="mqtt.sample_condition_value">1000</stringProp>
+        </net.xmeter.samplers.SubSampler>
+        <hashTree>
+          <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+            <boolProp name="ResultCollector.error_logging">false</boolProp>
+            <objProp>
+              <name>saveConfig</name>
+              <value class="SampleSaveConfiguration">
+                <time>true</time>
+                <latency>true</latency>
+                <timestamp>true</timestamp>
+                <success>true</success>
+                <label>true</label>
+                <code>true</code>
+                <message>true</message>
+                <threadName>true</threadName>
+                <dataType>true</dataType>
+                <encoding>false</encoding>
+                <assertions>true</assertions>
+                <subresults>true</subresults>
+                <responseData>false</responseData>
+                <samplerData>false</samplerData>
+                <xml>false</xml>
+                <fieldNames>true</fieldNames>
+                <responseHeaders>false</responseHeaders>
+                <requestHeaders>false</requestHeaders>
+                <responseDataOnError>false</responseDataOnError>
+                <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                <assertionsResultsToSave>0</assertionsResultsToSave>
+                <bytes>true</bytes>
+                <sentBytes>true</sentBytes>
+                <url>true</url>
+                <threadCounts>true</threadCounts>
+                <idleTime>true</idleTime>
+                <connectTime>true</connectTime>
+              </value>
+            </objProp>
+            <stringProp name="filename"></stringProp>
+          </ResultCollector>
+          <hashTree/>
+          <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
+            <boolProp name="ResultCollector.error_logging">false</boolProp>
+            <objProp>
+              <name>saveConfig</name>
+              <value class="SampleSaveConfiguration">
+                <time>true</time>
+                <latency>true</latency>
+                <timestamp>true</timestamp>
+                <success>true</success>
+                <label>true</label>
+                <code>true</code>
+                <message>true</message>
+                <threadName>true</threadName>
+                <dataType>true</dataType>
+                <encoding>false</encoding>
+                <assertions>true</assertions>
+                <subresults>true</subresults>
+                <responseData>false</responseData>
+                <samplerData>false</samplerData>
+                <xml>false</xml>
+                <fieldNames>true</fieldNames>
+                <responseHeaders>false</responseHeaders>
+                <requestHeaders>false</requestHeaders>
+                <responseDataOnError>false</responseDataOnError>
+                <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                <assertionsResultsToSave>0</assertionsResultsToSave>
+                <bytes>true</bytes>
+                <sentBytes>true</sentBytes>
+                <url>true</url>
+                <threadCounts>true</threadCounts>
+                <idleTime>true</idleTime>
+                <connectTime>true</connectTime>
+              </value>
+            </objProp>
+            <stringProp name="filename"></stringProp>
+          </ResultCollector>
+          <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">16</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+        </hashTree>
+        <net.xmeter.samplers.DisConnectSampler guiclass="net.xmeter.gui.DisConnectSamplerUI" testclass="net.xmeter.samplers.DisConnectSampler" testname="MQTT DisConnect" enabled="true"/>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="false">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">5</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">false</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="Once Only Controller" enabled="true"/>
+        <hashTree>
+          <net.xmeter.samplers.ConnectSampler guiclass="net.xmeter.gui.ConnectSamplerUI" testclass="net.xmeter.samplers.ConnectSampler" testname="MQTT Connect" enabled="true">
+            <stringProp name="mqtt.server">soundbox-mqtt.tibilprojects.com</stringProp>
+            <stringProp name="mqtt.port">1883</stringProp>
+            <stringProp name="mqtt.version">3.1</stringProp>
+            <stringProp name="mqtt.conn_timeout">100</stringProp>
+            <stringProp name="mqtt.protocol">TCP</stringProp>
+            <stringProp name="mqtt.ws_path"></stringProp>
+            <boolProp name="mqtt.dual_ssl_authentication">false</boolProp>
+            <stringProp name="mqtt.clientcert_file_path"></stringProp>
+            <stringProp name="mqtt.clientcert_password"></stringProp>
+            <stringProp name="mqtt.user_name"></stringProp>
+            <stringProp name="mqtt.password"></stringProp>
+            <stringProp name="mqtt.client_id_prefix">mqttx_0cfe3bb9</stringProp>
+            <boolProp name="mqtt.client_id_suffix">true</boolProp>
+            <stringProp name="mqtt.conn_keep_alive">300</stringProp>
+            <stringProp name="mqtt.conn_attampt_max">0</stringProp>
+            <stringProp name="mqtt.reconn_attampt_max">0</stringProp>
+            <stringProp name="mqtt.conn_clean_session">true</stringProp>
+          </net.xmeter.samplers.ConnectSampler>
+          <hashTree>
+            <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+              <boolProp name="ResultCollector.error_logging">false</boolProp>
+              <objProp>
+                <name>saveConfig</name>
+                <value class="SampleSaveConfiguration">
+                  <time>true</time>
+                  <latency>true</latency>
+                  <timestamp>true</timestamp>
+                  <success>true</success>
+                  <label>true</label>
+                  <code>true</code>
+                  <message>true</message>
+                  <threadName>true</threadName>
+                  <dataType>true</dataType>
+                  <encoding>false</encoding>
+                  <assertions>true</assertions>
+                  <subresults>true</subresults>
+                  <responseData>false</responseData>
+                  <samplerData>false</samplerData>
+                  <xml>false</xml>
+                  <fieldNames>true</fieldNames>
+                  <responseHeaders>false</responseHeaders>
+                  <requestHeaders>false</requestHeaders>
+                  <responseDataOnError>false</responseDataOnError>
+                  <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                  <assertionsResultsToSave>0</assertionsResultsToSave>
+                  <bytes>true</bytes>
+                  <sentBytes>true</sentBytes>
+                  <url>true</url>
+                  <threadCounts>true</threadCounts>
+                  <idleTime>true</idleTime>
+                  <connectTime>true</connectTime>
+                </value>
+              </objProp>
+              <stringProp name="filename"></stringProp>
+            </ResultCollector>
+            <hashTree/>
+          </hashTree>
+          <net.xmeter.samplers.PubSampler guiclass="net.xmeter.gui.PubSamplerUI" testclass="net.xmeter.samplers.PubSampler" testname="MQTT Pub - 10" enabled="true">
+            <stringProp name="mqtt.topic_name">12345678</stringProp>
+            <stringProp name="mqtt.qos_level">2</stringProp>
+            <boolProp name="mqtt.add_timestamp">false</boolProp>
+            <stringProp name="mqtt.message_type">String</stringProp>
+            <stringProp name="mqtt.message_type_fixed_length">1024</stringProp>
+            <stringProp name="mqtt.message_to_sent">{
+  &quot;reqRefNo&quot;: &quot;aa21cb7b-46237-4218-aaae-1c861a517f15&quot;,
+  &quot;rrn&quot;: &quot;5214523&quot;,
+  &quot;txnAmt&quot;: &quot;1000&quot;,
+  &quot;txnTimestamp&quot;: &quot;2901741941&quot;,
+  &quot;timeStamp&quot;: 1905643930,
+  &quot;deviceId&quot;: 100259
+}</stringProp>
+            <boolProp name="mqtt.retained_message">false</boolProp>
+          </net.xmeter.samplers.PubSampler>
+          <hashTree>
+            <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+              <boolProp name="ResultCollector.error_logging">false</boolProp>
+              <objProp>
+                <name>saveConfig</name>
+                <value class="SampleSaveConfiguration">
+                  <time>true</time>
+                  <latency>true</latency>
+                  <timestamp>true</timestamp>
+                  <success>true</success>
+                  <label>true</label>
+                  <code>true</code>
+                  <message>true</message>
+                  <threadName>true</threadName>
+                  <dataType>true</dataType>
+                  <encoding>false</encoding>
+                  <assertions>true</assertions>
+                  <subresults>true</subresults>
+                  <responseData>false</responseData>
+                  <samplerData>false</samplerData>
+                  <xml>false</xml>
+                  <fieldNames>true</fieldNames>
+                  <responseHeaders>false</responseHeaders>
+                  <requestHeaders>false</requestHeaders>
+                  <responseDataOnError>false</responseDataOnError>
+                  <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                  <assertionsResultsToSave>0</assertionsResultsToSave>
+                  <bytes>true</bytes>
+                  <sentBytes>true</sentBytes>
+                  <url>true</url>
+                  <threadCounts>true</threadCounts>
+                  <idleTime>true</idleTime>
+                  <connectTime>true</connectTime>
+                </value>
+              </objProp>
+              <stringProp name="filename"></stringProp>
+            </ResultCollector>
+            <hashTree/>
+          </hashTree>
+          <net.xmeter.samplers.PubSampler guiclass="net.xmeter.gui.PubSamplerUI" testclass="net.xmeter.samplers.PubSampler" testname="MQTT Pub - 100" enabled="true">
+            <stringProp name="mqtt.topic_name">12345678</stringProp>
+            <stringProp name="mqtt.qos_level">2</stringProp>
+            <boolProp name="mqtt.add_timestamp">false</boolProp>
+            <stringProp name="mqtt.message_type">String</stringProp>
+            <stringProp name="mqtt.message_type_fixed_length">1024</stringProp>
+            <stringProp name="mqtt.message_to_sent">{
+  &quot;reqRefNo&quot;: &quot;av21cb7b-46237-4218-aaae-1c861a517f15&quot;,
+  &quot;rrn&quot;: &quot;5245553&quot;,
+  &quot;txnAmt&quot;: &quot;10000&quot;,
+  &quot;txnTimestamp&quot;: &quot;1905741941&quot;,
+  &quot;timeStamp&quot;: 1905643930,
+  &quot;deviceId&quot;: 100259
+}</stringProp>
+            <boolProp name="mqtt.retained_message">false</boolProp>
+          </net.xmeter.samplers.PubSampler>
+          <hashTree>
+            <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+              <boolProp name="ResultCollector.error_logging">false</boolProp>
+              <objProp>
+                <name>saveConfig</name>
+                <value class="SampleSaveConfiguration">
+                  <time>true</time>
+                  <latency>true</latency>
+                  <timestamp>true</timestamp>
+                  <success>true</success>
+                  <label>true</label>
+                  <code>true</code>
+                  <message>true</message>
+                  <threadName>true</threadName>
+                  <dataType>true</dataType>
+                  <encoding>false</encoding>
+                  <assertions>true</assertions>
+                  <subresults>true</subresults>
+                  <responseData>false</responseData>
+                  <samplerData>false</samplerData>
+                  <xml>false</xml>
+                  <fieldNames>true</fieldNames>
+                  <responseHeaders>false</responseHeaders>
+                  <requestHeaders>false</requestHeaders>
+                  <responseDataOnError>false</responseDataOnError>
+                  <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                  <assertionsResultsToSave>0</assertionsResultsToSave>
+                  <bytes>true</bytes>
+                  <sentBytes>true</sentBytes>
+                  <url>true</url>
+                  <threadCounts>true</threadCounts>
+                  <idleTime>true</idleTime>
+                  <connectTime>true</connectTime>
+                </value>
+              </objProp>
+              <stringProp name="filename"></stringProp>
+            </ResultCollector>
+            <hashTree/>
+          </hashTree>
+          <net.xmeter.samplers.PubSampler guiclass="net.xmeter.gui.PubSamplerUI" testclass="net.xmeter.samplers.PubSampler" testname="MQTT Pub - 200" enabled="true">
+            <stringProp name="mqtt.topic_name">12345678</stringProp>
+            <stringProp name="mqtt.qos_level">2</stringProp>
+            <boolProp name="mqtt.add_timestamp">false</boolProp>
+            <stringProp name="mqtt.message_type">String</stringProp>
+            <stringProp name="mqtt.message_type_fixed_length">1024</stringProp>
+            <stringProp name="mqtt.message_to_sent">{
+  &quot;reqRefNo&quot;: &quot;au21cb7b-46237-4218-aaae-1c861a517f15&quot;,
+  &quot;rrn&quot;: &quot;5664553&quot;,
+  &quot;txnAmt&quot;: &quot;20000&quot;,
+  &quot;txnTimestamp&quot;: &quot;1304741941&quot;,
+  &quot;timeStamp&quot;: 1905643930,
+  &quot;deviceId&quot;: 100259
+}</stringProp>
+            <boolProp name="mqtt.retained_message">false</boolProp>
+          </net.xmeter.samplers.PubSampler>
+          <hashTree>
+            <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+              <boolProp name="ResultCollector.error_logging">false</boolProp>
+              <objProp>
+                <name>saveConfig</name>
+                <value class="SampleSaveConfiguration">
+                  <time>true</time>
+                  <latency>true</latency>
+                  <timestamp>true</timestamp>
+                  <success>true</success>
+                  <label>true</label>
+                  <code>true</code>
+                  <message>true</message>
+                  <threadName>true</threadName>
+                  <dataType>true</dataType>
+                  <encoding>false</encoding>
+                  <assertions>true</assertions>
+                  <subresults>true</subresults>
+                  <responseData>false</responseData>
+                  <samplerData>false</samplerData>
+                  <xml>false</xml>
+                  <fieldNames>true</fieldNames>
+                  <responseHeaders>false</responseHeaders>
+                  <requestHeaders>false</requestHeaders>
+                  <responseDataOnError>false</responseDataOnError>
+                  <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                  <assertionsResultsToSave>0</assertionsResultsToSave>
+                  <bytes>true</bytes>
+                  <sentBytes>true</sentBytes>
+                  <url>true</url>
+                  <threadCounts>true</threadCounts>
+                  <idleTime>true</idleTime>
+                  <connectTime>true</connectTime>
+                </value>
+              </objProp>
+              <stringProp name="filename"></stringProp>
+            </ResultCollector>
+            <hashTree/>
+          </hashTree>
+          <net.xmeter.samplers.PubSampler guiclass="net.xmeter.gui.PubSamplerUI" testclass="net.xmeter.samplers.PubSampler" testname="MQTT Pub - 500.10" enabled="true">
+            <stringProp name="mqtt.topic_name">12345678</stringProp>
+            <stringProp name="mqtt.qos_level">2</stringProp>
+            <boolProp name="mqtt.add_timestamp">false</boolProp>
+            <stringProp name="mqtt.message_type">String</stringProp>
+            <stringProp name="mqtt.message_type_fixed_length">1024</stringProp>
+            <stringProp name="mqtt.message_to_sent">{
+  &quot;reqRefNo&quot;: &quot;ag21cb7b-44237-4218-aaae-1c861a517f15&quot;,
+  &quot;rrn&quot;: &quot;5264553&quot;,
+  &quot;txnAmt&quot;: &quot;50010&quot;,
+  &quot;txnTimestamp&quot;: &quot;1301341941&quot;,
+  &quot;timeStamp&quot;: 1905643930,
+  &quot;deviceId&quot;: 100259
+}</stringProp>
+            <boolProp name="mqtt.retained_message">false</boolProp>
+          </net.xmeter.samplers.PubSampler>
+          <hashTree>
+            <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+              <boolProp name="ResultCollector.error_logging">false</boolProp>
+              <objProp>
+                <name>saveConfig</name>
+                <value class="SampleSaveConfiguration">
+                  <time>true</time>
+                  <latency>true</latency>
+                  <timestamp>true</timestamp>
+                  <success>true</success>
+                  <label>true</label>
+                  <code>true</code>
+                  <message>true</message>
+                  <threadName>true</threadName>
+                  <dataType>true</dataType>
+                  <encoding>false</encoding>
+                  <assertions>true</assertions>
+                  <subresults>true</subresults>
+                  <responseData>false</responseData>
+                  <samplerData>false</samplerData>
+                  <xml>false</xml>
+                  <fieldNames>true</fieldNames>
+                  <responseHeaders>false</responseHeaders>
+                  <requestHeaders>false</requestHeaders>
+                  <responseDataOnError>false</responseDataOnError>
+                  <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                  <assertionsResultsToSave>0</assertionsResultsToSave>
+                  <bytes>true</bytes>
+                  <sentBytes>true</sentBytes>
+                  <url>true</url>
+                  <threadCounts>true</threadCounts>
+                  <idleTime>true</idleTime>
+                  <connectTime>true</connectTime>
+                </value>
+              </objProp>
+              <stringProp name="filename"></stringProp>
+            </ResultCollector>
+            <hashTree/>
+          </hashTree>
+          <net.xmeter.samplers.PubSampler guiclass="net.xmeter.gui.PubSamplerUI" testclass="net.xmeter.samplers.PubSampler" testname="MQTT Pub - 1000" enabled="true">
+            <stringProp name="mqtt.topic_name">12345678</stringProp>
+            <stringProp name="mqtt.qos_level">2</stringProp>
+            <boolProp name="mqtt.add_timestamp">false</boolProp>
+            <stringProp name="mqtt.message_type">String</stringProp>
+            <stringProp name="mqtt.message_type_fixed_length">1024</stringProp>
+            <stringProp name="mqtt.message_to_sent">{
+  &quot;reqRefNo&quot;: &quot;ag21cb73-46237-4218-aaae-1c861a517f15&quot;,
+  &quot;rrn&quot;: &quot;5364553&quot;,
+  &quot;txnAmt&quot;: &quot;100000&quot;,
+  &quot;txnTimestamp&quot;: &quot;1301781941&quot;,
+  &quot;timeStamp&quot;: 1905643930,
+  &quot;deviceId&quot;: 100259
+}</stringProp>
+            <boolProp name="mqtt.retained_message">false</boolProp>
+          </net.xmeter.samplers.PubSampler>
+          <hashTree>
+            <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+              <boolProp name="ResultCollector.error_logging">false</boolProp>
+              <objProp>
+                <name>saveConfig</name>
+                <value class="SampleSaveConfiguration">
+                  <time>true</time>
+                  <latency>true</latency>
+                  <timestamp>true</timestamp>
+                  <success>true</success>
+                  <label>true</label>
+                  <code>true</code>
+                  <message>true</message>
+                  <threadName>true</threadName>
+                  <dataType>true</dataType>
+                  <encoding>false</encoding>
+                  <assertions>true</assertions>
+                  <subresults>true</subresults>
+                  <responseData>false</responseData>
+                  <samplerData>false</samplerData>
+                  <xml>false</xml>
+                  <fieldNames>true</fieldNames>
+                  <responseHeaders>false</responseHeaders>
+                  <requestHeaders>false</requestHeaders>
+                  <responseDataOnError>false</responseDataOnError>
+                  <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                  <assertionsResultsToSave>0</assertionsResultsToSave>
+                  <bytes>true</bytes>
+                  <sentBytes>true</sentBytes>
+                  <url>true</url>
+                  <threadCounts>true</threadCounts>
+                  <idleTime>true</idleTime>
+                  <connectTime>true</connectTime>
+                </value>
+              </objProp>
+              <stringProp name="filename"></stringProp>
+            </ResultCollector>
+            <hashTree/>
+          </hashTree>
+          <net.xmeter.samplers.PubSampler guiclass="net.xmeter.gui.PubSamplerUI" testclass="net.xmeter.samplers.PubSampler" testname="MQTT Pub - 2000" enabled="true">
+            <stringProp name="mqtt.topic_name">12345678</stringProp>
+            <stringProp name="mqtt.qos_level">2</stringProp>
+            <boolProp name="mqtt.add_timestamp">false</boolProp>
+            <stringProp name="mqtt.message_type">String</stringProp>
+            <stringProp name="mqtt.message_type_fixed_length">1024</stringProp>
+            <stringProp name="mqtt.message_to_sent">{
+  &quot;reqRefNo&quot;: &quot;ag21cb7b-46137-4218-aaae-1c861a517f15&quot;,
+  &quot;rrn&quot;: &quot;5264553&quot;,
+  &quot;txnAmt&quot;: &quot;200000&quot;,
+  &quot;txnTimestamp&quot;: &quot;1303741941&quot;,
+  &quot;timeStamp&quot;: 1905643930,
+  &quot;deviceId&quot;: 100259
+}</stringProp>
+            <boolProp name="mqtt.retained_message">false</boolProp>
+          </net.xmeter.samplers.PubSampler>
+          <hashTree>
+            <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+              <boolProp name="ResultCollector.error_logging">false</boolProp>
+              <objProp>
+                <name>saveConfig</name>
+                <value class="SampleSaveConfiguration">
+                  <time>true</time>
+                  <latency>true</latency>
+                  <timestamp>true</timestamp>
+                  <success>true</success>
+                  <label>true</label>
+                  <code>true</code>
+                  <message>true</message>
+                  <threadName>true</threadName>
+                  <dataType>true</dataType>
+                  <encoding>false</encoding>
+                  <assertions>true</assertions>
+                  <subresults>true</subresults>
+                  <responseData>false</responseData>
+                  <samplerData>false</samplerData>
+                  <xml>false</xml>
+                  <fieldNames>true</fieldNames>
+                  <responseHeaders>false</responseHeaders>
+                  <requestHeaders>false</requestHeaders>
+                  <responseDataOnError>false</responseDataOnError>
+                  <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                  <assertionsResultsToSave>0</assertionsResultsToSave>
+                  <bytes>true</bytes>
+                  <sentBytes>true</sentBytes>
+                  <url>true</url>
+                  <threadCounts>true</threadCounts>
+                  <idleTime>true</idleTime>
+                  <connectTime>true</connectTime>
+                </value>
+              </objProp>
+              <stringProp name="filename"></stringProp>
+            </ResultCollector>
+            <hashTree/>
+          </hashTree>
+          <net.xmeter.samplers.PubSampler guiclass="net.xmeter.gui.PubSamplerUI" testclass="net.xmeter.samplers.PubSampler" testname="MQTT Pub - 51500" enabled="true">
+            <stringProp name="mqtt.topic_name">12345678</stringProp>
+            <stringProp name="mqtt.qos_level">2</stringProp>
+            <boolProp name="mqtt.add_timestamp">false</boolProp>
+            <stringProp name="mqtt.message_type">String</stringProp>
+            <stringProp name="mqtt.message_type_fixed_length">1024</stringProp>
+            <stringProp name="mqtt.message_to_sent">{
+  &quot;reqRefNo&quot;: &quot;ag21cb7b-46237-5218-aaae-1c861a517f15&quot;,
+  &quot;rrn&quot;: &quot;5264553&quot;,
+  &quot;txnAmt&quot;: &quot;5150000&quot;,
+  &quot;txnTimestamp&quot;: &quot;1301740941&quot;,
+  &quot;timeStamp&quot;: 1905643930,
+  &quot;deviceId&quot;: 100259
+}</stringProp>
+            <boolProp name="mqtt.retained_message">false</boolProp>
+          </net.xmeter.samplers.PubSampler>
+          <hashTree>
+            <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+              <boolProp name="ResultCollector.error_logging">false</boolProp>
+              <objProp>
+                <name>saveConfig</name>
+                <value class="SampleSaveConfiguration">
+                  <time>true</time>
+                  <latency>true</latency>
+                  <timestamp>true</timestamp>
+                  <success>true</success>
+                  <label>true</label>
+                  <code>true</code>
+                  <message>true</message>
+                  <threadName>true</threadName>
+                  <dataType>true</dataType>
+                  <encoding>false</encoding>
+                  <assertions>true</assertions>
+                  <subresults>true</subresults>
+                  <responseData>false</responseData>
+                  <samplerData>false</samplerData>
+                  <xml>false</xml>
+                  <fieldNames>true</fieldNames>
+                  <responseHeaders>false</responseHeaders>
+                  <requestHeaders>false</requestHeaders>
+                  <responseDataOnError>false</responseDataOnError>
+                  <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                  <assertionsResultsToSave>0</assertionsResultsToSave>
+                  <bytes>true</bytes>
+                  <sentBytes>true</sentBytes>
+                  <url>true</url>
+                  <threadCounts>true</threadCounts>
+                  <idleTime>true</idleTime>
+                  <connectTime>true</connectTime>
+                </value>
+              </objProp>
+              <stringProp name="filename"></stringProp>
+            </ResultCollector>
+            <hashTree/>
+          </hashTree>
+          <net.xmeter.samplers.DisConnectSampler guiclass="net.xmeter.gui.DisConnectSamplerUI" testclass="net.xmeter.samplers.DisConnectSampler" testname="MQTT DisConnect" enabled="true"/>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="MQTT - Device Test random data" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">false</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="Counter" enabled="true">
+          <stringProp name="CounterConfig.start">100</stringProp>
+          <stringProp name="CounterConfig.end">50000</stringProp>
+          <stringProp name="CounterConfig.incr">1</stringProp>
+          <stringProp name="CounterConfig.name">tnx</stringProp>
+          <stringProp name="CounterConfig.format"></stringProp>
+          <boolProp name="CounterConfig.per_user">false</boolProp>
+        </CounterConfig>
+        <hashTree/>
+        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="Once Only Controller" enabled="true"/>
+        <hashTree>
+          <net.xmeter.samplers.ConnectSampler guiclass="net.xmeter.gui.ConnectSamplerUI" testclass="net.xmeter.samplers.ConnectSampler" testname="MQTT Connect" enabled="true">
+            <stringProp name="mqtt.server">soundbox-mqtt.tibilprojects.com</stringProp>
+            <stringProp name="mqtt.port">1883</stringProp>
+            <stringProp name="mqtt.version">3.1</stringProp>
+            <stringProp name="mqtt.conn_timeout">100</stringProp>
+            <stringProp name="mqtt.protocol">TCP</stringProp>
+            <stringProp name="mqtt.ws_path"></stringProp>
+            <boolProp name="mqtt.dual_ssl_authentication">false</boolProp>
+            <stringProp name="mqtt.clientcert_file_path"></stringProp>
+            <stringProp name="mqtt.clientcert_password"></stringProp>
+            <stringProp name="mqtt.user_name"></stringProp>
+            <stringProp name="mqtt.password"></stringProp>
+            <stringProp name="mqtt.client_id_prefix">mqttx_0cfe3bb9</stringProp>
+            <boolProp name="mqtt.client_id_suffix">true</boolProp>
+            <stringProp name="mqtt.conn_keep_alive">300</stringProp>
+            <stringProp name="mqtt.conn_attampt_max">0</stringProp>
+            <stringProp name="mqtt.reconn_attampt_max">0</stringProp>
+            <stringProp name="mqtt.conn_clean_session">true</stringProp>
+          </net.xmeter.samplers.ConnectSampler>
+          <hashTree>
+            <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+              <boolProp name="ResultCollector.error_logging">false</boolProp>
+              <objProp>
+                <name>saveConfig</name>
+                <value class="SampleSaveConfiguration">
+                  <time>true</time>
+                  <latency>true</latency>
+                  <timestamp>true</timestamp>
+                  <success>true</success>
+                  <label>true</label>
+                  <code>true</code>
+                  <message>true</message>
+                  <threadName>true</threadName>
+                  <dataType>true</dataType>
+                  <encoding>false</encoding>
+                  <assertions>true</assertions>
+                  <subresults>true</subresults>
+                  <responseData>false</responseData>
+                  <samplerData>false</samplerData>
+                  <xml>false</xml>
+                  <fieldNames>true</fieldNames>
+                  <responseHeaders>false</responseHeaders>
+                  <requestHeaders>false</requestHeaders>
+                  <responseDataOnError>false</responseDataOnError>
+                  <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                  <assertionsResultsToSave>0</assertionsResultsToSave>
+                  <bytes>true</bytes>
+                  <sentBytes>true</sentBytes>
+                  <url>true</url>
+                  <threadCounts>true</threadCounts>
+                  <idleTime>true</idleTime>
+                  <connectTime>true</connectTime>
+                </value>
+              </objProp>
+              <stringProp name="filename"></stringProp>
+            </ResultCollector>
+            <hashTree/>
+          </hashTree>
+          <net.xmeter.samplers.PubSampler guiclass="net.xmeter.gui.PubSamplerUI" testclass="net.xmeter.samplers.PubSampler" testname="MQTT Pub " enabled="true">
+            <stringProp name="mqtt.topic_name">12345678</stringProp>
+            <stringProp name="mqtt.qos_level">2</stringProp>
+            <boolProp name="mqtt.add_timestamp">false</boolProp>
+            <stringProp name="mqtt.message_type">String</stringProp>
+            <stringProp name="mqtt.message_type_fixed_length">1024</stringProp>
+            <stringProp name="mqtt.message_to_sent">{
+  &quot;reqRefNo&quot;: &quot;${__UUID()}&quot;,
+  &quot;rrn&quot;: &quot;${__Random(1000000,9999999)}&quot;,
+  &quot;txnAmt&quot;: &quot;${tnx}10&quot;,
+  &quot;txnTimestamp&quot;: &quot;${__Random(1000000000,9999999999)}&quot;,
+  &quot;timeStamp&quot;: 1905643930,
+  &quot;deviceId&quot;: 100259
+}
+</stringProp>
+            <boolProp name="mqtt.retained_message">false</boolProp>
+            <stringProp name="TestPlan.comments">&quot;txnAmt&quot;: &quot;${__Random(100,10000)}&quot;,</stringProp>
+          </net.xmeter.samplers.PubSampler>
+          <hashTree>
+            <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+              <boolProp name="ResultCollector.error_logging">false</boolProp>
+              <objProp>
+                <name>saveConfig</name>
+                <value class="SampleSaveConfiguration">
+                  <time>true</time>
+                  <latency>true</latency>
+                  <timestamp>true</timestamp>
+                  <success>true</success>
+                  <label>true</label>
+                  <code>true</code>
+                  <message>true</message>
+                  <threadName>true</threadName>
+                  <dataType>true</dataType>
+                  <encoding>false</encoding>
+                  <assertions>true</assertions>
+                  <subresults>true</subresults>
+                  <responseData>false</responseData>
+                  <samplerData>false</samplerData>
+                  <xml>false</xml>
+                  <fieldNames>true</fieldNames>
+                  <responseHeaders>false</responseHeaders>
+                  <requestHeaders>false</requestHeaders>
+                  <responseDataOnError>false</responseDataOnError>
+                  <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                  <assertionsResultsToSave>0</assertionsResultsToSave>
+                  <bytes>true</bytes>
+                  <sentBytes>true</sentBytes>
+                  <url>true</url>
+                  <threadCounts>true</threadCounts>
+                  <idleTime>true</idleTime>
+                  <connectTime>true</connectTime>
+                </value>
+              </objProp>
+              <stringProp name="filename"></stringProp>
+            </ResultCollector>
+            <hashTree/>
+          </hashTree>
+          <net.xmeter.samplers.DisConnectSampler guiclass="net.xmeter.gui.DisConnectSamplerUI" testclass="net.xmeter.samplers.DisConnectSampler" testname="MQTT DisConnect" enabled="true"/>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="MQTT - Device Test random data" enabled="false">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">5</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">false</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="Counter" enabled="true">
+          <stringProp name="CounterConfig.start">100</stringProp>
+          <stringProp name="CounterConfig.end">50000</stringProp>
+          <stringProp name="CounterConfig.incr">1</stringProp>
+          <stringProp name="CounterConfig.name">tnx</stringProp>
+          <stringProp name="CounterConfig.format"></stringProp>
+          <boolProp name="CounterConfig.per_user">false</boolProp>
+        </CounterConfig>
+        <hashTree/>
+        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="Once Only Controller" enabled="true"/>
+        <hashTree>
+          <net.xmeter.samplers.ConnectSampler guiclass="net.xmeter.gui.ConnectSamplerUI" testclass="net.xmeter.samplers.ConnectSampler" testname="MQTT Connect" enabled="true">
+            <stringProp name="mqtt.server">soundbox-mqtt.tibilprojects.com</stringProp>
+            <stringProp name="mqtt.port">1883</stringProp>
+            <stringProp name="mqtt.version">3.1</stringProp>
+            <stringProp name="mqtt.conn_timeout">100</stringProp>
+            <stringProp name="mqtt.protocol">TCP</stringProp>
+            <stringProp name="mqtt.ws_path"></stringProp>
+            <boolProp name="mqtt.dual_ssl_authentication">false</boolProp>
+            <stringProp name="mqtt.clientcert_file_path"></stringProp>
+            <stringProp name="mqtt.clientcert_password"></stringProp>
+            <stringProp name="mqtt.user_name"></stringProp>
+            <stringProp name="mqtt.password"></stringProp>
+            <stringProp name="mqtt.client_id_prefix">mqttx_0cfe3bb9</stringProp>
+            <boolProp name="mqtt.client_id_suffix">true</boolProp>
+            <stringProp name="mqtt.conn_keep_alive">300</stringProp>
+            <stringProp name="mqtt.conn_attampt_max">0</stringProp>
+            <stringProp name="mqtt.reconn_attampt_max">0</stringProp>
+            <stringProp name="mqtt.conn_clean_session">true</stringProp>
+          </net.xmeter.samplers.ConnectSampler>
+          <hashTree>
+            <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+              <boolProp name="ResultCollector.error_logging">false</boolProp>
+              <objProp>
+                <name>saveConfig</name>
+                <value class="SampleSaveConfiguration">
+                  <time>true</time>
+                  <latency>true</latency>
+                  <timestamp>true</timestamp>
+                  <success>true</success>
+                  <label>true</label>
+                  <code>true</code>
+                  <message>true</message>
+                  <threadName>true</threadName>
+                  <dataType>true</dataType>
+                  <encoding>false</encoding>
+                  <assertions>true</assertions>
+                  <subresults>true</subresults>
+                  <responseData>false</responseData>
+                  <samplerData>false</samplerData>
+                  <xml>false</xml>
+                  <fieldNames>true</fieldNames>
+                  <responseHeaders>false</responseHeaders>
+                  <requestHeaders>false</requestHeaders>
+                  <responseDataOnError>false</responseDataOnError>
+                  <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                  <assertionsResultsToSave>0</assertionsResultsToSave>
+                  <bytes>true</bytes>
+                  <sentBytes>true</sentBytes>
+                  <url>true</url>
+                  <threadCounts>true</threadCounts>
+                  <idleTime>true</idleTime>
+                  <connectTime>true</connectTime>
+                </value>
+              </objProp>
+              <stringProp name="filename"></stringProp>
+            </ResultCollector>
+            <hashTree/>
+          </hashTree>
+          <net.xmeter.samplers.PubSampler guiclass="net.xmeter.gui.PubSamplerUI" testclass="net.xmeter.samplers.PubSampler" testname="MQTT Pub " enabled="true">
+            <stringProp name="mqtt.topic_name">12345678</stringProp>
+            <stringProp name="mqtt.qos_level">1</stringProp>
+            <boolProp name="mqtt.add_timestamp">false</boolProp>
+            <stringProp name="mqtt.message_type">String</stringProp>
+            <stringProp name="mqtt.message_type_fixed_length">1024</stringProp>
+            <stringProp name="mqtt.message_to_sent">{
+  &quot;reqRefNo&quot;: &quot;${__UUID()}&quot;,
+  &quot;rrn&quot;: &quot;${__Random(1000000,9999999)}&quot;,
+  &quot;txnAmt&quot;: &quot;${tnx}00&quot;,
+  &quot;txnTimestamp&quot;: &quot;${__Random(1000000000,9999999999)}&quot;,
+  &quot;timeStamp&quot;: 1905643930,
+  &quot;deviceId&quot;: 100259
+}
+</stringProp>
+            <boolProp name="mqtt.retained_message">false</boolProp>
+            <stringProp name="TestPlan.comments">&quot;txnAmt&quot;: &quot;${__Random(100,10000)}&quot;,</stringProp>
+          </net.xmeter.samplers.PubSampler>
+          <hashTree>
+            <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+              <boolProp name="ResultCollector.error_logging">false</boolProp>
+              <objProp>
+                <name>saveConfig</name>
+                <value class="SampleSaveConfiguration">
+                  <time>true</time>
+                  <latency>true</latency>
+                  <timestamp>true</timestamp>
+                  <success>true</success>
+                  <label>true</label>
+                  <code>true</code>
+                  <message>true</message>
+                  <threadName>true</threadName>
+                  <dataType>true</dataType>
+                  <encoding>false</encoding>
+                  <assertions>true</assertions>
+                  <subresults>true</subresults>
+                  <responseData>false</responseData>
+                  <samplerData>false</samplerData>
+                  <xml>false</xml>
+                  <fieldNames>true</fieldNames>
+                  <responseHeaders>false</responseHeaders>
+                  <requestHeaders>false</requestHeaders>
+                  <responseDataOnError>false</responseDataOnError>
+                  <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                  <assertionsResultsToSave>0</assertionsResultsToSave>
+                  <bytes>true</bytes>
+                  <sentBytes>true</sentBytes>
+                  <url>true</url>
+                  <threadCounts>true</threadCounts>
+                  <idleTime>true</idleTime>
+                  <connectTime>true</connectTime>
+                </value>
+              </objProp>
+              <stringProp name="filename"></stringProp>
+            </ResultCollector>
+            <hashTree/>
+          </hashTree>
+          <net.xmeter.samplers.DisConnectSampler guiclass="net.xmeter.gui.DisConnectSamplerUI" testclass="net.xmeter.samplers.DisConnectSampler" testname="MQTT DisConnect" enabled="true"/>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

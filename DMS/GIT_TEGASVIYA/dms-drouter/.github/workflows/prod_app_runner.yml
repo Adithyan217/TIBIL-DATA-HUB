@@ -1,0 +1,56 @@
+name: Deploy to App Runner AWS 
+
+on:
+  push:
+    branches: [ prod-apprunner ]
+  workflow_dispatch:
+
+env:
+  ECR_REPOSITORY: prod-dms-ecr
+  AWS_REGION: ap-south-1
+
+jobs:
+  deploy:
+    name: Deploy to App Runner
+    runs-on: ubuntu-latest
+
+    steps:
+      # -------- CHECKOUT ----------
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}   # PAT or GitHub Token
+          fetch-depth: 0                       # Full history (safe)
+          persist-credentials: true            # Needed for git operations
+
+      # -------- BUILD APP ----------
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      # -------- AWS AUTH ----------
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # -------- DOCKER BUILD & PUSH ----------
+      - name: Set Docker Image Details
+        run: |
+          echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_ENV
+          echo "IMAGE_TAG=drouterms-apprunner-${{ github.run_number }}" >> $GITHUB_ENV
+
+      - name: Build, tag, and push image to Amazon ECR
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

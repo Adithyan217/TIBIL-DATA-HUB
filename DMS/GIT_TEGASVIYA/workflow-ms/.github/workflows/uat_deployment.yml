@@ -1,0 +1,38 @@
+name: Build and Push to Artifact Registry
+
+on:
+  push:
+    branches: ["uat-cloudrun"]
+
+env:
+  PROJECT_ID: "dms-uat-backend"
+  REGION: "asia-south1"
+  REPOSITORY: "workflow-ms"
+  IMAGE_NAME: "workflow-ms" # container name in repo
+  TAG: ${{ github.sha }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up gcloud auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configure gcloud Docker auth
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker $REGION-docker.pkg.dev
+      - name: Build Docker image
+        run: |
+          docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$TAG .
+      - name: Push Docker image
+        run: |
+          docker push $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$TAG

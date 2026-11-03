@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS registry.tlog (
+    tlid SERIAL PRIMARY KEY,
+    imei VARCHAR UNIQUE NOT NULL,
+    tdetails VARCHAR NOT NULL,
+    uat TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_tlog_imei 
+ON registry.tlog (imei);

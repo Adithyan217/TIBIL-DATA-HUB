@@ -1,0 +1,415 @@
+Test Case,Scenario,Status,Error Message
+test_api_cases[S1 - T1],S1,PASS,
+test_api_cases[S1 - TC1],S1,PASS,
+test_api_cases[S1 - T2],S1,FAIL,"Failed: Assertion Failed for 'Onboard Bank': Not all rows passed. Total = 1, Passed = 0"
+test_api_cases[S2 - T3],S2,PASS,
+test_api_cases[S2 - TC1],S2,PASS,
+test_api_cases[S2 - T4],S2,FAIL,"Failed: Assertion Failed for 'Onboard Bank': Not all rows passed. Total = 2, Passed = 0"
+test_api_cases[S3 - T5],S3,PASS,
+test_api_cases[S4 - T6],S4,PASS,
+test_api_cases[S4 - TC1],S4,PASS,
+test_api_cases[S4 - T7],S4,PASS,
+test_api_cases[S5 - T8],S5,FAIL,"json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 7 column 13 (char 121)
+       Failed: ❌ Invalid JSON format after replacement:
+       {
+       ""event"": ""ONBOARD_BRANCH"",
+       ""event_by"": ""05d69885-9e9d-48e8-8673-3ba4d11fbf20"",
+       ""edetails"": [
+       {
+       ""row_id"":1,
+       ""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+       ""branch_code"":1236,
+       ""branch_name"": ""tester_branch1"",
+       ""brinfo"": {
+       ""name"": ""Alice Johnson"",
+       ""designation"": ""Branch Manager"",
+       ""phno"": ""+911234567890"",
+       ""email"": ""alice.johnson@bank.com""
+       }
+       }
+       ]
+       }
+       Error: Expecting property name enclosed in double quotes: line 7 column 13 (char 121)"
+test_api_cases[S5 - TC1],S5,PASS,
+test_api_cases[S5 - T9],S5,FAIL,"Failed: Assertion Failed for 'Onboard Bank': Not all rows passed. Total = 1, Passed = 0"
+test_api_cases[S6 - T10],S6,FAIL,"json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 7 column 13 (char 121)
+       Failed: ❌ Invalid JSON format after replacement:
+       {
+       ""event"": ""ONBOARD_BRANCH"",
+       ""event_by"": ""05d69885-9e9d-48e8-8673-3ba4d11fbf20"",
+       ""edetails"": [
+       {
+       ""row_id"":1,
+       ""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+       ""branch_code"":1236,
+       ""branch_name"": ""tester_branch2"",
+       ""brinfo"": {
+       ""name"": ""Alice Johnson"",
+       ""designation"": ""Branch Manager"",
+       ""phno"": ""+911234567890"",
+       ""email"": ""alice.johnson@bank.com""
+       }
+       },
+       {
+       ""row_id"":2,
+       ""bank_id"": {data.""Onboard Bank"".hdetails[0].values[1][3]},
+       ""branch_code"":1236,
+       ""branch_name"": ""tester_branch3"",
+       ""brinfo"": {
+       ""name"": ""Alice Johnson"",
+       ""designation"": ""Branch Manager"",
+       ""phno"": ""+911234567890"",
+       ""email"": ""alice.johnson@bank.com""
+       }
+       }
+       ]
+       }
+       Error: Expecting property name enclosed in double quotes: line 7 column 13 (char 121)"
+test_api_cases[S6 - TC1],S6,PASS,
+test_api_cases[S6 - T11],S6,FAIL,"Failed: Assertion Failed for 'Onboard Bank': Not all rows passed. Total = 1, Passed = 0"
+test_api_cases[S7 - T12],S7,PASS,
+test_api_cases[S8 - T13],S8,FAIL,"json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 7 column 13 (char 121)
+       Failed: ❌ Invalid JSON format after replacement:
+       {
+       ""event"": ""ONBOARD_BRANCH"",
+       ""event_by"": ""05d69885-9e9d-48e8-8673-3ba4d11fbf20"",
+       ""edetails"": [
+       {
+       ""row_id"":1,
+       ""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+       ""branch_code"":1236,
+       ""branch_name"": ""tester_branch1"",
+       ""brinfo"": {
+       ""name"": ""Alice Johnson"",
+       ""designation"": ""Branch Manager"",
+       ""phno"": ""+911234567890"",
+       ""email"": ""alice.johnson@bank.com""
+       }
+       }
+       ]
+       }
+       Error: Expecting property name enclosed in double quotes: line 7 column 13 (char 121)"
+test_api_cases[S8 - TC1],S8,PASS,
+test_api_cases[S8 - T14],S8,PASS,
+test_api_cases[S9 - T15],S9,PASS,
+test_api_cases[S9 - TC1],S9,PASS,
+test_api_cases[S9 - T16],S9,PASS,
+test_api_cases[S10 - T17],S10,FAIL,"json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 7 column 13 (char 122)
+       Failed: ❌ Invalid JSON format after replacement:
+       {
+       ""event"": ""ONBOARD_MERCHANT"",
+       ""event_by"":""05d69885-9e9d-48e8-8673-3ba4d11fbf20"",
+       ""edetails"": [
+       {
+       ""row_id"":1,
+       ""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+       ""branch_id"": {data.""Onboard Branch"".hdetails[0].values[0][3]},
+       ""mname"": ""tester_merchant1"",
+       ""mtype"":""Type 1"",
+       ""minfo"": {
+       ""accNo"": ""1234567"",
+       ""accHolderName"": ""Branch Manager"",
+       ""phno"": ""+911234567890""
+       
+       
+       }
+       }
+       
+       ]
+       }
+       Error: Expecting property name enclosed in double quotes: line 7 column 13 (char 122)"
+test_api_cases[S10 - TC1],S10,PASS,
+test_api_cases[S10 - T18],S10,FAIL,"Failed: Assertion Failed for 'Onboard Branch': Not all rows passed. Total = 1, Passed = 0"
+test_api_cases[S11 - T19],S11,FAIL,"json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 7 column 13 (char 122)
+       Failed: ❌ Invalid JSON format after replacement:
+       {
+       ""event"": ""ONBOARD_MERCHANT"",
+       ""event_by"":""05d69885-9e9d-48e8-8673-3ba4d11fbf20"",
+       ""edetails"": [
+       {
+       ""row_id"":1,
+       ""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+       ""branch_id"": {data.""Onboard Branch"".hdetails[0].values[0][3]},
+       ""mname"": ""tester_merchant2"",
+       ""mtype"":""Type 1"",
+       ""minfo"": {
+       ""accNo"": ""1234567"",
+       ""accHolderName"": ""Branch Manager"",
+       ""phno"": ""+911234567890""
+       
+       
+       }
+       },
+       {
+       ""row_id"":2,
+       ""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+       ""branch_id"": {data.""Onboard Branch"".hdetails[0].values[0][3]},
+       ""mname"": ""tester_merchant3"",
+       ""mtype"":""Type 1"",
+       ""minfo"": {
+       ""accNo"": ""1234567"",
+       ""accHolderName"": ""Branch Manager"",
+       ""phno"": ""+911234567890""
+       
+       
+       }
+       }
+       
+       ]
+       }
+       Error: Expecting property name enclosed in double quotes: line 7 column 13 (char 122)"
+test_api_cases[S11 - TC1],S11,PASS,
+test_api_cases[S11 - T20],S11,FAIL,"Failed: Assertion Failed for 'Onboard Branch': Not all rows passed. Total = 1, Passed = 0"
+test_api_cases[S12 - T21],S12,FAIL,"json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 7 column 13 (char 122)
+       Failed: ❌ Invalid JSON format after replacement:
+       {
+       ""event"": ""ONBOARD_MERCHANT"",
+       ""event_by"":""05d69885-9e9d-48e8-8673-3ba4d11fbf20"",
+       ""edetails"": [
+       {
+       ""row_id"":1,
+       ""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+       ""mname"": ""tester_merchant1"",
+       ""minfo"": {
+       ""accNo"": ""1234567"",
+       ""accHolderName"": ""Branch Manager"",
+       ""phno"": ""+911234567890""
+       }
+       }
+       
+       ]
+       }
+       Error: Expecting property name enclosed in double quotes: line 7 column 13 (char 122)"
+test_api_cases[S13 - T22],S13,FAIL,"json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 7 column 13 (char 122)
+       Failed: ❌ Invalid JSON format after replacement:
+       {
+       ""event"": ""ONBOARD_MERCHANT"",
+       ""event_by"":""05d69885-9e9d-48e8-8673-3ba4d11fbf20"",
+       ""edetails"": [
+       {
+       ""row_id"":1,
+       ""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+       ""branch_id"": {data.""Onboard Branch"".hdetails[0].values[0][3]},
+       ""mname"": ""tester_merchant1"",
+       ""mtype"":""Type 1"",
+       ""minfo"": {
+       ""accNo"": ""1234567"",
+       ""accHolderName"": ""Branch Manager"",
+       ""phno"": ""+911234567890""
+       }
+       }
+       
+       ]
+       }
+       Error: Expecting property name enclosed in double quotes: line 7 column 13 (char 122)"
+test_api_cases[S13 - TC1],S13,PASS,
+test_api_cases[S13 - T23],S13,PASS,
+test_api_cases[S14 - T24],S14,PASS,
+test_api_cases[S14 - TC1],S14,PASS,
+test_api_cases[S14 - T25],S14,PASS,
+test_api_cases[S15 - T26],S15,PASS,
+test_api_cases[S15 - TC1],S15,FAIL,"AssertionError: Expected 'PROCESSED', but got 'FAILURE'"
+test_api_cases[S15 - T27],S15,FAIL,"KeyError: 'hdetails'
+       Failed: JSON Structure Error: 'hdetails'"
+test_api_cases[S16 - T28],S16,FAIL,"json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 7 column 12 (char 121)
+       Failed: ❌ Invalid JSON format after replacement:
+       {
+       ""event"": ""ONBOARD_DEVICE"",
+       ""event_by"": ""05d69885-9e9d-48e8-8673-3ba4d11fbf20"",
+       ""edetails"": [
+       {
+       ""row_id"": 1,
+       ""bank_id"":{data.""Onboard Bank"".hdetails[0].values[0][3]},
+       ""onboard_status"": ""Allocated to Bank"",
+       ""mf_id"": ""tester_mf"",
+       ""model_id"": ""tester_model"",
+       ""firmware_id"": ""tester_firmware"",
+       ""dname"": ""tester_device2"",
+       ""imei"": ""tester_imei2"",
+       ""vpa_id"": ""tester_vpa@abc1""
+       
+       },
+       {
+       ""row_id"": 2,
+       ""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+       ""onboard_status"": ""Allocated to Bank"",
+       ""mf_id"": ""tester_mf"",
+       ""model_id"": ""tester_model"",
+       ""firmware_id"": ""tester_firmware"",
+       ""dname"": ""tester_device3"",
+       ""imei"": ""tester_imei3"",
+       ""vpa_id"": ""tester_vpa@abc2""
+       
+       }
+       ]
+       }
+       Error: Expecting property name enclosed in double quotes: line 7 column 12 (char 121)"
+test_api_cases[S16 - TC1],S16,FAIL,"AssertionError: Expected 'PROCESSED', but got 'FAILURE'"
+test_api_cases[S16 - T29],S16,FAIL,"KeyError: 'hdetails'
+       Failed: JSON Structure Error: 'hdetails'"
+test_api_cases[S17 - T30],S17,FAIL,"json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 7 column 12 (char 121)
+       Failed: ❌ Invalid JSON format after replacement:
+       {
+       ""event"": ""ONBOARD_DEVICE"",
+       ""event_by"": ""05d69885-9e9d-48e8-8673-3ba4d11fbf20"",
+       ""edetails"": [
+       {
+       ""row_id"": 1,
+       ""bank_id"":{data.""Onboard Bank"".hdetails[0].values[0][3]},
+       ""branch_id"":{data.""Onboard Branch"".hdetails[0].values[0][3]},
+       ""onboard_status"": ""Allocated to Branch"",
+       ""mf_id"": ""tester_mf"",
+       ""model_id"": ""tester_model"",
+       ""firmware_id"": ""tester_firmware"",
+       ""dname"": ""tester_device5"",
+       ""imei"": ""tester_imei5"",
+       ""vpa_id"": ""tester_vpa@abc5""
+       
+       },
+       {
+       ""row_id"": 2,
+       ""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+       ""branch_id"":{data.""Onboard Branch"".hdetails[0].values[0][3]},
+       ""onboard_status"": ""Allocated to Branch"",
+       ""mf_id"": ""tester_mf"",
+       ""model_id"": ""tester_model"",
+       ""firmware_id"": ""tester_firmware"",
+       ""dname"": ""tester_device6"",
+       ""imei"": ""tester_imei6"",
+       ""vpa_id"": ""tester_vpa@abc6""
+       
+       }
+       ]
+       }
+       Error: Expecting property name enclosed in double quotes: line 7 column 12 (char 121)"
+test_api_cases[S17 - TC1],S17,FAIL,"AssertionError: Expected 'PROCESSED', but got 'FAILURE'"
+test_api_cases[S17 - T31],S17,FAIL,"KeyError: 'hdetails'
+       Failed: JSON Structure Error: 'hdetails'"
+test_api_cases[S18 - T32],S18,FAIL,"json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 7 column 12 (char 121)
+       Failed: ❌ Invalid JSON format after replacement:
+       {
+       ""event"": ""ONBOARD_DEVICE"",
+       ""event_by"": ""05d69885-9e9d-48e8-8673-3ba4d11fbf20"",
+       ""edetails"": [
+       {
+       ""row_id"": 1,
+       ""bank_id"":{data.""Onboard Bank"".hdetails[0].values[0][3]},
+       ""branch_id"":{data.""Onboard Branch"".hdetails[0].values[0][3]},
+       ""onboard_status"": ""Allocated to Bank"",
+       ""mf_id"": ""tester_mf"",
+       ""model_id"": ""tester_model"",
+       ""firmware_id"": ""tester_firmware"",
+       ""dname"": ""tester_device7"",
+       ""imei"": ""tester_imei7"",
+       ""vpa_id"": ""tester_vpa@abc7"",
+       ""merchant_id"": {data.""Onboard Merchants"".hdetails[0].values[0][3]}
+       },
+       {
+       ""row_id"": 2,
+       ""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+       ""branch_id"":{data.""Onboard Branch"".hdetails[0].values[0][3]},
+       ""onboard_status"": ""Allocated to Bank"",
+       ""mf_id"": ""tester_mf"",
+       ""model_id"": ""tester_model"",
+       ""firmware_id"": ""tester_firmware"",
+       ""dname"": ""tester_device8"",
+       ""imei"": ""tester_imei8"",
+       ""vpa_id"": ""tester_vpa@abc8"",
+       ""merchant_id"": {data.""Onboard Merchants"".hdetails[0].values[1][3]}
+       }
+       ]
+       }
+       Error: Expecting property name enclosed in double quotes: line 7 column 12 (char 121)"
+test_api_cases[S18 - TC1],S18,FAIL,"AssertionError: Expected 'PROCESSED', but got 'FAILURE'"
+test_api_cases[S18 - T33],S18,FAIL,"KeyError: 'hdetails'
+       Failed: JSON Structure Error: 'hdetails'"
+test_api_cases[S19 - T34],S19,FAIL,AssertionError: Full response does not match expected response.
+test_api_cases[S20 - T35],S20,PASS,
+test_api_cases[S20 - TC1],S20,FAIL,"AssertionError: Expected 'PROCESSED', but got 'FAILURE'"
+test_api_cases[S20 - T36],S20,FAIL,"KeyError: 'hdetails'
+       Failed: JSON Structure Error: 'hdetails'"
+test_api_cases[S21 - T37],S21,PASS,
+test_api_cases[S21 - TC1],S21,FAIL,"AssertionError: Expected 'PROCESSED', but got 'FAILURE'"
+test_api_cases[S21 - T38],S21,FAIL,"KeyError: 'hdetails'
+       Failed: JSON Structure Error: 'hdetails'"
+test_api_cases[S22 - T59],S22,PASS,
+test_api_cases[S22 - TC1],S22,PASS,
+test_api_cases[S22 - T60],S22,FAIL,"Failed: Assertion Failed for 'Onboard VPA': Not all rows passed. Total = 1, Passed = 0"
+test_api_cases[S23 - T39],S23,FAIL,"json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 8 column 13 (char 141)
+       Failed: ❌ Invalid JSON format after replacement:
+       {
+       ""event"": ""ONBOARD_VPA"",
+       ""event_by"": ""05d69885-9e9d-48e8-8673-3ba4d11fbf20"",
+       ""edetails"": [
+       {
+       ""row_id"": 1,
+       ""vpa"": ""tester@vpa1"",
+       ""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+       ""device_id"": ""invalid_device""
+       }
+       ]
+       }
+       Error: Expecting property name enclosed in double quotes: line 8 column 13 (char 141)"
+test_api_cases[S23 - TC1],S23,PASS,
+test_api_cases[S23 - T40],S23,PASS,
+test_api_cases[S24 - T41],S24,PASS,
+test_api_cases[S24 - T42],S24,PASS,
+test_api_cases[S24 - T43],S24,PASS,
+test_api_cases[S24 - T44],S24,PASS,
+test_api_cases[S24 - T45],S24,PASS,
+test_api_cases[S24 - T46],S24,PASS,
+test_api_cases[S24 - TC1],S24,PASS,
+test_api_cases[S25 - T47],S25,PASS,
+test_api_cases[S25 - T48],S25,PASS,
+test_api_cases[S25 - T49],S25,PASS,
+test_api_cases[S25 - T50],S25,PASS,
+test_api_cases[S25 - TC1],S25,PASS,
+test_api_cases[S26 - T51],S26,PASS,
+test_api_cases[S26 - TC1],S26,PASS,
+test_api_cases[S26 - T52],S26,FAIL,"Failed: Assertion Failed for 'Allocate to Bank': Not all rows passed. Total = 1, Passed = 0"
+test_api_cases[S27 - T53],S27,PASS,
+test_api_cases[S27 - TC1],S27,PASS,
+test_api_cases[S27 - T54],S27,FAIL,"Failed: Assertion Failed for 'Allocate to Branch': Not all rows passed. Total = 1, Passed = 0"
+test_api_cases[S28 - T55],S28,PASS,
+test_api_cases[S28 - TC1],S28,PASS,
+test_api_cases[S28 - T56],S28,FAIL,"Failed: Assertion Failed for 'Allocate to Merchant': Not all rows passed. Total = 1, Passed = 0"
+test_api_cases[S29 - T61],S29,PASS,
+test_api_cases[S29 - TC1],S29,PASS,
+test_api_cases[S29 - T62],S29,FAIL,"Failed: Assertion Failed for 'Soundbox Playback': Not all rows passed. Total = 1, Passed = 0"
+test_api_cases[S30 - T57],S30,PASS,
+test_api_cases[S30 - TC1],S30,PASS,
+test_api_cases[S30 - T58],S30,FAIL,"Failed: Assertion Failed for 'Deactivate Device': Not all rows passed. Total = 1, Passed = 0"
+test_api_cases[S31 - T63],S31,FAIL,"json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 16 column 21 (char 299)
+       Failed: ❌ Invalid JSON format after replacement:
+       {
+       ""event"": ""ONBOARD_USER"",
+       ""event_by"": ""05d69885-9e9d-48e8-8673-3ba4d11fbf20"",
+       ""edetails"": [
+       {
+       ""user_info"": {
+       ""username"": ""tester@gmail.com"",
+       ""fname"": ""tester"",
+       ""lname"": ""user"",
+       ""email"": ""tester@gmail.com"",
+       ""user_org"": ""pocketatm""
+       },
+       ""user_role"": ""DMS Admin"",
+       ""user_access"": [
+       {
+       ""banks"": {""allow"":[{data.""Onboard Bank"".hdetails[0].values[0][3]}]},
+       ""branches"": {""allow"":[{data.""Onboard Branch"".hdetails[0].values[0][3]}, {data.""Onboard Branch"".hdetails[0].values[1][3]}]}
+       }
+       ]
+       }
+       ]
+       }
+       Error: Expecting property name enclosed in double quotes: line 16 column 21 (char 299)"
+test_api_cases[S31 - TC1],S31,PASS,
+test_api_cases[S31 - T64],S31,FAIL,"Failed: Assertion Failed for 'Deactivate Device': Not all rows passed. Total = 1, Passed = 0"
+test_api_cases[S32 - T65],S32,PASS,
+test_api_cases[S32 - T66],S32,PASS,
+test_api_cases[S32 - T67],S32,PASS,
+test_api_cases[S32 - T68],S32,PASS,
+test_api_cases[S32 - T69],S32,PASS,
+test_api_cases[S32 - TC1],S32,PASS,
+test_api_cases[S33 - T70],S33,PASS,

@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dtransformer-deployment
+  namespace: dms-uat
+  labels:
+    app: dtransformer
+    environment: uat  
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dtransformer
+      environment: uat
+  template:
+    metadata:
+      labels:
+        app: dtransformer
+        environment: uat  
+    spec:
+      serviceAccountName: uat-secrets-sa
+      volumes:
+        - name: dtransformer-ms-secrets
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: dtransformer-ms-secrets
+      containers:
+      - name: dtransformer
+        image: DOCKER_IMAGE_PLACEHOLDER
+        volumeMounts:
+            - name: dtransformer-ms-secrets
+              mountPath: /app/src/secrets
+        ports:
+        - containerPort: 3005
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "300Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1024Mi"  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dtransformer-service
+  namespace: dms-uat
+spec:
+  selector:
+    app: dtransformer
+    environment: uat  
+  ports:
+    - protocol: TCP
+      port: 8441
+      targetPort: 3005
+  type: NodePort

@@ -1,0 +1,487 @@
+openapi: 3.0.0
+info:
+  title: Intel-ms
+  description: Analytical APIs
+  version: 1.0.0
+
+components:
+  requestBodies:
+    payments:
+      description: Filter payload for metrics
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FilterRequest'
+          example:
+            filter:
+              fDate: "2025-01-01"
+              tDate: "2025-01-31"
+              bid: [101]
+              brid: [201]
+              imei: 12397974399
+    FilterPayload:
+      description: Filter payload for metrics
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FilterRequest'
+          example:
+            filter:
+              fDate: "2025-01-01"
+              tDate: "2025-01-31"
+              bid: [101, 102]
+              brid: [201, 202]
+
+  responses:
+    BadRequestResponse:
+      description: Bad input or missing required fields
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              data:
+                type: array
+                items:
+                  type: integer
+  schemas:
+    FilterRequest:
+      type: object
+      properties:
+        filter:
+          type: object
+          properties:
+            fDate:
+              type: string
+              format: date
+              minItems: 2
+              maxItems: 2
+            tDate:
+              type: string
+              format: date
+              minItems: 2
+              maxItems: 2
+              description: Start and end dates
+            bids:
+              type: array
+              items:
+                type: integer
+            brids:
+              type: array
+              items:
+                type: integer
+            imei:
+              type: number
+          required: [bids, brid]
+
+    BankMetricsResponse:
+      type: object
+      example:
+        code: 2000
+        data:
+          bank_count: 5
+      properties:
+        code:
+          type: integer
+        data:
+          type: object
+          properties:
+            bank_count:
+              type: integer
+
+    BranchMetricsResponse:
+      type: object
+      example:
+        code: 2000
+        data:
+          branch_count: 12
+      properties:
+        code:
+          type: integer
+        data:
+          type: object
+          properties:
+            branch_count:
+              type: integer
+
+    MerchantMetricsResponse:
+      type: object
+      example:
+        code: 2000
+        data:
+          merchant_count: 43
+      properties:
+        code:
+          type: integer
+        data:
+          type: object
+          properties:
+            merchant_count:
+              type: integer
+
+    DeviceMetricsResponse:
+      type: object
+      example:
+        code: 2000
+        data:
+          total_device_count: 1200
+          in_inventory_count: 450
+          allocated_count: 750
+      properties:
+        code:
+          type: integer
+        data:
+          type: object
+          properties:
+            total_device_count:
+              type: integer
+            in_inventory_count:
+              type: integer
+            allocated_count:
+              type: integer
+
+    RequestMetricsResponse:
+      type: object
+      example:
+        code: 2000
+        data:
+          open_count: 27
+          closed_count: 89
+      properties:
+        code:
+          type: integer
+        data:
+          type: object
+          properties:
+            open_count:
+              type: integer
+            closed_count:
+              type: integer
+
+    PaymentMetricsResponse:
+      type: object
+      example:
+        code: 2000
+        data:
+          payment_count: 112
+          payment_sum: 9876543.21
+      properties:
+        code:
+          type: integer
+        data:
+          type: object
+          properties:
+            payment_count:
+              type: integer
+            payment_sum:
+              type: number
+              format: float
+  examples:
+    banks_onboard_processed:
+      summary: "ONBOARD_BANK_PROCESSED"
+      value:
+        event: "ONBOARD_BANK_PROCESSED"
+        event_by: "bank@123"
+        rdetails:
+          status: [1,1,0]
+          value: [[1, 1, 'success', 1, 'abc']]
+          headers: ['row_id', "status", "msg", 'bid', bname]
+
+
+    branch_onboard_processed:
+      summary: "ONBOARD_BRANCH_PROCESSED"
+      value:
+        event: "ONBOARD_BRANCH_PROCESSED"
+        event_by: "456"
+        rdetails:
+          status: [1,1,0]
+          value: [[1, 1, 'success', 1,  23, 'xyz']]
+          headers: ['row_id', "status", "msg",bid, brid, brname]
+
+    device_onboard_processed:
+      summary: "ONBOARD_DEVICE_PROCESSED"
+      value:
+        event: "ONBOARD_DEVICE_PROCESSED"
+        event_by: "fff"
+        rdetails:
+          status: [1,1,0]
+          value: [[1, 1, 'success',['ONBOARD_DEVICE'], 1,  23,[],[],[] ]]
+          headers: ['row_id', "status", "msg", steps, 'bid', brid, allocate_to_bank_response, allocate_to_branch_response, allocate_to_merchant_response]
+    merchant_onboard_processed:
+      summary: "ONBOARD_MERCHANT_PROCESSED"
+      value:
+        event: "ONBOARD_MERCHANT_PROCESSED"
+        event_by: "456"
+        rdetails:
+          status: [1,1,0]
+          value: [[1, 1, 'success', 1,  23, 'xyz']]
+          headers: ['row_id', "status", "msg",bid, brid, mname ]
+    device_issue_processed:
+      summary: "DEVICE_ISSUE_PROCESSED"
+      value:
+        event: "DEVICE_ISSUE_PROCESSED"
+        event_by: "ABC@GMAIL.COM"
+        rdetails:
+          status: [1,1,0]
+          value: [[1, 1, 'success', 1,  23, 'open']]
+          headers: ['row_id', "status", "msg",bid, brid, issue_status ]
+
+    device_request_processed:
+      summary: "DEVICE_REQUEST_PROCESSED"
+      value:
+        event: "DEVICE_REQUEST_PROCESSED"
+        event_by: "ABC@GMAIL.COM"
+        rdetails:
+          status: [1,1,0]
+          value: [[1, 1, 'success', 1,  23, 'open || deliveried']]
+          headers: ['row_id', "status", "msg",bid, brid, drequest_status ]
+
+paths:
+  /intel/aggregate:
+    post:
+      tags:
+        - intel
+      summary: Dashboard details
+      requestBody:
+        required: true
+        content:
+          application/json:
+            examples:
+              banks_onboard_processed:
+                $ref: "#/components/examples/banks_onboard_processed"
+              branch_onboard_processed:
+                $ref: "#/components/examples/branch_onboard_processed"
+              device_onboard_processed:
+                $ref: "#/components/examples/device_onboard_processed"
+              merchant_onboard_processed:
+                $ref: "#/components/examples/merchant_onboard_processed"
+              device_issue_processed:
+                $ref: "#/components/examples/device_issue_processed"
+              device_request_processed:
+                $ref: "#/components/examples/device_request_processed"
+
+
+
+      responses:
+        '200':
+          description: Analytical data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: true
+              examples:
+                entity:
+                  summary: "entity metrics response"
+                  value:
+                    code: 2000
+                    message: "updated metrics"
+
+        '400':
+          description: Invalid context
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 400
+                  message:
+                    type: string
+                    example: "Invalid context"
+
+  /intel/payments/aggregate:
+    post:
+      tags:
+        - intel
+      summary: Dashboard details
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bid:
+                  type: integer
+                  example: 1
+                brid:
+                  type: integer
+                  example: 2
+                amt:
+                  type: number
+                  example: 324
+
+
+
+      responses:
+        '200':
+          description: Analytical data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: true
+              examples:
+                entity:
+                  summary: "payments metrics response"
+                  value:
+                    code: 2000
+                    message: "updated metrics"
+
+        '400':
+          description: Invalid context
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 400
+                  message:
+                    type: string
+                    example: "Invalid context"
+
+  /intel/banks/metrics/get:
+    post:
+      tags:
+        - intel
+      summary: Get bank metrics
+      requestBody:
+        $ref: '#/components/requestBodies/FilterPayload'
+      responses:
+        '200':
+          description: Bank metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankMetricsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+
+  /intel/branches/metrics/get:
+    post:
+      tags:
+        - intel
+      summary: Get branch metrics
+      requestBody:
+        $ref: '#/components/requestBodies/FilterPayload'
+      responses:
+        '200':
+          description: Branch metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BranchMetricsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+
+  /intel/merchants/metrics/get:
+    post:
+      tags:
+        - intel
+      summary: Get merchant metrics
+      requestBody:
+        $ref: '#/components/requestBodies/FilterPayload'
+      responses:
+        '200':
+          description: Merchant metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MerchantMetricsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+
+  /intel/devices/metrics/get:
+    post:
+      tags:
+        - intel
+      summary: Get device metrics
+      requestBody:
+        $ref: '#/components/requestBodies/FilterPayload'
+      responses:
+        '200':
+          description: Device metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceMetricsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+
+  /intel/device-requests/metrics/get:
+    post:
+      tags:
+        - intel
+      summary: Get device request metrics
+      requestBody:
+        $ref: '#/components/requestBodies/FilterPayload'
+      responses:
+        '200':
+          description: Device request metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestMetricsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+
+  /intel/device-issue/metrics/get:
+    post:
+      tags:
+        - intel
+      summary: Get device issue metrics
+      requestBody:
+        $ref: '#/components/requestBodies/FilterPayload'
+      responses:
+        '200':
+          description: Device issue metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestMetricsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+
+  /intel/payments/metrics/get:
+    post:
+      tags:
+        - intel
+      summary: Get payment metrics
+      requestBody:
+        $ref: '#/components/requestBodies/payments'
+      responses:
+        '200':
+          description: Payment metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMetricsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+
+
+
+

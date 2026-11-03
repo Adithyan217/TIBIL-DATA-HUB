@@ -1,0 +1,41 @@
+Test ID,Test Case,request_type,endpoint,request,response,assertion_function,expected_status,to_replace_in_req,add_to_context_from_res,add_to_context_from_req,delay
+TTR001,Invalid Context,POST,/transformer/serialize,"{
+   ""context"": ""cwd_mqtt_1"",
+   ""data"":{
+    ""payload"": """",
+    ""cache_pid"": 10,
+    ""did"": ""tester_imei""
+   }
+}","{""message"":""Cannot read properties of undefined (reading 'sTransformer')""}",full_response.assert_full_response,400,,,,0
+TTR002,Valid context and Empty Data,POST,/transformer/serialize,"{
+   ""context"": ""cwd_mqtt"",
+   ""data"":{
+    ""payload"": """",
+    ""cache_pid"": 10,
+    ""did"": ""tester_imei""
+   }
+}","{""code"":400,""message"":""Invalid authentication tag length: 0""}",full_response.assert_full_response,400,,,,0
+TTR003,Valid context and Invalid data,POST,/transformer/serialize,"{
+   ""context"": ""cwd_mqtt"",
+   ""data"":{
+    ""payload"": ""VSpELP2lFWL4/QyWqwdaZoIEUgB/foasp/mLb3xExwiU9/tQXXo8HnI5g+fWWUQtm9vJG9LqdCxFSjhDxnk/dclOiXsFBj6d0UfP/Ix1wTCyb3LZ2ZaqOEMCgQyT4Z2L4UHUD+5gKjLQh90ULXYx3+hLl5pXiYW4Hzlsr3kioLdpArqqAoqvyeF18UlNRbMXPLbYhhmKypRyuN8m8uaw4bIPlaUGWRGy6Q4OZPQez896h+aPMOdnMFzBt7VZQbSmwF"",
+    ""cache_pid"": 10,
+    ""did"": """"
+   }
+}","{""code"":400,""message"":""Unsupported state or unable to authenticate data""}",full_response.assert_full_response,400,,,,0
+TTR004,Empty did,POST,/transformer/serialize,"{
+   ""context"": ""cwd_mqtt"",
+   ""data"":{
+    ""payload"": ""VSpELP2lFWL4/QyWqwdaZoIEUgB/foasp/mLb3xExwiU9/tQXXo8HnI5g+fWWUQtm9vJG9LqdCxFSjhDxnk/dclOiXsFBj6d0UfP/Ix1wTCyb3LZ2ZaqOEMCgQyT4Z2L4UHUD+5gKjLQh90ULXYx3+hLl5pXiYW4Hzlsr3kioLdpArqqAoqvyeF18UlNRbMXPLbYhhmKypRyuN8m8uaw4bIPlaUGWRGy6Q4OZPQez896h+aPMOdnMFzBt7VZQbSmwFyt"",
+    ""cache_pid"": 10,
+    ""did"": """"
+   }
+}","{""code"":200,""data"":{""decrypted_request"":{""timeStamp"":""1744785477"",""vpa"":""9763180546@janabank"",""accountNo"":""3012010044009296"",""reqRefNo"":""JSFidbc1c4704c"",""mobile"":""9763180546"",""deviceId"":""tester_device"",""txnAmt"":""55.65"",""cache_pid"":""10""},""encrypted_response"":{""data"":""VSpDMfG0C2X+skaWwlAIMtNDFl4/Jt3ipYfMemlMk1fS7OBEHC51fCJr+8ieAggGqvzOFJKlZy4SHmcCyy9dOJgAyjx2WGjIwk3dm5o4mhgLCLohec3mGDpu9SCcEw==""},""mqtt_request"":{""money"":""55.65"",""request_id"":""10"",""did"":""tester_device""},""mqtt_topic"":""/sb/cwd//in/transaction""}}",resp_code.assert_resp_code,200,,,,0
+TTR005,Valid Data,POST,/transformer/serialize,"{
+   ""context"": ""cwd_mqtt"",
+   ""data"":{
+    ""payload"": ""VSpELP2lFWL4/QyWqwdaZoIEUgB/foasp/mLb3xExwiU9/tQXXo8HnI5g+fWWUQtm9vJG9LqdCxFSjhDxnk/dclOiXsFBj6d0UfP/Ix1wTCyb3LZ2ZaqOEMCgQyT4Z2L4UHUD+5gKjLQh90ULXYx3+hLl5pXiYW4Hzlsr3kioLdpArqqAoqvyeF18UlNRbMXPLbYhhmKypRyuN8m8uaw4bIPlaUGWRGy6Q4OZPQez896h+aPMOdnMFzBt7VZQbSmwFyt"",
+    ""cache_pid"": 10,
+    ""did"": ""tester_imei""
+   }
+}","{""code"":200,""data"":{""decrypted_request"":{""timeStamp"":""1744785477"",""vpa"":""9763180546@janabank"",""accountNo"":""3012010044009296"",""reqRefNo"":""JSFidbc1c4704c"",""mobile"":""9763180546"",""deviceId"":""tester_device"",""txnAmt"":""55.65"",""cache_pid"":""10""},""encrypted_response"":{""data"":""VSpDMfG0C2X+skaWwlAIMtNDFl4/Jt3ipYfMemlMk1fS7OBEHC51fCJr+8ieAggGqvzOFJKlZy4SHmcCyy9dOJgAyjx2WGjIwk3dm5o4mhgLCLohec3mGDpu9SCcEw==""},""mqtt_request"":{""money"":""55.65"",""request_id"":""10""},""mqtt_topic"":""/sb/cwd/tester_imei/in/transaction""}}",full_response.assert_full_response,200,,,,0

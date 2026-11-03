@@ -1,0 +1,65 @@
+Test ID,Test Case,request_type,endpoint,request,response,assertion_type,expected_status,to_replace,add_to_context_value,add_to_context_key
+T1,Onboarding Bank,POST,/requests/wfevents,"{
+        ""event"": ""ONBOARD_BANK"",
+        ""event_by"":{user_id},
+        ""edetails"": [
+            {
+                ""row_id"":1,
+                ""bank_name"": ""bank_1234567"",
+                ""baddr"": ""123 Finance Street"",
+                ""binfo"": {
+                    ""name"": ""John Doe"",
+                    ""phno"":""+911234567890"",
+                    ""email"": ""johndoe@fnb.com""
+                }
+            }
+        ]
+}","{
+    ""code"": 200,
+    ""event_id"": 527,
+    ""message"": ""Request added successfully""
+}",status_code,201,user_id,event_id,event_id
+T2,Checking Onboardbank status,POST,/requests/wfevents/get,"{
+    ""pagination"": {
+        ""limit"": 10,
+        ""offset"": 0
+    },
+    ""filter"": {
+         ""request_id"": {event_id}
+    },
+    ""userId"":{user_id}
+}","{
+    ""code"": 200,
+    ""count"": ""1"",
+    ""data"": [
+        {
+            ""eid"": 252877,
+            ""aid"": 32,
+            ""ecode"": ""DEVICE_ISSUE"",
+            ""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+            ""started_at"": ""2025-03-20T12:53:54.000Z"",
+            ""ischainable"": true,
+            ""action_status"": ""PROCESSING""
+        }
+    ]
+}",status_code,200,"eid,user_id",data[0].aid,aid
+T3,Onboarding Bank,POST,/requests/wfevents,"{
+        ""event"": ""ONBOARD_BANK"",
+        ""event_by"":{user_id},
+        ""edetails"": [
+            {
+                ""row_id"":1,
+                ""bank_name"": ""bank_1234567"",
+                ""baddr"": ""123 Finance Street"",
+                ""binfo"": {
+                    ""name"": ""John Doe"",
+                    ""phno"":""+911234567890"",
+                    ""email"": ""johndoe@fnb.com""
+                }
+            }
+        ]
+}","{
+    ""code"": 200,
+    ""event_id"": 527,
+    ""message"": ""Request added successfully""
+}",status_code,300,user_id,event_id,eid

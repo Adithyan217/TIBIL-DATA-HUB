@@ -1,0 +1,92 @@
+SID,Scenario,TID,Order
+1,Onboarding bank,T1,1
+1,Onboarding bank,TC1,2
+1,Onboarding bank,T2,3
+2,Bulk Onbaording Bank,T3,1
+2,Bulk Onbaording Bank,TC1,2
+2,Bulk Onbaording Bank,T4,3
+3,Invalid payoad Onboard Bank,T5,1
+4,Duplicate Bank name for onboard bank,T6,1
+4,Duplicate Bank name for onboard bank,TC1,2
+4,Duplicate Bank name for onboard bank,T7,3
+5,Onboarding branch,T8,1
+5,Onboarding branch,TC1,2
+5,Onboarding branch,T9,3
+6,Bulk Onboarding branch,T10,1
+6,Bulk Onboarding branch,TC1,2
+6,Bulk Onboarding branch,T11,3
+7,Invalid payoad Onboard Branch,T12,1
+8,Duplicate branch name for onboard branch,T13,1
+8,Duplicate branch name for onboard branch,TC1,2
+8,Duplicate branch name for onboard branch,T14,3
+9,Invalid bank for onboard branch,T15,1
+9,Invalid bank for onboard branch,TC1,2
+9,Invalid bank for onboard branch,T16,3
+10,Onboard Merchant,T17,1
+10,Onboard Merchant,TC1,2
+10,Onboard Merchant,T18,3
+11,Bulk Onboard Merchant,T19,1
+11,Bulk Onboard Merchant,TC1,2
+11,Bulk Onboard Merchant,T20,3
+12,Onboard Merchant Invalid payload,T21,1
+13,Onboarding merchant with duplicate name,T22,1
+13,Onboarding merchant with duplicate name,TC1,2
+13,Onboarding merchant with duplicate name,T23,3
+14,Onboarding merchant with invalid bank and branch,T24,1
+14,Onboarding merchant with invalid bank and branch,TC1,2
+14,Onboarding merchant with invalid bank and branch,T25,3
+15,Onboard Device (To Inventory),T26,1
+15,Onboard Device (To Inventory),TC1,2
+15,Onboard Device (To Inventory),T27,3
+16,Bulk Onboarding Device (Allocate To Bank),T28,1
+16,Bulk Onboarding Device (Allocate To Bank),TC1,2
+16,Bulk Onboarding Device (Allocate To Bank),T29,3
+17,Bulk Onboarding Device (Allocate To Branch),T30,1
+17,Bulk Onboarding Device (Allocate To Branch),TC1,2
+17,Bulk Onboarding Device (Allocate To Branch),T31,3
+18,Bulk Onboarding Device (Allocate To Merchant),T32,1
+18,Bulk Onboarding Device (Allocate To Merchant),TC1,2
+18,Bulk Onboarding Device (Allocate To Merchant),T33,3
+19,Invalid payload for Onboard Merchant,T34,1
+20,Invalid id for Onboard Merchant,T35,1
+20,Invalid id for Onboard Merchant,TC1,2
+20,Invalid id for Onboard Merchant,T36,3
+21,Duplicate dname for Onboard Merchant,T37,1
+21,Duplicate dname for Onboard Merchant,TC1,2
+21,Duplicate dname for Onboard Merchant,T38,3
+22,Onboard Vpa,T59,1
+22,Onboard Vpa,TC1,2
+22,Onboard Vpa,T60,3
+23,Onboatd vpa with invalid device_id and repeated vpa,T39,1
+23,Onboatd vpa with invalid device_id and repeated vpa,TC1,2
+23,Onboatd vpa with invalid device_id and repeated vpa,T40,3
+24,Creating Request for device,T41,1
+24,Creating Request for device,T42,2
+24,Creating Request for device,T43,3
+24,Creating Request for device,T44,4
+24,Creating Request for device,T45,5
+24,Creating Request for device,T46,6
+24,Creating Request for device,TC1,7
+25,Creating device issue,T47,1
+25,Creating device issue,T48,2
+25,Creating device issue,T49,3
+25,Creating device issue,T50,4
+25,Creating device issue,TC1,5
+26,Allocating to bank,T51,1
+26,Allocating to bank,TC1,2
+26,Allocating to bank,T52,3
+27,Allocating to branch,T53,1
+27,Allocating to branch,TC1,2
+27,Allocating to branch,T54,3
+28,Allocating to merchant,T55,1
+28,Allocating to merchant,TC1,2
+28,Allocating to merchant,T56,3
+29,Enabling Soundboxes,T61,1
+29,Enabling Soundboxes,TC1,2
+29,Enabling Soundboxes,T62,3
+30,Deactivate device,T57,1
+30,Deactivate device,TC1,2
+30,Deactivate device,T58,3
+31,Onboarding an User,T63,1
+31,Onboarding an User,TC1,2
+31,Onboarding an User,T64,3

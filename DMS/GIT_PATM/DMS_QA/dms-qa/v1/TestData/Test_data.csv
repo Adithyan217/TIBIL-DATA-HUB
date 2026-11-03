@@ -1,0 +1,123 @@
+Testcase ID,Testcase,Testcase Type,endpoint,method,auth_required,headers,params,payload,expected_status_code,expected_response_keys,expected_responce_body
+TC_DMS_001,Onboard_bank ,Postive,/requests/wfevents,POST,FALSE,"{""Content-Type"":""application/json""}",,"{
+        ""event"": ""ONBOARD_BANK"",
+        ""event_by"":""123@abc"",
+        ""edetails"": [
+            {
+                ""row_id"":1,
+                ""bank_name"": ""bank_1234567"",
+                ""baddr"": ""123 Finance Street"",
+                ""binfo"": {
+                    ""name"": ""John Doe"",
+                    ""phno"":""+911234567890"",
+                    ""email"": ""johndoe@fnb.com""
+                }
+            }
+        ]
+}",201,"code,event_id,message","{     ""code"": 200,     ""message"": ""Request added successfully"" }"
+TC_DMS_002,sending request without bank_name,Negative,/requests/wfevents,POST,FALSE,"{""Content-Type"":""application/json""}",,"{
+        ""event"": ""ONBOARD_BANK"",
+        ""event_by"":""123@abc"",
+        ""edetails"": [
+            {
+                ""row_id"":1,
+                ""baddr"": ""123 Finance Street"",
+                ""binfo"": {
+                    ""name"": ""John Doe"",
+                    ""phno"":""+911234567890"",
+                    ""email"": ""johndoe@fnb.com""
+                }
+            }
+        ]
+}",400,"code,message,errors","{
+    ""code"": 400,
+    ""message"": ""Schema Validation Failed"",
+    ""errors"": [
+        ""Field 'bank_name' is required."",
+        ""Field 'bank_name' is required in edetails[0].""
+    ]
+}"
+TC_DMS_003,Onboard_bank REGISTRY,Positive,/registry/banks,POST,FALSE,"{""Content-Type"":""application/json""}",,"{
+  ""eid"": 1,
+  ""event"": ""ONBOARD_BANK"",
+  ""event_by"": ""d@123"",
+  ""edetails"": [
+    {
+      ""row_id"": 1,
+      ""bank_name"": ""bankmerchant12"",
+      ""baddr"": ""abc"",
+      ""binfo"": {
+        ""name"": ""John Doe"",
+        ""phno"": ""+911234567890"",
+        ""email"": ""johndoe@fnb.com""
+      }
+    }
+  ]
+}
+",201,"code,message,edata","{
+    ""code"": 200,
+    ""message"": ""Bank Onboarding Processed"" 
+}"
+TC_DMS_004,Onboard_branch REGISTRY,Positive,/registry/branches,POST,FALSE,"{""Content-Type"":""application/json""}",,"{
+  ""eid"": 1,
+  ""event"": ""ONBOARD_BRANCH"",
+  ""event_by"": ""456"",
+  ""edetails"": [
+    {
+      ""row_id"": 1,
+      ""bank_id"": ""bank_1"",
+      ""branch_code"":1233,
+      ""branch_name"": ""Downtown111"",
+      ""brinfo"": {
+        ""name"": ""Alice Johnson"",
+        ""designation"": ""Branch Manager"",
+        ""phno"": ""+911234567890"",
+        ""email"": ""alice.johnson@bank.com""
+      }
+    }
+  ]
+}",201,"code,message,edata","{
+    ""code"": 200,
+    ""message"": ""Branch Onboarding Successful""
+}"
+TC_DMS_005,Onboard_devices REGISTRY(To Inventory),Positive,/registry/devices,POST,FALSE,"{""Content-Type"":""application/json""}",,"{
+    ""eid"":1234,
+    ""event"": ""ONBOARD_DEVICE"",
+    ""event_by"": ""ea67335e-b58f-4001-a2fa-0cd2319b3715"",
+    ""edetails"": [
+        {
+            ""row_id"": 1,
+            ""onboard_status"": ""To Inventory"",
+            ""mf_id"": ""mf_1"",
+            ""model_id"": ""model_1"",
+            ""firmware_id"": ""firmware_1"",
+            ""dname"": ""device_1"",
+            ""imei"": ""7272167722""
+
+        }
+    ]
+}",201,"code,message,edata","{
+    ""code"": 200,
+    ""message"": ""Device Onboarding Successful""
+}"
+TC_DMS_006,Onboard_devices REGISTRY(Allocate to Bank),Positive,/registry/devices,POST,FALSE,"{""Content-Type"":""application/json""}",,"{
+    ""eid"":1234,
+    ""event"": ""ONBOARD_DEVICE"",
+    ""event_by"": ""ea67335e-b58f-4001-a2fa-0cd2319b3715"",
+    ""edetails"": [
+        {
+            ""row_id"": 1,
+            ""bank_id"": ""bank_1"",
+            ""onboard_status"": ""Allocated to Bank"",
+            ""mf_id"": ""mf_1"",
+            ""model_id"": ""model_1"",
+            ""firmware_id"": ""firmware_1"",
+            ""dname"": ""device_1"",
+            ""imei"": ""7272167722"",
+            ""vpa_id"": ""sasdsad@ybl2""
+        }
+    ]
+}",201,"code,message,edata","{
+    ""code"": 200,
+    ""message"": ""Device Onboarding Successful""
+}"

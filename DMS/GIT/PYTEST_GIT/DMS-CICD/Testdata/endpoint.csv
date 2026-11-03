@@ -1,0 +1,11 @@
+url
+https://bscytxzsc3.execute-api.ap-south-1.amazonaws.com/user/otp
+https://bscytxzsc3.execute-api.ap-south-1.amazonaws.com/user/secrets
+https://bscytxzsc3.execute-api.ap-south-1.amazonaws.com/user/preferences
+https://bscytxzsc3.execute-api.ap-south-1.amazonaws.com/user/accounts/get
+https://bscytxzsc3.execute-api.ap-south-1.amazonaws.com/user/account/upi/get
+https://bscytxzsc3.execute-api.ap-south-1.amazonaws.com/payments/summary/get
+https://bscytxzsc3.execute-api.ap-south-1.amazonaws.com/payments/get
+https://bscytxzsc3.execute-api.ap-south-1.amazonaws.com/payments/simulate
+
+

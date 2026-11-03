@@ -1,0 +1,43 @@
+async eventChaining(pecode: string, request: any, response: any, eventBy: string) {
+  try {
+    const fetchChainableEvents = await this.qs.getChainableEvents(); // SQL already handled by you
+    const result = await this.pool.query(fetchChainableEvents, [pecode]);
+
+    if (!result?.rows?.length) return;
+
+    for (const row of result.rows) {
+      const { cecode, ptype, pschema } = row;
+
+      // Step 1: Create empty dataStore
+      const dataStore: Record<string, any> = {};
+
+      // Step 2: Store event and event_by
+      dataStore['event'] = cecode;
+      dataStore['event_by'] = eventBy;
+
+      // Step 3: Based on ptype store request or response
+      dataStore['details'] = ptype === 'req' ? request : response;
+
+      // Step 4: Parse the pschema
+      let schema: Record<string, string>;
+      try {
+        schema = JSON.parse(pschema);
+      } catch (err) {
+        this.logger.error(`Invalid JSON schema for event ${cecode}`);
+        continue;
+      }
+
+      // Step 5: Build payload using schema keys and dataStore values
+      const payload: Record<string, any> = {};
+      for (const [targetKey, sourceKey] of Object.entries(schema)) {
+        payload[targetKey] = dataStore[sourceKey];
+      }
+
+      this.logger.info(`Triggering chained event ${cecode} with payload`, payload);
+
+      await this.handleEvent(cecode, payload); // 🔁 Call your actual event handler
+    }
+  } catch (error) {
+    this.logger.error('Error during event chaining:', error);
+  }
+}

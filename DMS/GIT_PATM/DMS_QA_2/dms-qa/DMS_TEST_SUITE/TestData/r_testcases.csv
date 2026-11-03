@@ -1,0 +1,590 @@
+Test ID,Test Case,request_type,endpoint,request,response,assertion_function,expected_status,to_replace_in_req,add_to_context_from_res,add_to_context_from_req,delay
+TR001,Invalid vpa,POST,/registry/sb/check,"{
+""vpa"": {invalid_id},
+""bank_id"": {bank_name}
+}","{
+""code"": 4000,
+""message"": ""verfication failed""
+}",full_response.assert_full_response,200,"invalid_id, bank_name",,,0
+TR002,Invalid Bank_id,POST,/registry/sb/check,"{
+""vpa"": {vpa},
+""bank_id"": {invalid_id}
+}","{
+""code"": 4000,
+""message"": ""verfication failed""
+}",full_response.assert_full_response,200,"vpa, invalid_id",,,0
+TR003,Empty Vpa,POST,/registry/sb/check,"{
+""vpa"": "" "",
+""bank_id"": {bank_name}
+}","{
+""code"": 4000,
+""message"": ""verfication failed""
+}",full_response.assert_full_response,200,bank_name,,,0
+TR004,Valid vpa and Bank,POST,/registry/sb/check,"{
+""vpa"": {vpa},
+""bank_id"": {bank_name}
+}","{
+""code"": 2000,
+""message"": ""verfication successful""
+}",full_response.assert_full_response,200,"vpa, bank_name",,,0
+TR005,Invalid merchant_id,POST,/registry/sb/check,"{
+""merchant_id"": {invalid_id},
+""bank_id"": {bank_name}
+}","{
+""code"": 4000,
+""message"": ""verfication failed""
+}",full_response.assert_full_response,200,"invalid_id, bank_name",,,0
+TR006,Empty merchant_id,POST,/registry/sb/check,"{
+""merchant_id"": "" "",
+""bank_id"": {bank_name}
+}","{
+""code"": 4000,
+""message"": ""verfication failed""
+}",full_response.assert_full_response,200,bank_name,,,0
+TR007,Valid merchant_id and bank_id,POST,/registry/sb/check,"{
+""merchant_id"": {merchant_name},
+""bank_id"": {bank_name}
+}","{
+""code"": 2000,
+""message"": ""verfication successful""
+}",full_response.assert_full_response,200,"merchant_name, bank_name",,,0
+TR008,Invalid dname,POST,/registry/sb/check,"{
+""device_id"": {invalid_id}
+}","{
+""code"": 4000,
+""message"": ""verfication failed""
+}",full_response.assert_full_response,200,invalid_id,,,0
+TR009,Empty dname,POST,/registry/sb/check,"{
+""device_id"": "" ""
+}","{
+""code"": 4000,
+""message"": ""verfication failed""
+}",full_response.assert_full_response,200,,,,0
+TR010,Valid dname,POST,/registry/sb/check,"{
+""device_id"": {device_name}
+}","{
+""code"": 2000,
+""message"": ""verfication successful""
+}",full_response.assert_full_response,200,device_name,,,0
+TR011,Invalid vpa_id for deletion,POST,/registry/sb/check,"{
+ ""vpa"": {invalid_id},
+""bank_id"":{bank_name},
+ ""isdelete"": true
+}","{
+""code"": 4000,
+""message"": ""verfication failed""
+}",full_response.assert_full_response,200,vpa,,,0
+TR012,Empty vpa_id for deletion,POST,/registry/sb/check,"{
+""vpa"": "" "",
+""bank_id"":{bank_name},
+""isdelete"": true
+}","{
+""code"": 4000,
+""message"": ""verfication failed""
+}",full_response.assert_full_response,200,bank_name,,,0
+TR013,Valid vpa_id for deletion,POST,/registry/sb/check,"{
+""vpa"": {vpa},
+""bank_id"":{bank_name},
+""isdelete"": true
+}","{
+""code"": 2000,
+""message"": ""verfication successful""
+}",full_response.assert_full_response,200,"vpa,bank_name",,,0
+TR014,List Banks,POST,/registry/banks/list/get,"{
+""pagination"": {
+""offset"": 0,
+""limit"": 10
+},
+""filter"": {
+""bid"": {bank_name}
+}
+}","{
+""code"": 2000,
+""count"": 1,
+""data"": [
+{
+""bid"": 1,
+""bname"": ""bank_1""
+}
+]
+}",resp_code.assert_resp_code,200,bank_name,,,0
+TR015,Search Invalid Bank,POST,/registry/banks/list/get,"{
+""pagination"": {
+""offset"": 0,
+""limit"": 10
+},
+""filter"": {
+""bank_id"":{invalid_id}
+}
+}","{
+    ""code"": 2000,
+    ""data"": []
+}",resp_code.assert_resp_code,200,bank_name,,,0
+TR016,Check Pagination Limit,POST,/registry/banks/list/get,"{
+""pagination"": {
+""offset"": 0,
+""limit"": 10
+}
+
+}","{
+""code"": 2000,
+""count"": 1,
+""data"": [
+{
+""bid"": 1,
+""bname"": ""bank_1""
+}
+]
+}",data_limit.assert_data_limit,200,,,,0
+TR017,Get Bank Details,POST,/registry/banks/details/get,"{
+""offset"": 0,
+""limit"": 10,
+""bid"": ""bank_1""
+}","{
+""code"": 2000,
+""count"": 1,
+""data"": [
+{
+""bid"": 1,
+""bname"": ""XYZ"",
+""braddr"": ""1st Main Road"",
+""binfo"": {
+""name"": ""john"",
+""phno"": ""+123456789012"",
+""email"": ""abc@gmail.com""
+}
+}
+]
+}",resp_code.assert_resp_code,200,bank_name,,,0
+TR018,Invalid Bank Name,POST,/registry/banks/details/get,"{
+""offset"": 0,
+""limit"": 10,
+""bid"": {invalid_id}
+}","{
+    ""code"": 2000,
+    ""data"": []
+}",resp_code.assert_resp_code,200,invalid_id,,,0
+TR019,List Branches,POST,/registry/branches/list/get,"{
+""pagination"": {
+""offset"": 0,
+""limit"": 10
+}
+}","{
+""code"": 2000,
+""count"": 1,
+""data"": [
+{
+""brid"": 1,
+""brname"": ""branch_1""
+}
+]
+}",resp_code.assert_resp_code,200,,,,0
+TR020,List Particular Branches of Bank,POST,/registry/branches/list/get,"{
+""pagination"": {
+""offset"": 0,
+""limit"": 10
+},
+""filter"": {
+""bid"": ""bank_1""
+}
+}","{
+""code"": 2000,
+""count"": 1,
+""data"": [
+{
+""brid"": 1,
+""brname"": ""branch_1""
+}
+]
+}",resp_code.assert_resp_code,200,,,,0
+TR021,Invalid Bank Name,POST,/registry/branches/list/get,"{
+""pagination"": {
+""offset"": 0,
+""limit"": 10
+},
+""filter"": {
+""bid"": {invalid_id}
+}
+}","{
+    ""code"": 2000,
+    ""data"": []
+}",resp_code.assert_resp_code,200,invalid_id,,,0
+TR022,Get Branch Details,POST,/registry/branches/details/get,"{
+""offset"": 0,
+""limit"": 10,
+""brid"": ""branch_1""
+}","{
+""code"": 2000,
+""count"": 1,
+""data"": [
+{
+""brid"": 1,
+""brname"": ""abc"",
+""braddr"": ""1st Main Road"",
+""brinfo"": {
+""name"": ""john"",
+""phno"": ""+123456789012"",
+""email"": ""abc@gmail.com""
+}
+}
+]
+}",resp_code.assert_resp_code,200,,,,0
+TR023,Invalid Branch Name,POST,/registry/branches/details/get,"{
+""offset"": 0,
+""limit"": 10,
+""brid"": {invalid_id}
+}","{
+    ""code"": 2000,
+    ""data"": []
+}",resp_code.assert_resp_code,200,invalid_id,,,0
+TR024,Get Device Details,POST,/registry/devices/details/get,"{
+""device_id"": ""device_1""
+}","{
+""code"": 2000,
+""data"": [
+{
+""id"": 1,
+""device_name"": ""abcjd"",
+""model"": ""test 1"",
+""firmware_version"": ""v.1.2"",
+""manufacturer"": ""mf 21"",
+""mfid"": 1,
+""allocation_on"": ""2024-11-21 17:09:02.604165"",
+""allocated_merchant"": ""merchant_1"",
+""allocated_to"": ""merchant_1"",
+""device_status"": ""Available for allocation"",
+""allocated_vpa"": ""vpa@123"",
+""allocated_bank"": ""bank_1"",
+""allocated_branch"": ""branch_1""
+}
+]
+}",resp_code.assert_resp_code,200,,,,0
+TR025,Invalid Device,POST,/registry/devices/details/get,"{
+""device_id"": {invalid_id}
+}","{
+    ""code"": 2000,
+    ""data"": []
+}",resp_code.assert_resp_code,200,invalid_id,,,0
+TR026,Invalid Bank ID,POST,/registry/devices/list/get,"{
+""pagination"": {
+""offset"": 0,
+""limit"": 10
+},
+""filter"": {
+""bid"": [
+0
+]
+}
+}","{
+    ""code"": 2000,
+    ""data"": []
+}",resp_code.assert_resp_code,200,,,,0
+TR027,Invalid Branch ID,POST,/registry/devices/list/get,"{
+""pagination"": {
+""offset"": 0,
+""limit"": 10
+},
+""filter"": {
+""brid"": [
+0
+]
+}
+}","{
+    ""code"": 2000,
+    ""data"": []
+}",resp_code.assert_resp_code,200,,,,0
+TR028,Inventory Devices,POST,/registry/devices/list/get,"{
+""pagination"": {
+""offset"": 0,
+""limit"": 10
+},
+""filter"": {
+""ininventory"": true
+
+}
+}","{
+""code"": 2000,
+""count"": 1,
+""data"": [
+{
+""device_id"": ""10345"",
+""vpa_id"": ""device1"",
+""merchant"": """",
+""imei"": ""12345678"",
+""did"": 1
+}
+]
+}",resp_code.assert_resp_code,200,,,,0
+TR029,In use Devices,POST,/registry/devices/list/get,"{
+""pagination"": {
+""offset"": 0,
+""limit"": 10
+},
+""filter"": {
+""insue"": true
+
+}
+}","{
+""code"": 2000,
+""count"": 1,
+""data"": [
+{
+""device_id"": ""10345"",
+""vpa_id"": ""device1"",
+""merchant"": ""ABC MERCHANT"",
+""imei"": ""12345678"",
+""did"": 1
+}
+]
+}",resp_code.assert_resp_code,200,,,,0
+TR030,SB enabled,POST,/registry/devices/list/get,"{
+""pagination"": {
+""offset"": 0,
+""limit"": 10
+},
+""filter"": {
+""enabled"": true
+
+}
+}","{
+""code"": 2000,
+""count"": 1,
+""data"": [
+{
+""device_id"": ""10345"",
+""vpa_id"": ""device1"",
+""merchant"": ""ABC MERCHANT"",
+""imei"": ""12345678"",
+""did"": 1
+}
+]
+}",resp_code.assert_resp_code,200,,,,0
+TR031,Search Invalid Device,POST,/registry/devices/list/get,"{""pagination"":{""limit"":5,""offset"":0},""filter"":{""did"":{invalid_id}}}","{
+    ""code"": 2000,
+    ""data"": []
+}",resp_code.assert_resp_code,200,invalid_id,,,0
+TR032,Valid Device,POST,/registry/devices/list/get,"{""pagination"":{""limit"":5,""offset"":0},""filter"":{""did"":""device_1""}}","{
+""code"": 2000,
+""count"": ""2"",
+""data"": [
+{
+""device_id"": ""100292x"",
+""vpa_id"": null,
+""merchant"": null,
+""imei"": ""353139635442840x"",
+""did"": 164,
+""sbe"": true
+},
+{
+""device_id"": ""100292"",
+""vpa_id"": null,
+""merchant"": null,
+""imei"": ""353139635442840"",
+""did"": 167,
+""sbe"": true
+}
+]
+}",resp_code.assert_resp_code,200,,,,0
+TR033,Invalid VPA,POST,/registry/devices/list/get,"{""pagination"":{""limit"":5,""offset"":0},""filter"":{""vpa"":{invalid_id}}}","{
+    ""code"": 2000,
+    ""data"": []
+}",resp_code.assert_resp_code,200,invalid_id,,,0
+TR034,Valid VPA,POST,/registry/devices/list/get,"{""pagination"":{""limit"":5,""offset"":0},""filter"":{""vpa"":""vpa@abc1""}}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""device_id"": ""456789"",
+""vpa_id"": ""vpa@1100.com"",
+""merchant"": ""MerchantOne"",
+""imei"": ""0987654321"",
+""did"": 151,
+""sbe"": true
+}
+]
+}",resp_code.assert_resp_code,200,,,,0
+TR035,Empty Filter,POST,/registry/devices/list/get,"{""pagination"":{""limit"":5,""offset"":0},""filter"":{}}","{
+""code"": 2000,
+""count"": ""80"",
+""data"": [
+{
+""device_id"": ""998899"",
+""vpa_id"": null,
+""merchant"": null,
+""imei"": ""123456789"",
+""did"": 150,
+""sbe"": true
+},
+{
+""device_id"": ""456789"",
+""vpa_id"": ""vpa@1100.com"",
+""merchant"": ""MerchantOne"",
+""imei"": ""0987654321"",
+""did"": 151,
+""sbe"": true
+},
+{
+""device_id"": ""194"",
+""vpa_id"": ""newvpa194@vpa"",
+""merchant"": null,
+""imei"": ""33369966"",
+""did"": 152,
+""sbe"": true
+},
+{
+""device_id"": ""195"",
+""vpa_id"": ""newvpa195@vpa"",
+""merchant"": null,
+""imei"": ""33358855"",
+""did"": 153,
+""sbe"": true
+},
+{
+""device_id"": ""210"",
+""vpa_id"": ""abcvpa210@upi"",
+""merchant"": ""ABC laundry"",
+""imei"": ""11224455"",
+""did"": 154,
+""sbe"": true
+}
+]
+}",data_limit.assert_data_limit,200,,,,0
+TR036,Valid Bank Id and Invalid Branch ID,POST,/registry/devices/list/get,"{
+""pagination"": {
+""offset"": 0,
+""limit"": 10
+},
+""filter"": {
+""bid"": [
+1
+],
+""brid"": [
+0
+]
+
+}
+}","{
+    ""code"": 2000,
+    ""data"": []
+}",resp_code.assert_resp_code,200,,,,0
+TR037,Invalid Bank Id and valid Branch ID,POST,/registry/devices/list/get,"{
+""pagination"": {
+""offset"": 0,
+""limit"": 10
+},
+""filter"": {
+""bid"": [
+0
+],
+""brid"": [
+1
+]
+
+}
+}","{
+    ""code"": 2000,
+    ""data"": []
+}",resp_code.assert_resp_code,200,,,,0
+TR038,Merchants list get ,POST,/registry/merchants/list/get,"{
+    ""pagination"": {
+        ""offset"": 0,
+        ""limit"": 5
+    },
+    ""filter"": {
+        ""bid"": 1
+    }
+}","{
+    ""code"": 2000,
+    ""data"": [
+        {
+            ""merchant_id"": 123,
+            ""merchant"": ""ABC laundry"",
+            ""allocated_devices"": ""3""
+        },
+        {
+            ""merchant_id"": 124,
+            ""merchant"": ""Veggies and Fruits shop"",
+            ""allocated_devices"": ""0""
+        },
+        {
+            ""merchant_id"": 125,
+            ""merchant"": ""MerchantOne"",
+            ""allocated_devices"": ""1""
+        },
+        {
+            ""merchant_id"": 126,
+            ""merchant"": ""Merchant123"",
+            ""allocated_devices"": ""0""
+        },
+        {
+            ""merchant_id"": 127,
+            ""merchant"": ""sad"",
+            ""allocated_devices"": ""0""
+        }
+    ],
+    ""count"": ""59""
+}",data_limit.assert_data_limit,200,,,,1
+TR039,sim providers list,POST,/registry/sim-providers/get,{},"{
+    ""code"": 2000,
+    ""data"": [
+        {
+            ""spid"": 1,
+            ""sim_provider"": ""jio""
+        },
+        {
+            ""spid"": 2,
+            ""sim_provider"": ""bsnl""
+        }
+    ]
+}",row_count.assert_row_count,200,,,,0
+TR040,merchant_types,POST,/registry/merchant-types/get,{},"{
+    ""code"": 2000,
+    ""data"": [
+        {
+            ""mtid"": 1,
+            ""merchant_type"": ""Type 1""
+        }
+    ]
+}",row_count.assert_row_count,200,,,,0
+TR041,User-banks get,POST,/registry/user/banks/get,"{
+    ""email"": ""tester@gmail.com""
+}","{
+    ""code"": 2000,
+    ""data"": [],
+    ""available_banks"": [
+        {
+            ""bid"": 1,
+            ""bname"": ""bank_1"",
+            ""baddr"": ""Banglore""
+        }
+    ],
+    ""selected_banks"": [
+        {
+            ""bid"": 1,
+            ""bname"": ""bank_1"",
+            ""baddr"": ""Banglore""
+        }
+    ]
+}",keys_only.assert_keys_only,200,,,,0
+TR042,User-branches get,POST,/registry/user/branches/get,"{
+    ""email"": ""tester@gmail.com"",
+ ""bid"": 1
+
+}","{
+    ""code"": 2000,
+    ""data"": [],
+    ""available_branches"": [
+        {
+            ""brid"": 1,
+            ""brname"": ""bank_1"",
+            ""braddr"": ""Banglore""
+        }
+    ],
+    ""selected_branches"": [
+        {
+            ""brid"": 1,
+            ""brname"": ""bank_1"",
+            ""braddr"": ""Banglore""
+        }
+    ]
+}",keys_only.assert_keys_only,200,,,,0

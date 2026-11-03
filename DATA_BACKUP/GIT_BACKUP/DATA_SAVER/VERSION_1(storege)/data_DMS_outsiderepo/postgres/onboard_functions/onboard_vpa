@@ -1,0 +1,72 @@
+CREATE OR REPLACE FUNCTION dmsr.vpa_validator(vpa_name VARCHAR,b_id INTEGER) 
+RETURNS BOOLEAN AS $$
+BEGIN
+   	IF EXISTS (SELECT 1 FROM dmsr.vpa WHERE vpa = vpa_name ) THEN
+        RETURN FALSE;
+    END IF;
+	
+	IF NOT EXISTS (SELECT 1 FROM dmsr.banks WHERE bid = b_id AND isd = 'false') THEN
+    	RETURN FALSE;
+	END IF;
+
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION dmsr.vpa_validator_writer(
+    rowid INTEGER,
+    vpa VARCHAR,
+	bid INTEGER,
+    eby INTEGER,
+    eid INTEGER
+)
+RETURNS TABLE (row_id INTEGER, status INTEGER, msg TEXT,v_id INTEGER) AS $$
+DECLARE
+    vevt dmsr.vevts := 'VPA_ONBOARDED';
+	v_id INTEGER;
+BEGIN
+    IF dmsr.vpa_validator(vpa,bid) THEN
+    	INSERT INTO dmsr.vpa (eid, vevt, eby, vpa,bid)
+    	VALUES (eid, vevt, eby, vpa,bid)
+		RETURNING vid INTO v_id;
+		RETURN QUERY SELECT rowid, 1, 'Insertion Successful',v_id;		
+	ELSE 
+		RETURN QUERY SELECT rowid, 0, 'Validation Failed',0;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION dmsr.vpa_iterator(
+	rowid INT[],
+    vpa TEXT[],
+	bid INT[],
+    event_bys INT[],
+    eids INT[]
+) 
+RETURNS TABLE (row_id INTEGER, status INTEGER, msg TEXT,vid INTEGER) AS
+$$
+DECLARE
+    i INT;
+BEGIN
+    FOR i IN 1..array_length(vpa, 1) LOOP
+  
+        RETURN QUERY SELECT * FROM dmsr.vpa_validator_writer(
+			rowid[i],
+    		vpa[i],
+			bid[i],
+    		event_bys[i],   
+            eids[i]
+        ); 
+    END LOOP; 
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT * FROM dmsr.vpa_iterator(
+	ARRAY[1,2],
+    ARRAY['te11111', 'tet121'],  
+	ARRAY[21,2],
+    ARRAY[1, 1], 
+    ARRAY[28, 28]
+);

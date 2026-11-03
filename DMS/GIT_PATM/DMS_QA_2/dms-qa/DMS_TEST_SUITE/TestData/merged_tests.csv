@@ -1,0 +1,3020 @@
+Test ID,Test Case,request_type,test case type,endpoint,request,response,assertion_function,expected_status,to_replace_in_req,add_to_context_from_res,add_to_context_from_req,delay,TID,SID,Order
+T1,Onboarding Bank,POST,positive,/requests/wfevents,"{
+""event"": ""ONBOARD_BANK"",
+""event_by"":{user_id},
+""edetails"": [
+{
+""row_id"":1,
+""bank_name"": ""tester_bank1"",
+""baddr"": ""123 Finance Street"",
+""binfo"": {
+""name"": ""John Doe"",
+""phno"":""+911234567890"",
+""email"": ""johndoe@fnb.com""
+}
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 527,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,user_id,event_id,,0.5,T1,1,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,1,2
+T2,Onboard bank handler status,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Onboard Bank""
+],
+""data"": {
+""Onboard Bank"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+0,
+1
+],
+""values"": [
+[
+1,
+1,
+""{SUCCESS_INSERT}"",
+""tester_bank1""
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""msg"",
+""bank_name""
+]
+}
+]
+}
+}
+}",row_status.assert_success_row_status,200,"event_id,data[0].aid","data.""Onboard Bank"".hdetails[0].values[0][3]",,0.2,T2,1,3
+T3,Bulk Onboard bank,POST,positive,/requests/wfevents,"{
+""event"": ""ONBOARD_BANK"",
+""event_by"":{user_id},
+""edetails"": [
+{
+""row_id"":1,
+""bank_name"": ""tester_bank2"",
+""baddr"": ""123 Finance Street"",
+""binfo"": {
+""name"": ""John Doe"",
+""phno"":""+911234567890"",
+""email"": ""johndoe@fnb.com""
+}
+},
+{
+""row_id"":2,
+""bank_name"": ""tester_bank3"",
+""baddr"": ""123 Finance Street"",
+""binfo"": {
+""name"": ""John Doe"",
+""phno"":""+911234567890"",
+""email"": ""johndoe@fnb.com""
+}
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 527,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,user_id,event_id,,0.2,T3,2,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,2,2
+T4,Bulk Onboard bank handler status,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Onboard Bank""
+],
+""data"": {
+""Onboard Bank"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+2,
+2,
+0
+],
+""values"": [
+[
+1,
+1,
+""{SUCCESS_INSERT}"",
+""tester_bank2""
+],
+[
+2,
+1,
+""{SUCCESS_INSERT}"",
+""tester_bank3""
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""msg"",
+""bank_name""
+]
+}
+]
+}
+}
+}",row_status.assert_success_row_status,200,"event_id,data[0].aid","data.""Onboard Bank"".hdetails[0].values[0][3],data.""Onboard Bank"".hdetails[0].values[1][3]",,0.2,T4,2,3
+T5,Onboard bank with Invalid Payload Format,POST,negative,/requests/wfevents,"{
+""event"": ""ONBOARD_BANK"",
+""event_by"":""tester123"",
+""edetails"": [
+{
+""row_id"":1,
+""baddr"": ""123 Finance Street"",
+""binfo"": {
+""name"": ""John Doe"",
+""phno"":""+911234567890"",
+""email"": ""johndoe@fnb.com""
+}
+}
+]
+}","{
+""code"": 1000,
+""message"":""INVALID SCHEMA"",
+""errors"": [
+""Field 'bank_name' is required."",
+""Field 'bank_name' is required in edetails[0].""
+]
+}",full_response.assert_full_response,400,,,,0.2,T5,3,1
+T6,Onboard bank with Duplicate bank name,POST,negative,/requests/wfevents,"{
+""event"": ""ONBOARD_BANK"",
+""event_by"":{user_id},
+""edetails"": [
+{
+""row_id"":1,
+""bank_name"": ""tester_bank1"",
+""baddr"": ""123 Finance Street"",
+""binfo"": {
+""name"": ""John Doe"",
+""phno"":""+911234567890"",
+""email"": ""johndoe@fnb.com""
+}
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 527,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,user_id,event_id,,0.2,T6,4,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,4,2
+T7,Duplicate bname Onboard bank handler status,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Onboard Bank""
+],
+""data"": {
+""Onboard Bank"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+0,
+1
+],
+""values"": [
+[
+1,
+1,
+""{SUCCESS_INSERT}"",
+""tester_bank1""
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""msg"",
+""bank_name""
+]
+}
+]
+}
+}
+}",row_status.assert_failed_row_status,200,"event_id,data[0].aid",,,0.2,T7,4,3
+T8,Onboarding Branch,POST,positive,/requests/wfevents,"{
+""event"": ""ONBOARD_BRANCH"",
+""event_by"": {user_id},
+""edetails"": [
+{
+""row_id"":1,
+""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+""branch_code"":1236,
+""branch_name"": ""tester_branch1"",
+""brinfo"": {
+""name"": ""Alice Johnson"",
+""designation"": ""Branch Manager"",
+""phno"": ""+911234567890"",
+""email"": ""alice.johnson@bank.com""
+}
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 527,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,"user_id,data.""Onboard Bank"".hdetails[0].values[0][3]",event_id,,0.2,T8,5,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,5,2
+T9,Onboard Branch Handler status,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Onboard Branch""
+],
+""data"": {
+""Onboard Branch"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+1,
+0
+],
+""values"": [
+[
+1,
+1,
+""{SUCCESS_INSERT}"",
+""tester_branch1""
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""msg"",
+""bank_name""
+]
+}
+]
+}
+}
+}",row_status.assert_success_row_status,200,"event_id,data[0].aid","data.""Onboard Branch"".hdetails[0].values[0][3]",,0.2,T9,5,3
+T10,Bulk Onboarding Branch,POST,positive,/requests/wfevents,"{
+""event"": ""ONBOARD_BRANCH"",
+""event_by"": {user_id},
+""edetails"": [
+{
+""row_id"":1,
+""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+""branch_code"":1236,
+""branch_name"": ""tester_branch2"",
+""brinfo"": {
+""name"": ""Alice Johnson"",
+""designation"": ""Branch Manager"",
+""phno"": ""+911234567890"",
+""email"": ""alice.johnson@bank.com""
+}
+},
+{
+""row_id"":2,
+""bank_id"": {data.""Onboard Bank"".hdetails[0].values[1][3]},
+""branch_code"":1236,
+""branch_name"": ""tester_branch3"",
+""brinfo"": {
+""name"": ""Alice Johnson"",
+""designation"": ""Branch Manager"",
+""phno"": ""+911234567890"",
+""email"": ""alice.johnson@bank.com""
+}
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 527,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,"user_id,data.""Onboard Bank"".hdetails[0].values[0][3]",event_id,,0.2,T10,6,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,6,2
+T11,Bulk Onboard Branch Handler status,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Onboard Branch""
+],
+""data"": {
+""Onboard Branch"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+2,
+2,
+0
+],
+""values"": [
+[
+1,
+1,
+""{SUCCESS_INSERT}"",
+""tester_branch2""
+],
+[
+2,
+1,
+""{SUCCESS_INSERT}"",
+""tester_branch3""
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""msg"",
+""bank_name""
+]
+}
+]
+}
+}
+}",row_status.assert_success_row_status,200,"event_id,data[0].aid","data.""Onboard Branch"".hdetails[0].values[0][3],data.""Onboard Branch"".hdetails[0].values[1][3]",,0.2,T11,6,3
+T12,Onboard branch with Invalid Payload Format,POST,negative,/requests/wfevents,"{
+""event"": ""ONBOARD_BRANCH"",
+""event_by"": ""456"",
+""edetails"": [
+{
+""row_id"":1,
+""bank_id"": ""bank_1"",
+""branch_code"":1236,
+""brinfo"": {
+""name"": ""Alice Johnson"",
+""designation"": ""Branch Manager"",
+""phno"": ""+911234567890"",
+""email"": ""alice.johnson@bank.com""
+}
+}
+]
+}","{
+""code"": 1000,
+""message"":""INVALID SCHEMA"",
+""errors"": [
+""Field 'branch_name' is required."",
+""Field 'branch_name' is required in edetails[0].""
+]
+}",full_response.assert_full_response,400,,,,0.2,T12,7,1
+T13,Onboard bank with Duplicate branch name,POST,negative,/requests/wfevents,"{
+""event"": ""ONBOARD_BRANCH"",
+""event_by"": {user_id},
+""edetails"": [
+{
+""row_id"":1,
+""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+""branch_code"":1236,
+""branch_name"": ""tester_branch1"",
+""brinfo"": {
+""name"": ""Alice Johnson"",
+""designation"": ""Branch Manager"",
+""phno"": ""+911234567890"",
+""email"": ""alice.johnson@bank.com""
+}
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 527,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,"user_id,data.""Onboard Bank"".hdetails[0].values[0][3]",event_id,,0.2,T13,8,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,8,2
+T14,Duplicate brname Onboard branch handler status,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Onboard Bank""
+],
+""data"": {
+""Onboard Branch"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+0,
+1
+],
+""values"": [
+[
+1,
+1,
+""{BRANCH_REPEATED}"",
+null
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""msg"",
+""bank_name""
+]
+}
+]
+}
+}
+}",row_status.assert_failed_row_status,200,"event_id,data[0].aid",,,0.2,T14,8,3
+T15,Onboard branch with invalid bank,POST,negative,/requests/wfevents,"{
+""event"": ""ONBOARD_BRANCH"",
+""event_by"": {user_id},
+""edetails"": [
+{
+""row_id"": 1,
+""bank_id"": ""invalid_bank"",
+""branch_code"": 1236,
+""branch_name"": ""tester_branch10"",
+""brinfo"": {
+""name"": ""Alice Johnson"",
+""designation"": ""Branch Manager"",
+""phno"": ""+911234567890"",
+""email"": ""alice.johnson@bank.com""
+}
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 527,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,user_id,event_id,,0.2,T15,9,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,9,2
+T16,invalid bank in Onboard branch handler status,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Onboard Bank""
+],
+""data"": {
+""Onboard Branch"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+0,
+1
+],
+""values"": [
+[
+1,
+1,
+""{INVALID_BANK}"",
+null
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""msg"",
+""bank_name""
+]
+}
+]
+}
+}
+}",row_status.assert_failed_row_status,200,"event_id,data[0].aid",,,0.2,T16,9,3
+T17,Onboard Merchant,POST,positive,/requests/wfevents,"{
+""event"": ""ONBOARD_MERCHANT"",
+""event_by"":{user_id},
+""edetails"": [
+{
+""row_id"":1,
+""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+""branch_id"": {data.""Onboard Branch"".hdetails[0].values[0][3]},
+""mname"": ""tester_merchant1"",
+""mtype"":""Type 1"",
+""minfo"": {
+""accNo"": ""1234567"",
+""accHolderName"": ""Branch Manager"",
+""phno"": ""+911234567890""
+
+
+}
+}
+
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,user_id,event_id,,0.2,T17,10,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,10,2
+T18,Onboard merchat handler status,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Onboard Bank""
+],
+""data"": {
+""Onboard Bank"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+0,
+1
+],
+""values"": [
+[
+1,
+1,
+""{SUCCESS_INSERT}"",
+""tester_bank1""
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""msg"",
+""bank_name""
+]
+}
+]
+}
+}
+}",row_status.assert_success_row_status,200,"event_id,data[0].aid","data.""Onboard Merchants"".hdetails[0].values[0][3]",,0.0,T18,10,3
+T19,Bulk Onboard Merchant,POST,positive,/requests/wfevents,"{
+""event"": ""ONBOARD_MERCHANT"",
+""event_by"":{user_id},
+""edetails"": [
+{
+""row_id"":1,
+""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+""branch_id"": {data.""Onboard Branch"".hdetails[0].values[0][3]},
+""mname"": ""tester_merchant2"",
+""mtype"":""Type 1"",
+""minfo"": {
+""accNo"": ""1234567"",
+""accHolderName"": ""Branch Manager"",
+""phno"": ""+911234567890""
+
+
+}
+},
+{
+""row_id"":2,
+""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+""branch_id"": {data.""Onboard Branch"".hdetails[0].values[0][3]},
+""mname"": ""tester_merchant3"",
+""mtype"":""Type 1"",
+""minfo"": {
+""accNo"": ""1234567"",
+""accHolderName"": ""Branch Manager"",
+""phno"": ""+911234567890""
+
+
+}
+}
+
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,"user_id,data.""Onboard Bank"".hdetails[0].values[0][3],data.""Onboard Branch"".hdetails[0].values[0][3]",event_id,,0.2,T19,11,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,11,2
+T20,Bulk Onboard Merchant handler status,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Onboard Merchant""
+],
+""data"": {
+""Onboard Merchant"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+2,
+2,
+0
+],
+""values"": [
+[
+1,
+1,
+""{SUCCESS_INSERT}"",
+""tester_merchant2""
+],
+[
+1,
+1,
+""{SUCCESS_INSERT}"",
+""tester_merchant3""
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""msg"",
+""merchant_name""
+]
+}
+]
+}
+}
+}",row_status.assert_success_row_status,200,"event_id,data[0].aid","data.""Onboard Merchants"".hdetails[0].values[0][3],data.""Onboard Merchants"".hdetails[0].values[1][3]",,0.0,T20,11,3
+T21,Onboard Merchant Invalid payload,POST,negative,/requests/wfevents,"{
+""event"": ""ONBOARD_MERCHANT"",
+""event_by"":{user_id},
+""edetails"": [
+{
+""row_id"":1,
+""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+""mname"": ""tester_merchant1"",
+""minfo"": {
+""accNo"": ""1234567"",
+""accHolderName"": ""Branch Manager"",
+""phno"": ""+911234567890""
+}
+}
+
+]
+}","{
+    ""code"": 1000,
+    ""message"": ""INVALID SCHEMA"",
+    ""errors"": [
+        ""Field 'branch_id' is required."",
+        ""Field 'mtype' is required."",
+        ""Field 'branch_id' is required in edetails[0]."",
+        ""Field 'mtype' is required in edetails[0].""
+    ]
+}",full_response.assert_full_response,400,"user_id,data.""Onboard Bank"".hdetails[0].values[0][3]",,,0.0,T21,12,1
+T22,Onboard Merchant with Duplicate mname,POST,negative,/requests/wfevents,"{
+""event"": ""ONBOARD_MERCHANT"",
+""event_by"":{user_id},
+""edetails"": [
+{
+""row_id"":1,
+""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+""branch_id"": {data.""Onboard Branch"".hdetails[0].values[0][3]},
+""mname"": ""tester_merchant1"",
+""mtype"":""Type 1"",
+""minfo"": {
+""accNo"": ""1234567"",
+""accHolderName"": ""Branch Manager"",
+""phno"": ""+911234567890""
+}
+}
+
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,"user_id,data.""Onboard Bank"".hdetails[0].values[0][3],data.""Onboard Branch"".hdetails[0].values[0][3]",event_id,,0.2,T22,13,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,13,2
+T23,Ckecking handler status of Onboard merchant with duplicte name,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Onboard Merchant""
+],
+""data"": {
+""Onboard Merchant"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+0,
+1
+],
+""values"": [
+[
+1,
+1,
+""{MERCHANT_REPEATED}"",
+NULL
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""msg"",
+""merchant_name""
+]
+}
+]
+}
+}
+}",row_status.assert_failed_row_status,200,"event_id,data[0].aid",,,0.0,T23,13,3
+T24,Onboarding Merchant wil invalid bank and branch,POST,negative,/requests/wfevents,"{
+""event"": ""ONBOARD_MERCHANT"",
+""event_by"":{user_id},
+""edetails"": [
+{
+""row_id"":1,
+""bank_id"": ""invalid_bank"",
+""branch_id"": ""invalid_branch"",
+""mname"": ""tester_merchant10"",
+""mtype"":""Type 1"",
+""minfo"": {
+""accNo"": ""1234567"",
+""accHolderName"": ""Branch Manager"",
+""phno"": ""+911234567890""
+}
+}
+
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,user_id,event_id,,0.2,T24,14,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,14,2
+T25,Checking handler status for invalid bank and branch in Onboard merchant,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Onboard Merchant""
+],
+""data"": {
+""Onboard Merchant"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+0,
+1
+],
+""values"": [
+[
+1,
+1,
+""{INVALID_BANK,INVALID_BRANCH}"",
+NULL
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""msg"",
+""merchant_name""
+]
+}
+]
+}
+}
+}",row_status.assert_failed_row_status,200,"event_id,data[0].aid",,,0.0,T25,14,3
+T26,Onboarding Devices,POST,positive,/requests/wfevents,"{
+""event"": ""ONBOARD_DEVICE"",
+""event_by"": {user_id},
+""edetails"": [
+{
+""row_id"": 1,
+""onboard_status"": ""To Inventory"",
+""mf_id"": ""tester_mf"",
+""model_id"": ""tester_model"",
+""firmware_id"": ""tester_firmware"",
+""dname"": ""tester_device1"",
+""imei"": ""tester_imei1""
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,user_id,event_id,,0.2,T26,15,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,15,2
+T27,Handler status for onboard device,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Onboard Device""
+],
+""data"": {
+""Onboard Device"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+1,
+0
+],
+""values"": [
+[
+1,
+1,
+""tester_device"",
+[
+""ONBOARD_DEVICE""
+],
+[
+1
+],
+""{}"",
+""{SUCCESS_INSERT}"",
+""{}"",
+""{}"",
+""{}"",
+""{}"",
+""{}""
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""event_response"",
+""steps"",
+""step_status"",
+""update_device_response"",
+""onboard_device_response"",
+""onboard_vpa_response"",
+""bind_device_response"",
+""allocate_to_bank_response"",
+""allocate_to_branch_response"",
+""allocate_to_merchant_response""
+]
+}
+]
+}
+}
+}",row_status.assert_success_row_status,200,"event_id,data[0].aid","data.""Onboard Device"".hdetails[0].values[0][2]",,0.0,T27,15,3
+T28,Bulk onboard devices(Allocate to bank),POST,positive,/requests/wfevents,"{
+""event"": ""ONBOARD_DEVICE"",
+""event_by"": {user_id},
+""edetails"": [
+{
+""row_id"": 1,
+""bank_id"":{data.""Onboard Bank"".hdetails[0].values[0][3]},
+""onboard_status"": ""Allocated to Bank"",
+""mf_id"": ""tester_mf"",
+""model_id"": ""tester_model"",
+""firmware_id"": ""tester_firmware"",
+""dname"": ""tester_device2"",
+""imei"": ""tester_imei2"",
+""vpa_id"": ""tester_vpa@abc1""
+
+},
+{
+""row_id"": 2,
+""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+""onboard_status"": ""Allocated to Bank"",
+""mf_id"": ""tester_mf"",
+""model_id"": ""tester_model"",
+""firmware_id"": ""tester_firmware"",
+""dname"": ""tester_device3"",
+""imei"": ""tester_imei3"",
+""vpa_id"": ""tester_vpa@abc2""
+
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,"user_id,data.""Onboard Bank"".hdetails[0].values[0][3]",event_id,,0.2,T28,16,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,16,2
+T29,Handler status for Bulk onboard devices(Allocate to bank),POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Onboard Device""
+],
+""data"": {
+""Onboard Device"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+2,
+2,
+0
+],
+""values"": [
+[
+1,
+1,
+""tester_device2"",
+[
+""ONBOARD_DEVICES"",
+""ONBOARD_VPA"",
+""BIND_DEVICE"",
+""ALLOCATE_TO_BANK""
+],
+[
+1,
+1,
+1,
+1,
+null,
+null
+],
+""{}"",
+""{SUCCESS_INSERT}"",
+""{SUCCESS_INSERT}"",
+""{SUCCESS}"",
+""{SUCCESS}"",
+null,
+null
+],
+[
+2,
+1,
+""tester_device3"",
+[
+""ONBOARD_DEVICES"",
+""ONBOARD_VPA"",
+""BIND_DEVICE"",
+""ALLOCATE_TO_BANK""
+],
+[
+1,
+1,
+1,
+1,
+null,
+null
+],
+""{}"",
+""{SUCCESS_INSERT}"",
+""{SUCCESS_INSERT}"",
+""{SUCCESS}"",
+""{SUCCESS}"",
+null,
+null
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""event_response"",
+""steps"",
+""step_status"",
+""update_device_response"",
+""onboard_device_response"",
+""onboard_vpa_response"",
+""bind_device_response"",
+""allocate_to_bank_response"",
+""allocate_to_branch_response"",
+""allocate_to_merchant_response""
+]
+}
+]
+}
+}
+}",row_status.assert_success_row_status,200,"event_id,data[0].aid","data.""Onboard Device"".hdetails[0].values[0][2],data.""Onboard Device"".hdetails[0].values[1][2]",,0.0,T29,16,3
+T30,Bulk onboard devices(Allocate to branch),POST,positive,/requests/wfevents,"{
+""event"": ""ONBOARD_DEVICE"",
+""event_by"": {user_id},
+""edetails"": [
+{
+""row_id"": 1,
+""bank_id"":{data.""Onboard Bank"".hdetails[0].values[0][3]},
+""branch_id"":{data.""Onboard Branch"".hdetails[0].values[0][3]},
+""onboard_status"": ""Allocated to Branch"",
+""mf_id"": ""tester_mf"",
+""model_id"": ""tester_model"",
+""firmware_id"": ""tester_firmware"",
+""dname"": ""tester_device5"",
+""imei"": ""tester_imei5"",
+""vpa_id"": ""tester_vpa@abc5""
+
+},
+{
+""row_id"": 2,
+""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+""branch_id"":{data.""Onboard Branch"".hdetails[0].values[0][3]},
+""onboard_status"": ""Allocated to Branch"",
+""mf_id"": ""tester_mf"",
+""model_id"": ""tester_model"",
+""firmware_id"": ""tester_firmware"",
+""dname"": ""tester_device6"",
+""imei"": ""tester_imei6"",
+""vpa_id"": ""tester_vpa@abc6""
+
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,"user_id,data.""Onboard Bank"".hdetails[0].values[0][3],data.""Onboard Branch"".hdetails[0].values[0][3]",event_id,,0.2,T30,17,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,17,2
+T31,Handler status for Bulk onboard devices(Allocate to branch),POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Onboard Device""
+],
+""data"": {
+""Onboard Device"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+2,
+2,
+0
+],
+""values"": [
+[
+1,
+1,
+""tester_device2"",
+[
+""ONBOARD_DEVICES"",
+""ONBOARD_VPA"",
+""BIND_DEVICE"",
+""ALLOCATE_TO_BANK"",
+""ALLOCATE_TO_BRANCH""
+],
+[
+1,
+1,
+1,
+1,
+1,
+null
+],
+""{}"",
+""{SUCCESS_INSERT}"",
+""{SUCCESS_INSERT}"",
+""{SUCCESS}"",
+""{SUCCESS}"",
+""{SUCCESS}"",
+null
+],
+[
+2,
+1,
+""tester_device3"",
+[
+""ONBOARD_DEVICES"",
+""ONBOARD_VPA"",
+""BIND_DEVICE"",
+""ALLOCATE_TO_BANK"",
+""ALLOCATE_TO_BRANCH""
+],
+[
+1,
+1,
+1,
+1,
+1,
+null
+],
+""{}"",
+""{SUCCESS_INSERT}"",
+""{SUCCESS_INSERT}"",
+""{SUCCESS}"",
+""{SUCCESS}"",
+""{SUCCESS}"",
+null
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""event_response"",
+""steps"",
+""step_status"",
+""update_device_response"",
+""onboard_device_response"",
+""onboard_vpa_response"",
+""bind_device_response"",
+""allocate_to_bank_response"",
+""allocate_to_branch_response"",
+""allocate_to_merchant_response""
+]
+}
+]
+}
+}
+}",row_status.assert_success_row_status,200,"event_id,data[0].aid","data.""Onboard Device"".hdetails[0].values[0][2],data.""Onboard Device"".hdetails[0].values[1][2]",,0.0,T31,17,3
+T32,Bulk onboard devices(Allocate to merchant),POST,positive,/requests/wfevents,"{
+""event"": ""ONBOARD_DEVICE"",
+""event_by"": {user_id},
+""edetails"": [
+{
+""row_id"": 1,
+""bank_id"":{data.""Onboard Bank"".hdetails[0].values[0][3]},
+""branch_id"":{data.""Onboard Branch"".hdetails[0].values[0][3]},
+""onboard_status"": ""Allocated to Bank"",
+""mf_id"": ""tester_mf"",
+""model_id"": ""tester_model"",
+""firmware_id"": ""tester_firmware"",
+""dname"": ""tester_device7"",
+""imei"": ""tester_imei7"",
+""vpa_id"": ""tester_vpa@abc7"",
+""merchant_id"": {data.""Onboard Merchants"".hdetails[0].values[0][3]}
+},
+{
+""row_id"": 2,
+""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+""branch_id"":{data.""Onboard Branch"".hdetails[0].values[0][3]},
+""onboard_status"": ""Allocated to Bank"",
+""mf_id"": ""tester_mf"",
+""model_id"": ""tester_model"",
+""firmware_id"": ""tester_firmware"",
+""dname"": ""tester_device8"",
+""imei"": ""tester_imei8"",
+""vpa_id"": ""tester_vpa@abc8"",
+""merchant_id"": {data.""Onboard Merchants"".hdetails[0].values[1][3]}
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,"user_id,data.""Onboard Bank"".hdetails[0].values[0][3],data.""Onboard Branch"".hdetails[0].values[0][3],data.""Onboard Merchants"".hdetails[0].values[0][3],data.""Onboard Merchants"".hdetails[0].values[1][3]",event_id,,0.2,T32,18,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,18,2
+T33,Handler status for Bulk onboard devices(Allocate to merchant),POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Onboard Device""
+],
+""data"": {
+""Onboard Device"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+2,
+2,
+0
+],
+""values"": [
+[
+1,
+1,
+""tester_device2"",
+[
+""ONBOARD_DEVICES"",
+""ONBOARD_VPA"",
+""BIND_DEVICE"",
+""ALLOCATE_TO_BANK"",
+""ALLOCATE_TO_BRANCH"",
+""ALLOCATE_TO_MERCHANT""
+],
+[
+1,
+1,
+1,
+1,
+1,
+null
+],
+""{}"",
+""{SUCCESS_INSERT}"",
+""{SUCCESS_INSERT}"",
+""{SUCCESS}"",
+""{SUCCESS}"",
+""{SUCCESS}"",
+""{SUCCESS}""
+],
+[
+2,
+1,
+""tester_device3"",
+[
+""ONBOARD_DEVICES"",
+""ONBOARD_VPA"",
+""BIND_DEVICE"",
+""ALLOCATE_TO_BANK""
+""ALLOCATE_TO_BRANCH"",
+""ALLOCATE_TO_MERCHANT""
+],
+[
+1,
+1,
+1,
+1,
+1,
+1
+],
+""{}"",
+""{SUCCESS_INSERT}"",
+""{SUCCESS_INSERT}"",
+""{SUCCESS}"",
+""{SUCCESS}"",
+""{SUCCESS}"",
+""{SUCCESS}""
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""event_response"",
+""steps"",
+""step_status"",
+""update_device_response"",
+""onboard_device_response"",
+""onboard_vpa_response"",
+""bind_device_response"",
+""allocate_to_bank_response"",
+""allocate_to_branch_response"",
+""allocate_to_merchant_response""
+]
+}
+]
+}
+}
+}",row_status.assert_success_row_status,200,"event_id,data[0].aid","data.""Onboard Device"".hdetails[0].values[0][2],data.""Onboard Device"".hdetails[0].values[1][2]",,0.0,T33,18,3
+T34,Invalid payload for Onboard device,POST,negative,/requests/wfevents,"{
+""event"": ""ONBOARD_DEVICE"",
+""event_by"": {user_id},
+""edetails"": [
+{
+""row_id"": 1,
+""onboard_status"": ""To Inventory"",
+""mf_id"": ""tester_mf"",
+""firmware_id"": ""tester_firmware"",
+""dname"": ""tester_device1"",
+""imei"": ""tester_imei1""
+}
+]
+}","{
+""code"": 1000,
+""message"":""INVALID SCHEMA"",
+""errors"": [
+""Field 'model_id' is required."",
+""Field 'model_id' is required in edetails[0].""
+]
+}",full_response.assert_full_response,400,user_id,,,0.0,T34,19,1
+T35,Invalid id for Onboard Device,POST,negative,/requests/wfevents,"{
+""event"": ""ONBOARD_DEVICE"",
+""event_by"": {user_id},
+""edetails"": [
+{
+""row_id"": 1,
+""onboard_status"": ""To Inventory"",
+""mf_id"": ""tester_mf"",
+""model_id"": ""invalid_model"",
+""firmware_id"": ""tester_firmware"",
+""dname"": ""tester_device1"",
+""imei"": ""tester_imei1""
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,user_id,event_id,,0.2,T35,20,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,20,2
+T36,Handler status for Invalid id for Onboard Device,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Onboard Device""
+],
+""data"": {
+""Onboard Device"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+0,
+1
+],
+""values"": [
+[
+1,
+0,
+null,
+[
+""ONBOARD_DEVICE""
+],
+[
+0
+],
+""{}"",
+""{INVALID_MF}"",
+""{}"",
+""{}"",
+""{}"",
+""{}"",
+""{}""
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""event_response"",
+""steps"",
+""step_status"",
+""update_device_response"",
+""onboard_device_response"",
+""onboard_vpa_response"",
+""bind_device_response"",
+""allocate_to_bank_response"",
+""allocate_to_branch_response"",
+""allocate_to_merchant_response""
+]
+}
+]
+}
+}
+}",row_status.assert_failed_row_status,200,"event_id,data[0].aid",,,0.0,T36,20,3
+T37,duplicate dname for Onboard Device,POST,negative,/requests/wfevents,"{
+""event"": ""ONBOARD_DEVICE"",
+""event_by"": {user_id},
+""edetails"": [
+{
+""row_id"": 1,
+""onboard_status"": ""To Inventory"",
+""mf_id"": ""tester_mf"",
+""model_id"": ""tester_model"",
+""firmware_id"": ""tester_firmware"",
+""dname"": ""tester_device1"",
+""imei"": ""tester_imei1""
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,user_id,event_id,,0.2,T37,21,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,21,2
+T38,Handler status for duplicate dname for Onboard Device,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Onboard Device""
+],
+""data"": {
+""Onboard Device"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+0,
+1
+],
+""values"": [
+[
+1,
+0,
+null,
+[
+""ONBOARD_DEVICE""
+],
+[
+0
+],
+""{}"",
+""{DEVICE_REPEATED}"",
+""{}"",
+""{}"",
+""{}"",
+""{}"",
+""{}""
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""event_response"",
+""steps"",
+""step_status"",
+""update_device_response"",
+""onboard_device_response"",
+""onboard_vpa_response"",
+""bind_device_response"",
+""allocate_to_bank_response"",
+""allocate_to_branch_response"",
+""allocate_to_merchant_response""
+]
+}
+]
+}
+}
+}",row_status.assert_failed_row_status,200,"event_id,data[0].aid",,,0.0,T38,21,3
+T59,Onboard_vpa,POST,positive,/requests/wfevents,"{
+""event"": ""ONBOARD_VPA"",
+""event_by"": {user_id},
+""edetails"": [
+{
+""row_id"": 1,
+""vpa"": ""tester_vpa@vpa"",
+""bank_id"": ""tester_bank"",
+""device_id"": ""tester_device""
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,user_id,event_id,,0.2,T59,22,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,22,2
+T60,Handler status for Onboard_vpa,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Onboard VPA""
+],
+""data"": {
+""Onboard VPA"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+0,
+1
+],
+""values"": [
+[
+1,
+0,
+""vpanew@1100com"",
+[
+""ONBOARD_VPA"",
+""BIND_DEVICE""
+],
+[
+0,
+1
+],
+""{DEVICE_REPEATED}"",
+""{SUCCESS}""
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""response"",
+""steps"",
+""step_status"",
+""onboard_vpa_response"",
+""bind_device_response""
+]
+}
+]
+}
+}
+}",row_status.assert_success_row_status,200,"event_id,user_id",,,0.0,T60,22,3
+T39,Invalid device_id and repeated vpa for Onboard vpa ,POST,positive,/requests/wfevents,"{
+""event"": ""ONBOARD_VPA"",
+""event_by"": {user_id},
+""edetails"": [
+{
+""row_id"": 1,
+""vpa"": ""tester@vpa1"",
+""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+""device_id"": ""invalid_device""
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,"user_id,data.""Onboard Bank"".hdetails[0].values[0][3]",event_id,,0.2,T39,23,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,23,2
+T40,Handler status for allocate to bank,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Onboard VPA""
+],
+""data"": {
+""Onboard VPA"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+0,
+1
+],
+""values"": [
+[
+1,
+0,
+""vpa@1100com"",
+[
+""ONBOARD_VPA"",
+""BIND_DEVICE""
+],
+[
+0,
+0
+],
+""{INVALID_DEVICE,VPA_REPEATED}"",
+""{INVALID_DEVICE}""
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""response"",
+""steps"",
+""step_status"",
+""onboard_vpa_response"",
+""bind_device_response""
+]
+}
+]
+}
+}
+}",row_status.assert_failed_row_status,200,"event_id,data[0].aid",,,0.0,T40,23,3
+T41,Creating Request For device,POST,positive,/requests/wfevents,"{
+""event"": ""DEVICE_REQUEST"",
+""event_by"": {user_id},
+""edetails"": [
+{
+""row_id"": 1,
+""context"": ""CREATE"",
+""bank_name"": ""tester_bank"",
+""bank_id"":99999,
+""branch_name"": ""tester_branch"",
+""merchant_name"": ""tester_merchant"",
+""sim_provider"":""jio"",
+""device_quantity"":1,
+""status"": ""Open""
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,user_id,event_id,,0.2,T41,24,1
+T42,Checking event details for Creating Request For device,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 2605,
+""aid"": 28,
+""ecode"": ""DEVICE_REQUEST"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-04-03T10:36:17.000Z"",
+""ischainable"": true,
+""action_status"": ""PROCESSING""
+}
+]
+}",action_status.assert_processing_action_status,200,"event_id,user_id",data[0].aid,,0.0,T42,24,2
+T43,Checking handler status for Creating Request For device,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Device Request""
+],
+""data"": {
+""Device Request"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+0,
+0
+],
+""values"": [
+[
+1,
+""REQUEST_CREATED"",
+15,
+""bank_1"",
+""branch_1"",
+""suresh"",
+{
+""phno"": ""+917777777777"",
+""accNo"": ""222222"",
+""accHolderName"": ""singh""
+},
+""Open"",
+""sample request"",
+2605
+]
+],
+""headers"": [
+""row_id"",
+""msg"",
+""drid"",
+""bankname"",
+""branchname"",
+""merchantname"",
+""merchantinfo"",
+""status"",
+""rcomment"",
+""eventid""
+]
+}
+]
+}
+}
+}",status_code.assert_status_code,200,"event_id,data[0].aid","data.""Device Request"".hdetails[0].values[0][2]",,0.0,T43,24,3
+T44,Updating Device request to allocated,POST,positive,/requests/wfevents,"{
+""event"": ""DEVICE_REQUEST_ALLOCATED"",
+""event_by"": {user_id},
+""peid"":{event_id},
+""edetails"": [
+{
+""row_id"": 1,
+""drid"":{data.""Device Request"".hdetails[0].values[0][2]},
+""context"": ""UPDATE"",
+""status"": ""Allocated""
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,"user_id,event_id,data.""Device Request"".hdetails[0].values[0][2]",,,0.2,T44,24,4
+T45,Updating Device request to dispatched,POST,positive,/requests/wfevents,"{
+""event"": ""DEVICE_REQUEST_DISPATCHED"",
+""event_by"": {user_id},
+""peid"":{event_id},
+""edetails"": [
+{
+""row_id"": 1,
+""drid"":{data.""Device Request"".hdetails[0].values[0][2]},
+""context"": ""UPDATE"",
+""status"": ""Dispatched""
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,"user_id,event_id,data.""Device Request"".hdetails[0].values[0][2]",,,0.2,T45,24,5
+T46,Updating Device request to delivered,POST,positive,/requests/wfevents,"{
+""event"": ""DEVICE_REQUEST_DELIVERED"",
+""event_by"": {user_id},
+""peid"":{event_id},
+""edetails"": [
+{
+""row_id"": 1,
+""drid"":{data.""Device Request"".hdetails[0].values[0][2]},
+""context"": ""UPDATE"",
+""status"": ""Delivered""
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,"user_id,event_id,data.""Device Request"".hdetails[0].values[0][2]",,,0.2,T46,24,6
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,24,7
+T47,Creating Device issues,POST,positive,/requests/wfevents,"{
+""event"": ""DEVICE_ISSUE"",
+""event_by"": {user_id},
+""edetails"": [
+{
+""row_id"":1,
+""context"": ""CREATE"",
+""device"":""tester_device"",
+""vpa"":""tester@vpa"",
+""bank_name"": ""tester_bank"",
+""bank_id"":99999,
+""branch"": ""tester_branch"",
+""merchant"": ""suresh"",
+""mphno"":""+911234567890"",
+""issue"": ""sample request"",
+""status"": ""Open""
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,user_id,event_id,,0.2,T47,25,1
+T48,event details for Creating Device issues,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 2704,
+""aid"": 32,
+""ecode"": ""DEVICE_ISSUE"",
+""eby"": ""8894104a-8079-4071-8002-003d3ed5a530"",
+""started_at"": ""2025-04-03T13:44:34.000Z"",
+""ischainable"": true,
+""action_status"": ""PROCESSING""
+}
+]
+}",action_status.assert_processing_action_status,200,"event_id,user_id",data[0].aid,,0.0,T48,25,2
+T49,Handler status for Creating Device issues,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Device Issue""
+],
+""data"": {
+""Device Issue"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+0,
+0
+],
+""values"": [
+[
+1,
+""ISSUE_CREATED"",
+17,
+""device_1"",
+""vap@123"",
+""suresh"",
+""+911234567890"",
+""Open"",
+""sample request"",
+2704
+]
+],
+""headers"": [
+""row_id"",
+""msg"",
+""iid"",
+""deviceid"",
+""vpaid"",
+""merchantname"",
+""merchantphno"",
+""status"",
+""issue"",
+""eventid""
+]
+}
+]
+}
+}
+}",status_code.assert_status_code,200,"even_id,data[0].aid","data.""Device Issue"".hdetails[0].values[0][2]",,0.0,T49,25,3
+T50,Updating device issue,POST,positive,/requests/wfevents,"{
+""event"": ""DEVICE_ISSUE_UPDATE"",
+""event_by"": ""8894104a-8079-4071-8002-003d3ed5a530"",
+""peid"":{event_id},
+""edetails"": [
+{
+""row_id"":1,
+""context"": ""UPDATE"",
+""iid"":{data.""Device Issue"".hdetails[0].values[0][2]},
+""status"": ""Resolved""
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,"event_id,data.""Device Issue"".hdetails[0].values[0][2]",,,0.2,T50,25,4
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,25,5
+T51,Allocate to bank for device,POST,positive,/requests/wfevents,"{
+""event"": ""ALLOCATE_TO_BANK"",
+""event_by"": {user_id},
+""edetails"": [
+{
+""row_id"": 1,
+""bank_id"": ""tester_bank"",
+""device_id"": ""tester_device""
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,user_id,event_id,,0.2,T51,26,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,26,2
+T52,Handler status for allocate to bank,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Allocate to Bank""
+],
+""data"": {
+""Allocate to Bank"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+1,
+0
+],
+""values"": [
+[
+1,
+1,
+""{SUCCESS}"",
+[
+""device_id"",
+""vpa_id"",
+""bank_id"",
+""branch_id"",
+""merchant_id""
+],
+[
+""device_1"",
+""vpa@abc1"",
+""bank_1"",
+null,
+null
+],
+""2025-04-03T15:56:50.237Z""
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""msg"",
+""id_headers"",
+""id_values"",
+""eat""
+]
+}
+]
+}
+}
+}",row_status.assert_success_row_status,200,"event_id,data[0].aid",,,0.0,T52,26,3
+T53,Allocate to branch for device,POST,positive,/requests/wfevents,"{
+""event"": ""ALLOCATE_TO_BRANCH"",
+""event_by"": {user_id},
+""edetails"": [
+{
+""row_id"": 1,
+""branch_id"": ""tester_branch"",
+""device_id"": ""tester_device""
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,user_id,event_id,,0.2,T53,27,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,27,2
+T54,handler status for allocate to branch,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Allocate to Branch""
+],
+""data"": {
+""Allocate to Branch"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+1,
+0
+],
+""values"": [
+[
+1,
+1,
+""{SUCCESS}"",
+[
+""device_id"",
+""vpa_id"",
+""bank_id"",
+""branch_id"",
+""merchant_id""
+],
+[
+""device_1"",
+""vpa@abc1"",
+""bank_1"",
+""branch_1"",
+null
+],
+""2025-04-03T15:59:11.056Z""
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""msg"",
+""id_headers"",
+""id_values"",
+""eat""
+]
+}
+]
+}
+}
+}",row_status.assert_success_row_status,200,"event_id,user_id",,,0.0,T54,27,3
+T55,Allocate to merchant,POST,positive,/requests/wfevents,"{
+""event"": ""ALLOCATE_TO_MERCHANT"",
+""event_by"": {user_id},
+""edetails"": [
+{
+""row_id"": 1,
+""merchant_id"": ""tester_merchant"",
+""device_id"": ""tester_device""
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,user_id,event_id,,0.2,T55,28,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,28,2
+T56,handler status for allocate to merchant,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Allocate to Merchant""
+],
+""data"": {
+""Allocate to Merchant"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+1,
+0
+],
+""values"": [
+[
+1,
+1,
+""{SUCCESS}"",
+[
+""device_id"",
+""vpa_id"",
+""bank_id"",
+""branch_id"",
+""merchant_id""
+],
+[
+""device_1"",
+""vpa@abc1"",
+""bank_1"",
+""branch_1"",
+""kabil""
+],
+""2025-04-03T16:06:45.746Z""
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""msg"",
+""id_headers"",
+""id_values"",
+""eat""
+]
+}
+]
+}
+}
+}",row_status.assert_success_row_status,200,"event_id,user_id",,,0.0,T56,28,3
+T61,Enable Soundbox,POST,positive,/requests/wfevents,"{
+""event"": ""ENABLE_SOUNDBOX"",
+""event_by"": {user_id},
+""edetails"": [
+{
+""row_id"": 1,
+""rcontext"": ""cwd_mqtt"",
+""dname"": ""tester_device"",
+""imei"": ""tester_imei"",
+""device_id"": 99999,
+""sbe"": true
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,user_id,event_id,,0.2,T61,29,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,29,2
+T62,Handler status for Enable Soundbix,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Soundbox Routing"",
+""Soundbox Playback""
+],
+""data"": {
+""Soundbox Routing"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+1,
+0
+],
+""values"": [
+[
+1,
+1,
+""Successfully inserted""
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""msg""
+]
+}
+]
+},
+""Soundbox Playback"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+1,
+0
+],
+""values"": [
+[
+1,
+1,
+""{SUCCESS}""
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""msg""
+]
+}
+]
+}
+}
+}",row_status.assert_success_row_status,200,"event_id,user_id",,,0.0,T62,29,3
+T57,Deactivate device,POST,positive,/requests/wfevents,"{
+""event"": ""DEACTIVATE_DEVICE"",
+""event_by"": {user_id},
+""edetails"": [
+{
+""row_id"":1,
+""device_id"":""tester_device"" 
+}
+
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,user_id,event_id,,0.2,T57,30,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,30,2
+T58,handler status for Deactivate device,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Deactivate Device""
+],
+""data"": {
+""Deactivate Device"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+1,
+0
+],
+""values"": [
+[
+1,
+1,
+""{SUCCESS}"",
+[],
+[],
+""2025-04-03T16:17:37.632Z""
+]
+],
+""headers"": [
+""row_id"",
+""status"",
+""msg"",
+""id_headers"",
+""id_values"",
+""eat""
+]
+}
+]
+}
+}
+}",row_status.assert_success_row_status,200,"event_id,user_id",,,0.0,T58,30,3
+T63,Onboarding a user,POST,positive,/requests/wfevents,"{
+""event"": ""ONBOARD_USER"",
+""event_by"": {user_id},
+""edetails"": [
+{
+""user_info"": {
+""username"": ""tester@gmail.com"",
+""fname"": ""tester"",
+""lname"": ""user"",
+""email"": ""tester@gmail.com"",
+""user_org"": ""pocketatm""
+},
+""user_role"": ""DMS Admin"",
+""user_access"": [
+{
+""banks"": {""allow"":[{data.""Onboard Bank"".hdetails[0].values[0][3]}]},
+""branches"": {""allow"":[{data.""Onboard Branch"".hdetails[0].values[0][3]}, {data.""Onboard Branch"".hdetails[0].values[1][3]}]}
+}
+]
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,user_id,event_id,,0.2,T63,31,1
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,31,2
+T64,Handler status for onboard user,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+""code"": 2000,
+""steps"": [
+""Onboard User""
+],
+""data"": {
+""Onboard User"": {
+""hstatus"": ""PROCESSED"",
+""hdetails"": [
+{
+""status"": [
+1,
+1,
+0
+],
+""values"": [
+[
+""tester@gmail.com"",
+""USER_ONBOARDED"",
+1
+]
+],
+""headers"": [
+""username"",
+""msg"",
+""status""
+]
+}
+]
+}
+}
+}",row_status.assert_success_row_status,200,"event_id,user_id",,,0.0,T64,31,3
+T65,Sim-request,POST,positive,/requests/wfevents,"{
+  ""event"": ""SIM_REQUEST"",
+  ""event_by"":{user_id},
+  ""edetails"": [
+    {
+      ""row_id"": 1,
+      ""context"": ""CREATE"",
+""bank_name"": ""tester_bank"",
+""bank_id"":99999,
+""branch"": ""tester_branch"",
+      ""device"": ""tester_device"",
+""merchant"": ""tester_merchant"",
+      ""current_sp"": ""airtel"",
+      ""requested_sp"": ""Jio"",
+      ""status"": ""Open""
+    }
+  ]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,user_id,event_id,,0.2,T65,32,1
+T66,Checking event details for Creating Sim-request,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 2605,
+""aid"": 28,
+""ecode"": ""SIM_REQUEST"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-04-03T10:36:17.000Z"",
+""ischainable"": true,
+""action_status"": ""PROCESSING""
+}
+]
+}",action_status.assert_processing_action_status,200,"event_id,user_id",data[0].aid,,0.0,T66,32,2
+T67,Handler status for Sim-request,POST,positive,/requests/wfhandler/status/get,"{
+""eid"": {event_id},
+""aid"": {data[0].aid}
+}","{
+    ""code"": 2000,
+    ""data"": {
+        ""Sim Request"": {
+            ""hstatus"": ""PROCESSED"",
+            ""hdetails"": [
+                {
+                    ""status"": [
+                        1,
+                        0,
+                        0
+                    ],
+                    ""values"": [
+                        [
+                            1,
+                            ""REQUEST_CREATED"",
+                            11,
+                            ""device_1"",
+                            ""sample"",
+                            ""Open"",
+                            4175,
+                            ""airtel"",
+                            ""Jio"",
+                            ""bank_1"",
+                            ""branch_1""
+                        ]
+                    ],
+                    ""headers"": [
+                        ""row_id"",
+                        ""msg"",
+                        ""srid"",
+                        ""deviceid"",
+                        ""merchantname"",
+                        ""status"",
+                        ""eventid"",
+                        ""current_sim"",
+                        ""requested_sim"",
+                        ""bankname"",
+                        ""branchname""
+                    ]
+                }
+            ]
+        }
+    },
+    ""steps"": [
+        ""Sim Request""
+    ]
+}",status_code.assert_status_code,200,"event_id,data[0].aid","data.""Sim Request"".hdetails[0].values[0][2]",,0.0,T67,32,3
+T68,Updating Sim-request to dispatched,POST,positive,/requests/wfevents,"{
+""event"": ""SIM_REQUEST_DISPATCHED"",
+""event_by"": {user_id},
+""peid"":{event_id},
+""edetails"": [
+{
+""row_id"": 1,
+""srid"":{data.""Sim Request"".hdetails[0].values[0][2]},
+""context"": ""UPDATE"",
+""status"": ""Dispatched""
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,"user_id,event_id,data.""Sim Request"".hdetails[0].values[0][2]",,,0.2,T68,32,4
+T69,Updating Sim-request to delivered,POST,positive,/requests/wfevents,"{
+""event"": ""SIM_REQUEST_DELIVERED"",
+""event_by"": {user_id},
+""peid"":{event_id},
+""edetails"": [
+{
+""row_id"": 1,
+""srid"":{data.""Sim Request"".hdetails[0].values[0][2]},
+""context"": ""UPDATE"",
+""status"": ""Delivered""
+}
+]
+}","{
+""code"": 2000,
+""event_id"": 1987,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,"user_id,event_id,data.""Sim Request"".hdetails[0].values[0][2]",,,0.2,T69,32,5
+TC1,workflow event detials,POST,positive,/requests/wfevents/get,"{
+""pagination"": {
+""limit"": 10,
+""offset"": 0
+},
+""filter"": {
+""request_id"": {event_id}
+},
+""userId"":{user_id}
+}","{
+""code"": 2000,
+""count"": ""1"",
+""data"": [
+{
+""eid"": 252877,
+""aid"": 1,
+""ecode"": ""ONBOARD_BANK"",
+""eby"": ""5a788b69-9b42-4e09-b00e-596583212eb9"",
+""started_at"": ""2025-03-20T12:53:54.000Z"",
+""ischainable"": false,
+""action_status"": ""PROCESSED""
+}
+]
+}",action_status.assert_processed_action_status,200,"event_id,user_id",data[0].aid,,0.0,TC1,32,6
+T70,Simulate Payment,POST,positive,/requests/wfevents,"{
+""event"": ""SIMULATE_PAYMENT"",
+""event_by"":{user_id},
+    ""edetails"": [
+        {
+            ""device_id"": 99999,
+            ""txt_amt"": 23
+        }
+    ]
+}","{
+""code"": 2000,
+""event_id"": 527,
+""message"": ""Request added successfully""
+}",status_code.assert_status_code,200,user_id,event_id,,0.2,T70,33,1

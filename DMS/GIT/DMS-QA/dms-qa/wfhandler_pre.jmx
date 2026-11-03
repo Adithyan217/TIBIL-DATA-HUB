@@ -1,0 +1,645 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <stringProp name="TestPlan.comments"></stringProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="DID_Extraction" enabled="true">
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">false</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </SetupThreadGroup>
+      <hashTree>
+        <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor" enabled="true">
+          <stringProp name="cacheKey">true</stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="script">import java.io.File
+
+// Define the output file path
+def filePath = &apos;/home/ubuntu/apache-jmeter-5.3/bin/TestData/did_mpid.csv&apos;
+def file = new File(filePath)
+
+// Logging to ensure the script is running
+log.info(&quot;Starting script to overwrite file.csv.&quot;)
+
+// Overwrite the file by opening it in write mode (this clears any existing content)
+file.withWriter(&apos;UTF-8&apos;) { writer -&gt;
+    writer.write(&quot;did,mpid\n&quot;)  // Write the header for a new file
+}
+
+// Get the resultSet1 and resultSet2 from JMeter variables (stored as lists of maps)
+def resultSet1 = vars.getObject(&quot;resultSet1&quot;)
+def resultSet2 = vars.getObject(&quot;resultSet2&quot;)
+
+if (resultSet1 == null || resultSet2 == null) {
+    log.error(&quot;One of the resultSets is null. Check the JDBC requests.&quot;)
+} else {
+    log.info(&quot;Both resultSet1 and resultSet2 retrieved successfully.&quot;)
+}
+
+// Ensure both result sets have the same number of rows to avoid index issues
+def rowCount = Math.min(resultSet1.size(), resultSet2.size())
+log.info(&quot;Processing ${rowCount} rows.&quot;)
+
+// Open the file in write mode (again, this is an overwrite operation)
+file.withWriterAppend(&apos;UTF-8&apos;) { writer -&gt;
+    // Iterate through the resultSets and append the data to the CSV
+    for (int i = 0; i &lt; rowCount; i++) {
+        def did = resultSet1[i].get(&quot;did&quot;)
+        def mpid = resultSet2[i].get(&quot;mpid&quot;)
+
+        log.info(&quot;Writing row: did=${did}, mpid=${mpid}&quot;)
+        writer.append(&quot;${did},${mpid}\n&quot;)
+    }
+}
+
+log.info(&quot;Finished writing to file.csv.&quot;)
+</stringProp>
+          <stringProp name="scriptLanguage">groovy</stringProp>
+        </JSR223PostProcessor>
+        <hashTree/>
+        <JDBCDataSource guiclass="TestBeanGUI" testclass="JDBCDataSource" testname="JDBC Connection Configuration" enabled="true">
+          <stringProp name="dataSource">myDb</stringProp>
+          <stringProp name="poolMax">0</stringProp>
+          <stringProp name="timeout">10000</stringProp>
+          <stringProp name="trimInterval">60000</stringProp>
+          <boolProp name="autocommit">true</boolProp>
+          <stringProp name="transactionIsolation">DEFAULT</stringProp>
+          <boolProp name="preinit">false</boolProp>
+          <stringProp name="initQuery"></stringProp>
+          <boolProp name="keepAlive">true</boolProp>
+          <stringProp name="connectionAge">5000</stringProp>
+          <stringProp name="checkQuery"></stringProp>
+          <stringProp name="dbUrl">jdbc:postgresql://dms-db.chjeqnus3n84.ap-south-1.rds.amazonaws.com:5432/dms-db</stringProp>
+          <stringProp name="driver">org.postgresql.Driver</stringProp>
+          <stringProp name="username">postgres</stringProp>
+          <stringProp name="password">TibilDatabase</stringProp>
+          <stringProp name="connectionProperties"></stringProp>
+        </JDBCDataSource>
+        <hashTree/>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
+          <stringProp name="dataSource">myDb</stringProp>
+          <stringProp name="query">select did from dmsr.sb where mid is null;</stringProp>
+          <stringProp name="queryArguments"></stringProp>
+          <stringProp name="queryArgumentsTypes"></stringProp>
+          <stringProp name="queryTimeout"></stringProp>
+          <stringProp name="queryType">Select Statement</stringProp>
+          <stringProp name="resultSetHandler">Store as Object</stringProp>
+          <stringProp name="resultSetMaxRows"></stringProp>
+          <stringProp name="resultVariable">resultSet1</stringProp>
+          <stringProp name="variableNames"></stringProp>
+        </JDBCSampler>
+        <hashTree/>
+        <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
+          <stringProp name="dataSource">myDb</stringProp>
+          <stringProp name="queryType">Select Statement</stringProp>
+          <stringProp name="query">select mpid from dmsr.merchants where mpid NOT IN (select mid from dmsr.sb where mid is not null)</stringProp>
+          <stringProp name="queryArguments"></stringProp>
+          <stringProp name="queryArgumentsTypes"></stringProp>
+          <stringProp name="variableNames"></stringProp>
+          <stringProp name="resultVariable">resultSet2</stringProp>
+          <stringProp name="queryTimeout"></stringProp>
+          <stringProp name="resultSetMaxRows"></stringProp>
+          <stringProp name="resultSetHandler">Store as Object</stringProp>
+        </JDBCSampler>
+        <hashTree/>
+      </hashTree>
+      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="clear csv " enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </SetupThreadGroup>
+      <hashTree>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="true">
+          <stringProp name="cacheKey">true</stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="script">import java.io.FileWriter
+import java.io.BufferedWriter
+
+// Define the CSV file path
+String csvFilePath = &quot;/home/ubuntu/apache-jmeter-5.3/bin/TestData/eid_NEW.csv&quot;;  // Update this path accordingly
+
+try {
+    // Clear the file by opening it without &apos;append&apos; mode
+    FileWriter fileWriter = new FileWriter(csvFilePath);
+    BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+    // Close the BufferedWriter and FileWriter
+    bufferedWriter.close();
+
+    // Log the operation
+    log.info(&quot;CSV file cleared at the start of the test: &quot; + csvFilePath);
+} catch (IOException e) {
+    log.error(&quot;Error while clearing the CSV file: &quot; + e.getMessage());
+}
+</stringProp>
+          <stringProp name="scriptLanguage">groovy</stringProp>
+        </JSR223Sampler>
+        <hashTree/>
+      </hashTree>
+      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="clear csv " enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </SetupThreadGroup>
+      <hashTree>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="true">
+          <stringProp name="cacheKey">true</stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="script">import java.io.FileWriter
+import java.io.BufferedWriter
+
+// Define the CSV file path
+String csvFilePath = &quot;/home/ubuntu/apache-jmeter-5.3/bin/TestData/did_mpid.csv&quot;;  // Update this path accordingly
+
+try {
+    // Clear the file by opening it without &apos;append&apos; mode
+    FileWriter fileWriter = new FileWriter(csvFilePath);
+    BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+    // Close the BufferedWriter and FileWriter
+    bufferedWriter.close();
+
+    // Log the operation
+    log.info(&quot;CSV file cleared at the start of the test: &quot; + csvFilePath);
+} catch (IOException e) {
+    log.error(&quot;Error while clearing the CSV file: &quot; + e.getMessage());
+}
+</stringProp>
+          <stringProp name="scriptLanguage">groovy</stringProp>
+        </JSR223Sampler>
+        <hashTree/>
+      </hashTree>
+      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="clear csv " enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </SetupThreadGroup>
+      <hashTree>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="true">
+          <stringProp name="cacheKey">true</stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="script">import java.io.FileWriter
+import java.io.BufferedWriter
+
+// Define the CSV file path
+String csvFilePath = &quot;/home/ubuntu/apache-jmeter-5.3/bin/TestData/lid.csv&quot;;  // Update this path accordingly
+
+try {
+    // Clear the file by opening it without &apos;append&apos; mode
+    FileWriter fileWriter = new FileWriter(csvFilePath);
+    BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+    // Close the BufferedWriter and FileWriter
+    bufferedWriter.close();
+
+    // Log the operation
+    log.info(&quot;CSV file cleared at the start of the test: &quot; + csvFilePath);
+} catch (IOException e) {
+    log.error(&quot;Error while clearing the CSV file: &quot; + e.getMessage());
+}
+</stringProp>
+          <stringProp name="scriptLanguage">groovy</stringProp>
+        </JSR223Sampler>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Add event in wfevents_ READ estatus" enabled="true">
+        <stringProp name="TestPlan.comments">${__P(Thread, 1)}</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">${__P(Threadevent, 1)}</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">false</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Read_CSV Data_ mpid_did" enabled="true">
+          <stringProp name="delimiter">,</stringProp>
+          <stringProp name="fileEncoding"></stringProp>
+          <stringProp name="filename">/home/ubuntu/apache-jmeter-5.3/bin/TestData/did_mpid.csv</stringProp>
+          <boolProp name="ignoreFirstLine">true</boolProp>
+          <boolProp name="quotedData">true</boolProp>
+          <boolProp name="recycle">true</boolProp>
+          <stringProp name="shareMode">shareMode.all</stringProp>
+          <boolProp name="stopThread">false</boolProp>
+          <stringProp name="variableNames">did,mpid</stringProp>
+        </CSVDataSet>
+        <hashTree/>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <JDBCDataSource guiclass="TestBeanGUI" testclass="JDBCDataSource" testname="JDBC Connection Configuration" enabled="true">
+          <stringProp name="dataSource">myDb</stringProp>
+          <stringProp name="poolMax">0</stringProp>
+          <stringProp name="timeout">10000</stringProp>
+          <stringProp name="trimInterval">60000</stringProp>
+          <boolProp name="autocommit">true</boolProp>
+          <stringProp name="transactionIsolation">DEFAULT</stringProp>
+          <boolProp name="preinit">false</boolProp>
+          <stringProp name="initQuery"></stringProp>
+          <boolProp name="keepAlive">true</boolProp>
+          <stringProp name="connectionAge">5000</stringProp>
+          <stringProp name="checkQuery"></stringProp>
+          <stringProp name="dbUrl">jdbc:postgresql://dms-db.chjeqnus3n84.ap-south-1.rds.amazonaws.com:5432/dms-db</stringProp>
+          <stringProp name="driver">org.postgresql.Driver</stringProp>
+          <stringProp name="username">postgres</stringProp>
+          <stringProp name="password">TibilDatabase</stringProp>
+          <stringProp name="connectionProperties"></stringProp>
+        </JDBCDataSource>
+        <hashTree/>
+        <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
+          <stringProp name="dataSource">myDb</stringProp>
+          <stringProp name="queryType">Select Statement</stringProp>
+          <stringProp name="query">INSERT INTO workflow.wfevents (eby, einfo, ecode, estatus)
+VALUES (${eby}, &apos;${einfo}&apos;::json, &apos;${ecode}&apos;, &apos;${estatus}&apos;)
+RETURNING *;</stringProp>
+          <stringProp name="queryArguments"></stringProp>
+          <stringProp name="queryArgumentsTypes"></stringProp>
+          <stringProp name="variableNames"></stringProp>
+          <stringProp name="resultVariable"></stringProp>
+          <stringProp name="queryTimeout"></stringProp>
+          <stringProp name="resultSetMaxRows"></stringProp>
+          <stringProp name="resultSetHandler">Store as String</stringProp>
+        </JDBCSampler>
+        <hashTree>
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor" enabled="true">
+            <stringProp name="TestPlan.comments">C:/Users/RAMESH SINGH/Downloads/apache-jmeter-5.3/csv/eid1.csv</stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">
+// Set eby to a constant value
+int eby = 1;
+vars.put(&apos;eby&apos;, eby.toString());
+log.info(&quot;eby: &quot; + eby);
+
+// Get mpid from JMeter variables
+String mpid = vars.get(&quot;mpid&quot;);
+String did = vars.get(&quot;did&quot;);
+
+// Set einfo to JSON data with dynamic did and mpid values
+String einfo = &apos;{&quot;event&quot;:&quot;ALLOCATE_TO_MERCHANT&quot;,&quot;details&quot;:[{&quot;mid&quot;:&apos; + mpid + &apos;,&quot;did&quot;:&apos; + did + &apos;}]}&apos;;
+vars.put(&apos;einfo&apos;, einfo);
+log.info(&quot;einfo: &quot; + einfo);
+
+// Set ecode to a constant value
+String ecode = &apos;ALLOCATE_TO_MERCHANT&apos;;
+vars.put(&apos;ecode&apos;, ecode);
+log.info(&quot;ecode: &quot; + ecode);
+
+// Set estatus to a constant value
+String estatus = &apos;READ&apos;;
+vars.put(&apos;estatus&apos;, estatus);
+log.info(&quot;estatus: &quot; + estatus);
+</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223PreProcessor>
+          <hashTree/>
+          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regular Expression Extractor" enabled="true">
+            <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+            <stringProp name="RegexExtractor.refname">eid</stringProp>
+            <stringProp name="RegexExtractor.regex">(?m)^(\d+)\s+\d+\s+.*</stringProp>
+            <stringProp name="RegexExtractor.template">$1$</stringProp>
+            <stringProp name="RegexExtractor.default">NOT_FOUND</stringProp>
+            <stringProp name="RegexExtractor.match_number">1</stringProp>
+          </RegexExtractor>
+          <hashTree/>
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor" enabled="true">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">import java.io.FileWriter
+import java.io.BufferedWriter
+
+// Get the extracted eid value
+def eidValue = vars.get(&quot;eid&quot;)
+
+def filePath = &quot;/home/ubuntu/apache-jmeter-5.3/bin/TestData/eid_NEW.csv&quot;
+
+try {
+    // Create FileWriter in append mode
+    FileWriter fileWriter = new FileWriter(filePath, true) // &apos;true&apos; enables append mode
+    BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)
+    
+    // Add header if the file is new
+    File file = new File(filePath)
+    if (file.length() == 0) {
+        bufferedWriter.write(&quot;eid_NEW&quot;)
+        bufferedWriter.newLine()
+    }
+
+    // Write the eid value to the CSV file
+    bufferedWriter.write(eidValue)
+    bufferedWriter.newLine()
+    
+    // Close the BufferedWriter and FileWriter
+    bufferedWriter.close()
+} catch (IOException e) {
+    log.error(&quot;Error while writing to the CSV file: &quot; + e.getMessage())
+}
+</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <PostThreadGroup guiclass="PostThreadGroupGui" testclass="PostThreadGroup" testname="tearDown Thread Group" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">${__P(Threadwflog, 1)}</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </PostThreadGroup>
+      <hashTree>
+        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
+          <stringProp name="filename">/home/ubuntu/apache-jmeter-5.3/bin/TestData/eid_NEW.csv</stringProp>
+          <stringProp name="fileEncoding"></stringProp>
+          <stringProp name="variableNames">eid_READ</stringProp>
+          <boolProp name="ignoreFirstLine">true</boolProp>
+          <stringProp name="delimiter">,</stringProp>
+          <boolProp name="quotedData">true</boolProp>
+          <boolProp name="recycle">true</boolProp>
+          <boolProp name="stopThread">false</boolProp>
+          <stringProp name="shareMode">shareMode.all</stringProp>
+        </CSVDataSet>
+        <hashTree/>
+        <JDBCDataSource guiclass="TestBeanGUI" testclass="JDBCDataSource" testname="JDBC Connection Configuration" enabled="true">
+          <stringProp name="dataSource">myDb</stringProp>
+          <stringProp name="poolMax">0</stringProp>
+          <stringProp name="timeout">10000</stringProp>
+          <stringProp name="trimInterval">60000</stringProp>
+          <boolProp name="autocommit">true</boolProp>
+          <stringProp name="transactionIsolation">DEFAULT</stringProp>
+          <boolProp name="preinit">false</boolProp>
+          <stringProp name="initQuery"></stringProp>
+          <boolProp name="keepAlive">true</boolProp>
+          <stringProp name="connectionAge">5000</stringProp>
+          <stringProp name="checkQuery"></stringProp>
+          <stringProp name="dbUrl">jdbc:postgresql://dms-db.chjeqnus3n84.ap-south-1.rds.amazonaws.com:5432/dms-db</stringProp>
+          <stringProp name="driver">org.postgresql.Driver</stringProp>
+          <stringProp name="username">postgres</stringProp>
+          <stringProp name="password">TibilDatabase</stringProp>
+          <stringProp name="connectionProperties"></stringProp>
+        </JDBCDataSource>
+        <hashTree/>
+        <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
+          <stringProp name="dataSource">myDb</stringProp>
+          <stringProp name="queryType">Select Statement</stringProp>
+          <stringProp name="query">INSERT INTO workflow.wflog(hid,eid,status)
+VALUES(${hid},${e_id},&apos;${status}&apos;)
+RETURNING *;</stringProp>
+          <stringProp name="queryArguments"></stringProp>
+          <stringProp name="queryArgumentsTypes"></stringProp>
+          <stringProp name="variableNames"></stringProp>
+          <stringProp name="resultVariable"></stringProp>
+          <stringProp name="queryTimeout"></stringProp>
+          <stringProp name="resultSetMaxRows"></stringProp>
+          <stringProp name="resultSetHandler">Store as String</stringProp>
+        </JDBCSampler>
+        <hashTree>
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor" enabled="true">
+            <stringProp name="TestPlan.comments">C:/Users/RAMESH SINGH/Downloads/apache-jmeter-5.3/csv/eid_NEW.csv</stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">
+// Set eby to a constant value
+int hid = 1;
+vars.put(&apos;hid&apos;, hid.toString());
+log.info(&quot;hid: &quot; + hid);
+
+
+String eid = vars.get(&quot;eid_READ&quot;);
+
+
+String e_id = eid ;
+vars.put(&apos;e_id&apos;, e_id);
+log.info(&quot;e_id: &quot; +e_id );
+
+
+// Set Status to a constant value
+String status = &apos;START&apos;;
+vars.put(&apos;status&apos;, status);
+log.info(&quot;status: &quot; + status);
+
+//// Set estatus to a constant value
+//String estatus = &apos;START&apos;;
+//vars.put(&apos;estatus&apos;, estatus);
+//log.info(&quot;estatus: &quot; + estatus);
+</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223PreProcessor>
+          <hashTree/>
+          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regular Expression Extractor" enabled="true">
+            <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+            <stringProp name="RegexExtractor.refname">lid</stringProp>
+            <stringProp name="RegexExtractor.regex">(?m)^(\d+)\s+</stringProp>
+            <stringProp name="RegexExtractor.template">$1$</stringProp>
+            <stringProp name="RegexExtractor.default">NOT_FOUND</stringProp>
+            <stringProp name="RegexExtractor.match_number">1</stringProp>
+          </RegexExtractor>
+          <hashTree/>
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor" enabled="true">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">import java.io.FileWriter
+import java.io.BufferedWriter
+
+// Get the extracted eid value
+def eidValue = vars.get(&quot;lid&quot;)
+
+def filePath = &quot;/home/ubuntu/apache-jmeter-5.3/bin/TestData/lid.csv&quot;
+
+try {
+    // Create FileWriter in append mode
+    FileWriter fileWriter = new FileWriter(filePath, true) // &apos;true&apos; enables append mode
+    BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)
+    
+    // Add header if the file is new
+    File file = new File(filePath)
+    if (file.length() == 0) {
+        bufferedWriter.write(&quot;lid&quot;)
+        bufferedWriter.newLine()
+    }
+
+    // Write the eid value to the CSV file
+    bufferedWriter.write(eidValue)
+    bufferedWriter.newLine()
+    
+    // Close the BufferedWriter and FileWriter
+    bufferedWriter.close()
+} catch (IOException e) {
+    log.error(&quot;Error while writing to the CSV file: &quot; + e.getMessage())
+}
+</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
+        </hashTree>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

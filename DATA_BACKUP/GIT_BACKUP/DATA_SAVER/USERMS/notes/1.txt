@@ -1,0 +1,66 @@
+
+async updateUserDetails(body,uToken){
+    try {
+        const clientData = await this.keycloakService.getAccessToken('client');
+        const userRespData = await this.keycloakService.getUserData(body.userId, 'uuid', clientData.data.data);
+        const userInfo = userRespData.data?.data
+        if(body?.fname)
+            userInfo.firstName = body.fname;
+        if(body?.lname)
+            userInfo.lastName = body.lname;
+        if(body?.enable){
+            userInfo.enabled = body.enable;
+            await this.onboardService.assignUpermissions(userInfo.username,{ allow: [], deny: [] },{ allow: [], deny: [] }, uToken, userInfo.firstName, userInfo.lastName, null,userInfo.enabled);            
+
+        }
+        if(body?.access_scope){
+            await this.onboardService.assignUpermissions(userInfo.username, body?.access_scope?.banks ||  { allow: [], deny: [] }, body?.access_scope?.branches || { allow: [], deny: [] }, uToken, userInfo.firstName, userInfo.lastName, body.access_scope.role);
+        }
+        if(body?.notification)
+            userInfo.attributes.notification = [body.notification];
+
+        if(body?.language){
+            userInfo.attributes.language = [body.language];
+
+        }
+        if(body?.fname && body?.lname && body?.access_scope == undefined){                        // language and notification is undifined check can be added
+            await this.onboardService.assignUpermissions(userInfo.username,{ allow: [], deny: [] },{ allow: [], deny: [] }, uToken, userInfo.firstName, userInfo.lastName, null);            
+        }
+        const response: any = await this.keycloakService.updateUserDetails(userInfo, body.userId, clientData.data.data);
+        if(response.status == 200) {
+            let edata = body?.enable ?
+            { "status":[1,1,0],
+             "values":[[body?.userId, "USER_DEACTIVATED", 1]], 
+             "headers":["userId","msg", "status"]} : 
+              { "status":[1,1,0],
+                "values":[[body?.userId, "USER_UPDATED", 1]], 
+                "headers":["userId","msg", "status"]}
+            return generateResponse(200, CODE.SUCCESS, edata, {edata});
+
+        }else{
+            
+            let edata = body?.enable?
+            { 
+                "status":[1,0,1], 
+                "values":[[body?.userId, "USER_DEACTIVATION_FAILED", 0]], 
+                "headers":["userId","msg", "status"]} : {
+                    "status":[1,0,1], 
+                    "values":[[body?.userId, "USER_UPDATION_FAILED", 0]], 
+                    "headers":["userId","msg", "status"]
+                }
+            return generateResponse(200, CODE.ERROR, edata, {edata});
+        }
+    } catch (error) {
+        let edata = body?.enable?
+        { 
+            "status":[1,0,1], 
+            "values":[[body?.userId, "USER_DEACTIVATION_FAILED", 0]], 
+            "headers":["userId","msg", "status"]}:
+            { 
+                "status":[1,0,1], 
+                "values":[[body?.userId, "USER_UPDATION_FAILED", 0]], 
+                "headers":["userId","msg", "status"]}
+            return generateResponse(400, CODE.ERROR, edata, {edata});
+        }
+
+}

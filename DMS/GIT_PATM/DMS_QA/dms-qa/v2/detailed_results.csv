@@ -1,0 +1,42 @@
+Test Case,Scenario,Error Message
+test_api_cases[S1 - T1],FAIL,"ValueError: not enough values to unpack (expected 2, got 1)"
+test_api_cases[S1 - T2],FAIL,"ValueError: not enough values to unpack (expected 2, got 1)"
+test_api_cases[S1 - T3],FAIL,"ValueError: not enough values to unpack (expected 2, got 1)"
+test_api_cases[S2 - T4],FAIL,"ValueError: not enough values to unpack (expected 2, got 1)"
+test_api_cases[S2 - T5],FAIL,"ValueError: not enough values to unpack (expected 2, got 1)"
+test_api_cases[S2 - T6],FAIL,"ValueError: not enough values to unpack (expected 2, got 1)"
+test_api_cases[S3 - T7],FAIL,"json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 7 column 21 (char 155)
+       Failed: ❌ Invalid JSON format after replacement:
+       {
+           ""event"": ""ONBOARD_BRANCH"",
+           ""event_by"": ""05d69885-9e9d-48e8-8673-3ba4d11fbf20"",
+           ""edetails"": [
+             {
+               ""row_id"":1,
+               ""bank_id"": {data.""Onboard Bank"".hdetails[0].values[0][3]},
+               ""branch_code"":1236,
+               ""branch_name"": ""Downtown1123"",
+               ""brinfo"": {
+                 ""name"": ""Alice Johnson"",
+                 ""designation"": ""Branch Manager"",
+                 ""phno"": ""+911234567890"",
+                 ""email"": ""alice.johnson@bank.com""
+               }
+             }
+           ]
+       }
+       
+       Error: Expecting property name enclosed in double quotes: line 7 column 21 (char 155)"
+test_api_cases[S3 - T8],FAIL,"json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 7 column 25 (char 110)
+       Failed: ❌ Invalid JSON format after replacement:
+       {
+           ""pagination"": {
+               ""limit"": 10,
+               ""offset"": 0
+           },
+           ""filter"": {
+                ""request_id"": {event_id}
+           },
+           ""userId"":{user_id}
+       }
+       Error: Expecting property name enclosed in double quotes: line 7 column 25 (char 110)"

@@ -1,0 +1,80 @@
+CREATE OR REPLACE FUNCTION dmsr.model_validator(md_name VARCHAR,mf_id INTEGER,f_id INTEGER) 
+RETURNS BOOLEAN AS $$
+BEGIN
+   	IF EXISTS (SELECT 1 FROM dmsr.model WHERE mdname = md_name ) THEN
+        RETURN FALSE;
+    END IF;
+	
+	IF NOT EXISTS (SELECT 1 FROM dmsr.mf WHERE mfid = mf_id AND isd = 'false') THEN
+    	RETURN FALSE;
+	END IF;
+	
+	IF NOT EXISTS (SELECT 1 FROM dmsr.firmware WHERE fid = f_id AND isd = 'false') THEN
+    	RETURN FALSE;
+	END IF;
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION dmsr.model_validator_writer(
+    rowid INTEGER,
+	mfid INTEGER,
+    mdname VARCHAR,
+	fid INTEGER,
+    eby INTEGER,
+    eid INTEGER
+)
+RETURNS TABLE (row_id INTEGER, status INTEGER, msg TEXT,md_id INTEGER) AS $$
+DECLARE
+    mdevt dmsr.mdevts := 'MODEL_ONBOARDED';
+	md_id INTEGER;
+BEGIN
+    IF dmsr.model_validator(mdname,mfid,fid) THEN
+    	INSERT INTO dmsr.model (eid, mdevt, eby, mdname, mfid,fid)
+    	VALUES (eid, mdevt, eby, mdname, mfid,fid)
+		RETURNING mdid INTO md_id;
+		RETURN QUERY SELECT rowid, 1, 'Insertion Successful',md_id;		
+	ELSE 
+		RETURN QUERY SELECT rowid, 0, 'Validation Failed',0;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION dmsr.model_iterator(
+	rowid INT[],
+	mf_id INT[],
+    md_names TEXT[],
+	fid INT[],
+    event_bys INT[],
+    eids INT[]
+) 
+RETURNS TABLE (row_id INTEGER, status INTEGER, msg TEXT,mdid INTEGER) AS
+$$
+DECLARE
+    i INT;
+BEGIN
+    FOR i IN 1..array_length(md_names, 1) LOOP
+  
+        RETURN QUERY SELECT * FROM dmsr.model_validator_writer(
+			rowid[i],
+			mf_id[i],
+    		md_names[i],
+			fid[i],
+    		event_bys[i],   
+            eids[i]
+        ); 
+    END LOOP; 
+END;
+$$ LANGUAGE plpgsql;
+
+
+SELECT * FROM dmsr.model_iterator(
+	ARRAY[1,2],
+	ARRAY[21,3],
+    ARRAY['te1111', 'tet21'],  
+	ARRAY[3,3],
+    ARRAY[1, 1], 
+    ARRAY[28, 28]
+);

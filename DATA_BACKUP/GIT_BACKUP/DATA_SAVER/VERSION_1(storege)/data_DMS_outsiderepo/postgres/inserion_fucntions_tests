@@ -1,0 +1,1399 @@
+-----------------------------------------------------------------------------------------------------------------
+---------------------------------------------------ONBOARD BANK---------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------
+
+
+
+
+-- -- CREATE OR REPLACE FUNCTION onboard_bank_writter(context varchar,datas jsonb[])
+-- -- RETURNS VOID AS $$
+-- -- DECLARE
+
+-- -- BEGIN
+
+
+
+-- -- END;
+-- -- $$ LANGUAGE PLPSQL;
+
+-- -- CREATE OR REPLACE FUNCTION dmsr.onboard_bank_writer(context VARCHAR, onboard_values JSONB[]) 
+-- -- RETURNS VOID AS $$
+-- -- DECLARE
+-- --     value JSONB;
+-- --     bank_name VARCHAR;
+-- --     bank_address VARCHAR;
+-- --     eid INTEGER;
+-- --     eby INTEGER;
+-- --     binfo JSONB;
+-- --     insert_query TEXT;
+
+-- -- BEGIN
+
+-- --     FOR value IN ARRAY onboard_values LOOP
+
+-- --         bank_name := value->>'bank_name';
+-- --         bank_address := value->>'baddr';
+-- --         eid := (value->>'eid')::INTEGER;
+-- --         eby := (value->>'eby')::INTEGER;
+-- --         binfo := value->'binfo';
+
+-- --         insert_query := 'INSERT INTO dmsr.banks (bname, baddr, eid, eby, binfo) VALUES (' || 
+-- --                         quote_literal(bank_name) || ', ' ||
+-- --                         quote_literal(bank_address) || ', ' ||
+-- --                         quote_literal(eid) || ', ' ||
+-- --                         quote_literal(eby) || ', ' ||
+-- --                         quote_literal(binfo) || ');';
+
+-- --         EXECUTE insert_query;
+
+
+-- --     END LOOP;
+-- -- END;
+-- -- $$ LANGUAGE plpgsql;
+
+
+-- -- CREATE OR REPLACE FUNCTION dmsr.bank_writer(context VARCHAR, onboard_values JSONB[]) 
+-- -- RETURNS VOID AS $$
+-- -- DECLARE
+-- --     value JSONB;
+-- --     bank_name VARCHAR;
+-- --     bank_address VARCHAR;
+-- --     eid INTEGER;
+-- --     eby INTEGER;
+-- --     binfo JSONB;
+-- --     insert_query TEXT;
+-- --     values_list TEXT;
+-- -- BEGIN
+-- --     values_list := '';
+
+-- --     FOR value IN ARRAY onboard_values LOOP
+-- --         bank_name := value->>'bank_name';
+-- --         baddr := value->>'baddr';
+-- --         eid := (value->>'eid')::INTEGER;
+-- --         eby := (value->>'eby')::INTEGER;
+-- --         binfo := value->'binfo';
+
+-- --         values_list := values_list || '(' ||
+-- --                         quote_literal(bank_name) || ', ' ||
+-- --                         quote_literal(bank_address) || ', ' ||
+-- --                         quote_literal(eid) || ', ' ||
+-- --                         quote_literal(eby) || ', ' ||
+-- --                         quote_literal(binfo) || '), ';
+-- --     END LOOP;
+
+-- --     IF length(values_list) > 0 THEN
+-- --         values_list := left(values_list, length(values_list) - 2);
+-- --     END IF;
+
+-- --     insert_query := 'INSERT INTO dmsr.banks (bname, baddr, eid, eby, binfo) VALUES ' || values_list || ';';
+
+-- --     EXECUTE insert_query;
+
+
+-- -- END;
+-- -- $$ LANGUAGE plpgsql;
+
+
+
+
+-- CREATE OR REPLACE FUNCTION dmsr.bank_writer(context VARCHAR, onboard_values JSONB[]) 
+-- RETURNS VOID AS $$
+-- DECLARE
+--     value JSONB;
+--     bank_name VARCHAR;
+--     bank_address VARCHAR;
+--     eid INTEGER;
+--     eby INTEGER;
+--     binfo JSONB;
+--     insert_query TEXT;
+--     values_list TEXT;
+--     i INT;
+-- BEGIN
+--     values_list := '';
+
+--     FOR i IN 1 .. array_length(onboard_values, 1) LOOP
+--         value := onboard_values[i];
+--         bank_name := value->>'bank_name';
+--         bank_address := value->>'baddr';
+--         eid := (value->>'eid')::INTEGER;
+--         eby := (value->>'eby')::INTEGER;
+--         binfo := value->'binfo';
+
+--         values_list := values_list || '(' ||
+--                         quote_literal(bank_name) || ', ' ||
+--                         quote_literal(bank_address) || ', ' ||
+--                         quote_literal(eid) || ', ' ||
+--                         quote_literal(eby) || ', ' ||
+--                         quote_literal(binfo) || '), ';
+--     END LOOP;
+
+--     IF length(values_list) > 0 THEN
+--         values_list := left(values_list, length(values_list) - 2);
+--     END IF;
+
+--     insert_query := 'INSERT INTO dmsr.banks (bname, baddr, eid, eby, binfo) VALUES ' || values_list || ';';
+--     EXECUTE insert_query;
+-- END;
+-- $$ LANGUAGE plpgsql;
+
+
+
+
+-- SELECT dmsr.bank_writer('INSERT', 
+--     ARRAY[
+--         '{"bank_name": "xyz", "baddr": "1st Main Road", "eid": 2, "eby": 3, "binfo": {"name": "abc", "designation": "manager", "phno": "+919876543211", "email": "xyz@gmail.com"}}'::jsonb,
+--         '{"bank_name": "abc", "baddr": "2nd Main Road", "eid": 4, "eby": 5, "binfo": {"name": "def", "designation": "director", "phno": "+919876543210", "email": "abc@gmail.com"}}'::jsonb
+--     ]);
+
+
+
+
+
+-- CREATE OR REPLACE FUNCTION dmsr.bank_writer(context VARCHAR, onboard_values JSONB[]) 
+-- RETURNS VOID AS $$
+-- DECLARE
+--     value JSONB;
+--     bank_name VARCHAR;
+--     bank_address VARCHAR;
+--     eid INTEGER;
+--     eby INTEGER;
+--     binfo JSONB;
+--     insert_query TEXT;
+--     values_list TEXT;
+--     i INT;
+-- BEGIN
+--     values_list := '';
+
+--     FOR i IN 1 .. array_length(onboard_values, 1) LOOP
+--         BEGIN
+--             value := onboard_values[i];
+            
+--             -- Extracting values from the JSONB object
+--             bank_name := value->>'bank_name';  -- Ensure the key name is correct
+--             bank_address := value->>'baddr';
+--             eid := (value->>'eid')::INTEGER;
+--             eby := (value->>'eby')::INTEGER;
+--             binfo := value->'binfo';
+
+--             -- Logging the extracted values for debugging
+--             RAISE NOTICE 'Processing row %: bank_name=% bank_address=% eid=% eby=% binfo=%', 
+--                 i, bank_name, bank_address, eid, eby, binfo;
+
+--             -- Only append valid values to the values_list
+--             IF bank_name IS NOT NULL AND bank_address IS NOT NULL AND eid IS NOT NULL AND eby IS NOT NULL THEN
+--                 values_list := values_list || '(' ||
+--                                 quote_literal(bank_name) || ', ' ||
+--                                 quote_literal(bank_address) || ', ' ||
+--                                 quote_literal(eid) || ', ' ||
+--                                 quote_literal(eby) || ', ' ||
+--                                 quote_literal(binfo) || '), ';
+--             ELSE
+--                 RAISE NOTICE 'Skipping invalid entry at index %, missing or invalid field', i;
+--             END IF;
+--         EXCEPTION
+--             WHEN OTHERS THEN
+--                 -- Log error and continue
+--                 RAISE NOTICE 'Error in row %: %', i, SQLERRM;
+--         END;
+--     END LOOP;
+
+--     IF length(values_list) > 0 THEN
+--         values_list := left(values_list, length(values_list) - 2);  
+--         insert_query := 'INSERT INTO dmsr.banks (bname, baddr, eid, eby, binfo) VALUES ' || values_list || ';';
+
+--         -- Log the insert query for debugging
+--         RAISE NOTICE 'Executing query: %', insert_query;
+
+--         -- Execute the insert query
+--         EXECUTE insert_query;
+--     ELSE
+--         RAISE NOTICE 'No valid rows to insert.';
+--     END IF;
+-- END;
+-- $$ LANGUAGE plpgsql;
+
+
+
+
+
+
+-- --------------------------------------------
+
+
+-- -- working fine better version
+
+
+-- CREATE OR REPLACE FUNCTION dmsr.bank_writer(context VARCHAR, onboard_values JSONB[]) 
+-- RETURNS VOID AS $$
+-- DECLARE
+--     value JSONB;
+--     bank_name VARCHAR;
+--     bank_address VARCHAR;
+--     eid INTEGER;
+--     eby INTEGER;
+--     binfo JSONB;
+--     insert_query TEXT;
+--     values_list TEXT;
+--     i INT;
+-- BEGIN
+--     values_list := '';
+
+--     FOR i IN 1 .. array_length(onboard_values, 1) LOOP
+--         BEGIN
+--             value := onboard_values[i];
+            
+--             bank_name := value->>'bank_name';
+--             bank_address := value->>'baddr';
+--             eid := (value->>'eid')::INTEGER;
+--             eby := (value->>'eby')::INTEGER;
+--             binfo := value->'binfo';
+
+--             IF jsonb_typeof(binfo) = 'object' THEN
+--                 IF bank_name IS NOT NULL AND bank_address IS NOT NULL AND eid IS NOT NULL AND eby IS NOT NULL THEN
+--                     values_list := values_list || '(' ||
+--                                     quote_literal(bank_name) || ', ' ||
+--                                     quote_literal(bank_address) || ', ' ||
+--                                     quote_literal(eid) || ', ' ||
+--                                     quote_literal(eby) || ', ' ||
+--                                     quote_literal(binfo) || '), ';
+--                 ELSE
+--                     RAISE NOTICE 'Skipping invalid entry at index %, missing or invalid field', i;
+--                 END IF;
+--             ELSE
+--                 RAISE NOTICE 'Skipping row % due to invalid binfo field: %', i, binfo;
+--             END IF;
+--         EXCEPTION
+--             WHEN OTHERS THEN
+--                 RAISE NOTICE 'Error in row %: %', i, SQLERRM;
+--         END;
+--     END LOOP;
+
+--     IF length(values_list) > 0 THEN
+--         values_list := left(values_list, length(values_list) - 2);  -- Removing extra commas 
+--         insert_query := 'INSERT INTO dmsr.banks (bname, baddr, eid, eby, binfo) VALUES ' || values_list || ';';
+
+--         RAISE NOTICE 'Executing query: %', insert_query;
+
+--         EXECUTE insert_query;
+--     ELSE
+--         RAISE NOTICE 'No valid rows to insert.';
+--     END IF;
+-- END;
+-- $$ LANGUAGE plpgsql;
+
+-- ---------------------------------------------------------------------------------------
+-- CREATE OR REPLACE FUNCTION dmsr.bank_writer(context VARCHAR, bank_values JSONB[]) 
+-- RETURNS VOID AS $$
+-- DECLARE
+--     value JSONB;
+--     bank_name VARCHAR;
+--     bank_address VARCHAR;
+--     eid INTEGER;
+--     eby INTEGER;
+--     binfo JSONB;
+--     insert_query TEXT;
+--     values_list TEXT;
+--     i INT;
+-- BEGIN
+--     values_list := '';
+
+--     FOR i IN 1 .. array_length(bank_values, 1) LOOP
+--         BEGIN
+--             value := bank_values[i];
+            
+--             -- Validate if the object is a valid JSONB type
+--             IF value IS NULL OR jsonb_typeof(value) <> 'object' THEN
+--                 RAISE NOTICE 'Skipping invalid JSON object at index %, error: not a valid JSON object', i;
+--                 CONTINUE;
+--             END IF;
+            
+--             -- Extract values from JSON object
+--             bank_name := value->>'bank_name';
+--             bank_address := value->>'baddr';
+--             eid := (value->>'eid')::INTEGER;
+--             eby := (value->>'eby')::INTEGER;
+--             binfo := value->'binfo';
+
+--             -- Check if required fields are not NULL
+--             IF bank_name IS NULL OR eid IS NULL OR eby IS NULL THEN
+--                 RAISE NOTICE 'Skipping invalid object at index %, missing required fields', i;
+--                 CONTINUE;
+--             END IF;
+
+--             -- Build the values list for insert query
+--             values_list := values_list || '(' ||
+--                             quote_literal(bank_name) || ', ' ||
+--                             quote_literal(bank_address) || ', ' ||
+--                             quote_literal(eid) || ', ' ||
+--                             quote_literal(eby) || ', ' ||
+--                             quote_literal(binfo) || '), ';
+--         EXCEPTION WHEN others THEN
+--             RAISE NOTICE 'Skipping invalid JSON object at index %, error: %', i, SQLERRM;
+--         END;
+--     END LOOP;
+
+--     -- Only generate and execute the insert query if there are valid values
+--     IF length(values_list) > 0 THEN
+--         values_list := left(values_list, length(values_list) - 2);  -- Remove the last comma and space
+--         insert_query := 'INSERT INTO dmsr.banks (bname, baddr, eid, eby, binfo) VALUES ' || values_list || ';';
+--         EXECUTE insert_query;
+--     ELSE
+--         RAISE NOTICE 'No valid JSON objects to insert.';
+--     END IF;
+
+-- END;
+-- $$ LANGUAGE plpgsql;
+
+
+
+
+
+--------------------------------------------------------------------------------------------------------------
+-- extar validations
+
+-- CREATE OR REPLACE FUNCTION dmsr.bank_writer(context VARCHAR, bank_values JSONB[]) 
+-- RETURNS VOID AS $$
+-- DECLARE
+--     value JSONB;
+--     bank_name VARCHAR;
+--     bank_address VARCHAR;
+--     eid INTEGER;
+--     eby INTEGER;
+--     binfo JSONB;
+--     insert_query TEXT;
+--     values_list TEXT;
+--     i INT;
+-- BEGIN
+--     values_list := '';
+
+--     FOR i IN 1 .. array_length(bank_values, 1) LOOP
+--         BEGIN
+--             value := bank_values[i];
+            
+--             IF value IS NULL OR jsonb_typeof(value) <> 'object' THEN
+--                 RAISE NOTICE 'Skipping invalid JSON object at index %, error: not a valid JSON object', i;
+--                 CONTINUE;
+--             END IF;
+            
+--             bank_name := value->>'bank_name';
+--             bank_address := value->>'baddr';
+--             eid := (value->>'eid')::INTEGER;
+--             eby := (value->>'eby')::INTEGER;
+--             binfo := value->'binfo';
+
+--             IF bank_name IS NULL OR bank_name = '' OR bank_address IS NULL OR bank_address = '' OR eid IS NULL OR eby IS NULL THEN
+--                 RAISE NOTICE 'Skipping invalid object at index %, missing required fields', i;
+--                 CONTINUE;
+--             END IF;
+
+--             values_list := values_list || '(' ||
+--                             quote_literal(bank_name) || ', ' ||
+--                             quote_literal(bank_address) || ', ' ||
+--                             quote_literal(eid) || ', ' ||
+--                             quote_literal(eby) || ', ' ||
+--                             quote_literal(binfo) || '), ';
+--         EXCEPTION WHEN others THEN
+--             RAISE NOTICE 'Skipping invalid JSON object at index %, error: %', i, SQLERRM;
+--         END;
+--     END LOOP;
+
+--     IF length(values_list) > 0 THEN
+--         values_list := left(values_list, length(values_list) - 2);  -- Remove the last comma and space
+--         insert_query := 'INSERT INTO dmsr.banks (bname, baddr, eid, eby, binfo) VALUES ' || values_list || ';';
+--         EXECUTE insert_query;
+--     ELSE
+--         RAISE NOTICE 'No valid JSON objects to insert.';
+--     END IF;
+
+-- END;
+-- $$ LANGUAGE plpgsql;
+---------------------------------------------------
+
+
+
+
+
+
+-- Validates and add the valid once
+
+
+
+
+-- -- Validator function
+-- CREATE OR REPLACE FUNCTION dmsr.bank_validator(bank_value JSONB) 
+-- RETURNS BOOLEAN AS $$
+-- DECLARE
+--     bank_name VARCHAR;
+--     bank_address VARCHAR;
+--     eid INTEGER;
+--     eby INTEGER;
+--     binfo JSONB;
+-- BEGIN
+--     IF bank_value IS NULL OR jsonb_typeof(bank_value) <> 'object' THEN
+--         RETURN FALSE;
+--     END IF;
+
+--     -- Extract and validate required fields
+--     bank_name := bank_value->>'bank_name';
+--     bank_address := bank_value->>'baddr';
+--     eid := (bank_value->>'eid')::INTEGER;
+--     eby := (bank_value->>'eby')::INTEGER;
+    
+--     -- Optional field
+--     binfo := bank_value->'binfo';
+
+--     IF bank_name IS NULL OR bank_name = '' OR 
+--        bank_address IS NULL OR bank_address = '' OR 
+--        eid IS NULL OR eby IS NULL THEN
+--         RETURN FALSE;
+--     END IF;
+
+--     -- If binfo is present, ensure it’s a JSONB object
+--     IF binfo IS NOT NULL AND jsonb_typeof(binfo) <> 'object' THEN
+--         RETURN FALSE;
+--     END IF;
+
+--     RETURN TRUE;  -- All validations passed
+-- END;
+-- $$ LANGUAGE plpgsql;
+
+-- -- Main function
+-- CREATE OR REPLACE FUNCTION dmsr.bank_validator_writer(context VARCHAR, bank_values JSONB[]) 
+-- RETURNS VOID AS $$
+-- DECLARE
+--     value JSONB;
+--     values_list TEXT := '';
+--     insert_query TEXT;
+--     i INT;
+-- BEGIN
+--     FOR i IN 1 .. array_length(bank_values, 1) LOOP
+--         BEGIN
+--             value := bank_values[i];
+
+--             -- Validate JSON object
+--             IF dmsr.bank_validator(value) THEN
+--                 -- If valid, extract values and build insert statement
+--                 values_list := values_list || '(' ||
+--                                quote_literal(value->>'bank_name') || ', ' ||
+--                                quote_literal(value->>'baddr') || ', ' ||
+--                                quote_literal((value->>'eid')::INTEGER) || ', ' ||
+--                                quote_literal((value->>'eby')::INTEGER) || ', ' ||
+--                                quote_literal(value->'binfo') || '), ';
+--             ELSE
+--                 RAISE NOTICE 'Skipping invalid object at index %, missing or invalid fields', i;
+--             END IF;
+
+--         EXCEPTION WHEN others THEN
+--             RAISE NOTICE 'Skipping JSON object at index %, error: %', i, SQLERRM;
+--         END;
+--     END LOOP;
+
+--     -- Remove the trailing comma and execute insert if values exist
+--     IF length(values_list) > 0 THEN
+--         values_list := left(values_list, length(values_list) - 2);
+--         insert_query := 'INSERT INTO dmsr.banks (bname, baddr, eid, eby, binfo) VALUES ' || values_list || ';';
+--         EXECUTE insert_query;
+--     ELSE
+--         RAISE NOTICE 'No valid JSON objects to insert.';
+--     END IF;
+
+-- END;
+-- $$ LANGUAGE plpgsql;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Validator function
+CREATE OR REPLACE FUNCTION dmsr.bank_validator(bank_value JSONB) 
+RETURNS BOOLEAN AS $$
+DECLARE
+    bank_name VARCHAR;
+    bank_address VARCHAR;
+    eid INTEGER;
+    eby INTEGER;
+    binfo JSONB;
+BEGIN
+    IF bank_value IS NULL OR jsonb_typeof(bank_value) <> 'object' THEN
+        RETURN FALSE;
+    END IF;
+
+    bank_name := bank_value->>'bank_name';
+    bank_address := bank_value->>'baddr';
+    eid := (bank_value->>'eid')::INTEGER;
+    eby := (bank_value->>'eby')::INTEGER;
+    binfo := bank_value->'binfo';
+
+    IF bank_name IS NULL OR bank_name = '' OR 
+       bank_address IS NULL OR bank_address = '' OR 
+       eid IS NULL OR eby IS NULL THEN
+        RETURN FALSE;
+    END IF;
+
+    IF binfo IS NOT NULL AND jsonb_typeof(binfo) <> 'object' THEN
+        RETURN FALSE;
+    END IF;
+
+    RETURN TRUE;  -- All validations passed
+END;
+$$ LANGUAGE plpgsql;
+
+-- Main function
+CREATE OR REPLACE FUNCTION dmsr.bank_validator_writer(context VARCHAR, bank_values JSONB[]) 
+RETURNS VOID AS $$
+DECLARE
+    value JSONB;
+    values_list TEXT := '';
+    insert_query TEXT;
+    i INT;
+BEGIN
+    FOR i IN 1 .. array_length(bank_values, 1) LOOP
+        BEGIN
+            value := bank_values[i];
+
+            -- Validate JSON object
+            IF dmsr.bank_validator(value) THEN
+                -- If valid, extract values and build insert statement
+                values_list := values_list || '(' ||
+                               quote_literal(value->>'bank_name') || ', ' ||
+                               quote_literal(value->>'baddr') || ', ' ||
+                               quote_literal((value->>'eid')::INTEGER) || ', ' ||
+                               quote_literal((value->>'eby')::INTEGER) || ', ' ||
+                               quote_literal(value->'binfo') || '), ';
+            ELSE
+                RAISE NOTICE 'Invalid json object found';
+            END IF;
+
+        EXCEPTION WHEN others THEN
+            RAISE NOTICE 'Skipping JSON object at index %, error: %', i, SQLERRM;
+        END;
+    END LOOP;
+
+    -- Remove the trailing comma and execute insert if values exist
+    IF length(values_list) > 0 THEN
+        values_list := left(values_list, length(values_list) - 2);
+        insert_query := 'INSERT INTO dmsr.banks (bname, baddr, eid, eby, binfo) VALUES ' || values_list || ';';
+        EXECUTE insert_query;
+    ELSE
+        RAISE NOTICE 'No valid JSON objects to insert.';
+    END IF;
+
+END;
+$$ LANGUAGE plpgsql;
+
+	
+SELECT dmsr.bank_validator_writer('INSERT', 
+    ARRAY[
+        '{"bank_name": "", "baddr": "1st Main Road", "eid": 2, "eby": 3, "binfo": {"name": "abc", "designation": "manager", "phno": "+919876543211", "email": "xyz@gmail.com"}}'::jsonb,
+        '{"bank_name": "abc", "baddr": "2nd Main Road", "eid": 4, "eby": 5, "binfo": 66}'::jsonb
+    ]);
+
+
+
+
+
+
+
+--------------------------------------------------------------------------------------------------------------
+
+DROP FUNCTION dmsr.bank_validator(jsonb)
+-- Validator function
+CREATE OR REPLACE FUNCTION dmsr.bank_validator(input_data JSONB) 
+RETURNS BOOLEAN AS $$
+DECLARE
+    eid INTEGER;
+    eby INTEGER;
+    bevts VARCHAR;
+    edetails JSONB;
+    i INT;
+    edetail JSONB;
+    bank_name VARCHAR;
+    bank_address VARCHAR;
+    binfo JSONB;
+BEGIN
+    -- Validate top-level fields
+    eid := (input_data->>'eid')::INTEGER;
+    eby := (input_data->'eobj'->>'event_by')::INTEGER;
+    bevts := input_data->'eobj'->>'event';
+
+    IF eid IS NULL OR eby IS NULL OR bevts IS NULL THEN
+        RAISE NOTICE 'Missing required top-level fields: eid, eby, or bevts';
+        RETURN FALSE;
+    END IF;
+
+    -- Check if 'edetails' array exists and has elements
+    edetails := input_data->'eobj'->'edetails';
+    IF edetails IS NULL OR jsonb_typeof(edetails) <> 'array' OR jsonb_array_length(edetails) = 0 THEN
+        RAISE NOTICE 'Missing or invalid edetails array';
+        RETURN FALSE;
+    END IF;
+
+    -- Validate each entry in edetails array
+    FOR i IN 0 .. jsonb_array_length(edetails) - 1 LOOP
+        edetail := edetails->i;
+
+        -- Check if edetail contains required fields
+        bank_name := edetail->>'bank_name';
+        bank_address := edetail->>'baddr';
+        binfo := edetail->'binfo';
+
+        IF bank_name IS NULL OR bank_name = '' OR 
+           bank_address IS NULL OR bank_address = '' THEN
+            RAISE NOTICE 'Missing required fields in edetail entry at index %', i;
+            RETURN FALSE;
+        END IF;
+
+        -- Ensure binfo is either NULL or a JSONB object
+        IF binfo IS NOT NULL AND jsonb_typeof(binfo) <> 'object' THEN
+            RAISE NOTICE 'Invalid binfo format in edetail entry at index %', i;
+            RETURN FALSE;
+        END IF;
+    END LOOP;
+
+    RETURN TRUE;  -- All validations passed
+END;
+$$ LANGUAGE plpgsql;
+
+-- Main function
+CREATE OR REPLACE FUNCTION dmsr.bank_validator_writer(input_data JSONB) 
+RETURNS VOID AS $$
+DECLARE
+    values_list TEXT := '';
+    insert_query TEXT;
+    i INT;
+
+    -- Extract validated top-level fields
+    eid INTEGER := (input_data->>'eid')::INTEGER;
+    eby INTEGER := (input_data->'eobj'->>'event_by')::INTEGER;
+    bevts VARCHAR := input_data->'eobj'->>'event';
+
+    -- Variables for each entry in edetails
+    edetail JSONB;
+    bank_name VARCHAR;
+    bank_address VARCHAR;
+    binfo JSONB;
+BEGIN
+    -- Validate the entire JSON input using bank_validator
+    IF NOT dmsr.bank_validator(input_data) THEN
+        RAISE NOTICE 'Input validation failed.';
+        RETURN;
+    END IF;
+
+    -- Loop through each item in the edetails array
+    FOR i IN 0 .. jsonb_array_length(input_data->'eobj'->'edetails') - 1 LOOP
+        edetail := input_data->'eobj'->'edetails'->i;
+
+        -- Extract values from edetail
+        bank_name := edetail->>'bank_name';
+        bank_address := edetail->>'baddr';
+        binfo := edetail->'binfo';
+
+        -- Append the values to the list for bulk insert
+        values_list := values_list || '(' ||
+                       quote_literal(eid) || ', ' ||
+                       quote_literal(bevts) || ', ' ||
+                       quote_literal(eby) || ', ' ||
+                       quote_literal(bank_name) || ', ' ||
+                       quote_literal(bank_address) || ', ' ||
+                       quote_literal(binfo) || '), ';
+    END LOOP;
+
+    -- Execute insert statement if values_list is populated
+    IF length(values_list) > 0 THEN
+        values_list := left(values_list, length(values_list) - 2);  -- Remove the trailing comma and space
+        insert_query := 'INSERT INTO dmsr.banks (eid, bevt, eby, bname, baddr, binfo) VALUES ' || values_list || ';';
+        EXECUTE insert_query;
+    ELSE
+        RAISE NOTICE 'No valid edetail entries to insert.';
+    END IF;
+
+END;
+$$ LANGUAGE plpgsql;
+
+---------------------------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION dmsr.bank_validator(input_data JSONB) 
+RETURNS BOOLEAN AS $$
+DECLARE
+
+    edetails JSONB;
+    i INT;
+    edetail JSONB;
+    bank_name VARCHAR;
+    existing_bank_names TEXT[];
+	input_bank_names TEXT[] := '{}';
+BEGIN
+    SELECT ARRAY_AGG(bname) INTO existing_bank_names FROM dmsr.banks;
+
+
+    edetails := input_data->'eobj'->'edetails';
+
+    FOR i IN 0 .. jsonb_array_length(edetails) - 1 LOOP
+        edetail := edetails->i;
+        bank_name := edetail->>'bank_name';
+
+		----unique name
+		IF bank_name = ANY(input_bank_names) THEN   --- checks for each bank name in the input by itself if duplicate found returns error
+            RETURN FALSE;  
+        ELSE
+            input_bank_names := array_append(input_bank_names, bank_name); 
+        END IF;
+
+        IF bank_name = ANY(existing_bank_names) THEN
+            RETURN FALSE;
+        END IF;
+    END LOOP;
+
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION dmsr.bank_validator_writer(input_data JSONB) 
+RETURNS JSON AS $$
+DECLARE
+    values_list TEXT := '';
+    insert_query TEXT;
+    i INT;
+    rows_inserted INT := 0;
+
+    eid INTEGER := (input_data->>'eid')::INTEGER;
+    eby INTEGER := (input_data->'eobj'->>'event_by')::INTEGER;
+    bevts VARCHAR := 'BANK_ONBOARDED';
+
+    edetail JSONB;
+    bank_name VARCHAR;
+    bank_address VARCHAR;
+    binfo JSONB;
+	rows_count INT := 0;
+BEGIN
+    IF NOT dmsr.bank_validator(input_data) THEN
+        RETURN jsonb_build_object('status', 'FAILURE', 'rows_inserted', 0);
+    END IF;
+
+    FOR i IN 0 .. jsonb_array_length(input_data->'eobj'->'edetails') - 1 LOOP
+        edetail := input_data->'eobj'->'edetails'->i;
+        bank_name := edetail->>'bank_name';
+        bank_address := edetail->>'baddr';
+        binfo := edetail->'binfo';
+
+        values_list := values_list || '(' ||
+                       quote_literal(eid) || ', ' ||
+                       quote_literal(bevts) || ', ' ||
+                       quote_literal(eby) || ', ' ||
+                       quote_literal(bank_name) || ', ' ||
+                       quote_literal(bank_address) || ', ' ||
+                       quote_literal(binfo) || '), ';
+		rows_count := rows_count + 1;
+    END LOOP;
+
+    IF length(values_list) > 0 THEN
+        values_list := left(values_list, length(values_list) - 2);
+        insert_query := 'INSERT INTO dmsr.banks (eid, bevt, eby, bname, baddr, binfo) VALUES ' || values_list ||';' ;
+
+        EXECUTE insert_query;
+
+        RETURN jsonb_build_object('status', 'SUCCESS', 'rows_inserted', rows_count);
+    ELSE
+        RETURN jsonb_build_object('status', 'FAILURE', 'rows_inserted', 0);
+    END IF;
+
+END;
+$$ LANGUAGE plpgsql;
+
+
+DROP FUNCTION dmsr.bank_validator_writer(jsonb)
+SELECT dmsr.bank_validator_writer(
+    '{
+        "aid": 3,
+        "alid": 28,
+        "eid": 28,
+        "ecode": "BANK_ONBOARDED",
+        "eobj": {
+            "event": "BANK_ONBOARDED",
+            "event_by": 1,
+            "edetails": [
+                {
+                    "bank_name": "ssb",
+                    "baddr": "1st Main Road",
+                    "binfo": {
+                        "name": "sbi",
+                        "designation": "manager",
+                        "phno": "+919876543211",
+                        "email": "xyz@gmail.com"
+                    }
+                },
+                {
+                    "bank_name": "sbbi",
+                    "baddr": "1st Main Road",
+                    "binfo": {
+                        "name": "abc",
+                        "designation": "manager",
+                        "phno": "+919876543211",
+                        "email": "xyz@gmail.com"
+                    }
+                }
+            ]
+        }
+    }'::jsonb
+);
+
+
+
+truncate dmsr.banks_v
+DROP FUNCTION dmsr.bank_validator_writer(jsonb)
+
+
+
+
+
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------
+---------------------------------------------------ONBOARD MANUFACTURE---------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+CREATE OR REPLACE FUNCTION dmsr.mf_validator(input_data JSONB) 
+RETURNS BOOLEAN AS $$
+DECLARE
+
+    edetails JSONB;
+    i INT;
+    edetail JSONB;
+    mf_name VARCHAR;
+    existing_mf_names TEXT[];
+	input_mf_names TEXT[] := '{}';
+BEGIN
+    SELECT ARRAY_AGG(mfname) INTO existing_mf_names FROM dmsr.mf;
+
+
+    edetails := input_data->'eobj'->'edetails';
+
+    FOR i IN 0 .. jsonb_array_length(edetails) - 1 LOOP
+        edetail := edetails->i;
+        mf_name := edetail->>'mfname';
+
+		----unique name
+		IF mf_name = ANY(input_mf_names) THEN   --- checks for each mf name in the input by itself if duplicate found returns error
+            RETURN FALSE;  
+        ELSE
+            input_mf_names := array_append(input_mf_names, mf_name); 
+        END IF;
+
+        IF mf_name = ANY(existing_mf_names) THEN
+            RETURN FALSE;
+        END IF;
+    END LOOP;
+
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION dmsr.mf_validator_writer(input_data JSONB) 
+RETURNS JSON AS $$
+DECLARE
+    values_list TEXT := '';
+    insert_query TEXT;
+    i INT;
+    rows_inserted INT := 0;
+
+    eid INTEGER := (input_data->>'eid')::INTEGER;
+    eby INTEGER := (input_data->'eobj'->>'event_by')::INTEGER;
+    mfevts VARCHAR := 'MF_ONBOARDED';
+   
+    edetail JSONB;
+    mf_name VARCHAR;
+    mf_address VARCHAR;
+    mfinfo JSONB;
+	rows_count INT := 0;
+BEGIN
+    IF NOT dmsr.mf_validator(input_data) THEN
+        RETURN jsonb_build_object('status', 'FAILURE', 'rows_inserted', 0);
+    END IF;
+
+ FOR i IN 0 .. jsonb_array_length(input_data->'eobj'->'edetails') - 1 LOOP
+        edetail := input_data->'eobj'->'edetails'->i;
+        mf_name := edetail->>'mfname';
+        mf_address := edetail->>'mfaddr';
+        mfinfo := edetail->'mfinfo';
+
+        values_list := values_list || '(' ||
+                       quote_literal(eid) || ', ' ||
+                       quote_literal(mfevts) || ', ' ||
+                       quote_literal(eby) || ', ' ||
+                       quote_literal(mf_name) || ', ' ||
+                       quote_literal(mf_address) || ', ' ||
+                       quote_literal(mfinfo) || '), ';
+		rows_count := rows_count + 1;
+    END LOOP;
+
+    IF length(values_list) > 0 THEN
+        values_list := left(values_list, length(values_list) - 2);
+        insert_query := 'INSERT INTO dmsr.mf (eid, mfevt, eby, mfname, mfaddr, mfinfo) VALUES ' || values_list ||';' ;
+
+        EXECUTE insert_query;
+
+        RETURN jsonb_build_object('status', 'SUCCESS', 'rows_inserted', rows_count);
+    ELSE
+        RETURN jsonb_build_object('status', 'FAILURE', 'rows_inserted', 0);
+    END IF;
+
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+
+SELECT dmsr.mf_validator_writer(
+'{
+  "aid": 3,
+  "alid": 28,
+  "eid": 28,
+  "ecode": "ONBOARD_MANUFACTURER",
+  "eobj": {
+    "event": "ONBOARD_MANUFACTURER",
+    "event_by": 1,
+    "edetails": [
+      {
+        "mfname": "manufacturer8",
+        "mfaddr": "2nd Main Road",
+        "mfinfo": {
+          "name": "abc",
+          "ph_no": "+91987654321",
+          "email": "abc@gmail.com"
+        }
+      },
+      {
+        "mfname": "manufacturer9",
+        "mfaddr": "3rd Main Road",
+        "mfinfo": {
+          "name": "cdc",
+          "ph_no": "+91337654321",
+          "email": "arjc@gmail.com"
+        }
+		}
+      ]
+    }
+  }'::jsonb 
+);
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------
+---------------------------------------------------ONBOARD BRANCHES---------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------
+
+
+
+
+CREATE OR REPLACE FUNCTION dmsr.branches_validator(input_data JSONB) 
+RETURNS BOOLEAN AS $$
+DECLARE
+
+    edetails JSONB;
+    i INT;
+    edetail JSONB;
+    br_name VARCHAR;
+    existing_br_names TEXT[];
+	input_br_names TEXT[] := '{}';
+BEGIN
+    SELECT ARRAY_AGG(brname) INTO existing_br_names FROM dmsr.branches;
+
+
+    edetails := input_data->'eobj'->'edetails';
+
+    FOR i IN 0 .. jsonb_array_length(edetails) - 1 LOOP
+        edetail := edetails->i;
+        br_name := edetail->>'brname';
+
+		----unique name
+		IF br_name = ANY(input_br_names) THEN   --- checks for each branches name in the input by itself if duplicate found returns error
+            RETURN FALSE;  
+        ELSE
+            input_br_names := array_append(input_br_names, br_name); 
+        END IF;
+
+        IF br_name = ANY(existing_br_names) THEN
+            RETURN FALSE;
+        END IF;
+    END LOOP;
+
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION dmsr.branches_validator_writer(input_data JSONB) 
+RETURNS JSON AS $$
+DECLARE
+    values_list TEXT := '';
+    insert_query TEXT;
+    i INT;
+    rows_inserted INT := 0;
+
+    eid INTEGER := (input_data->>'eid')::INTEGER;
+    eby INTEGER := (input_data->'eobj'->>'event_by')::INTEGER;
+    brevts VARCHAR := 'BRANCH_ONBOARDED';
+   
+    edetail JSONB;
+    br_name VARCHAR;
+    br_address VARCHAR;
+    brinfo JSONB;
+	bid INTEGER;
+	rows_count INT := 0;
+BEGIN
+    IF NOT dmsr.branches_validator(input_data) THEN
+        RETURN jsonb_build_object('status', 'FAILURE', 'rows_inserted', 0);
+    END IF;
+
+ FOR i IN 0 .. jsonb_array_length(input_data->'eobj'->'edetails') - 1 LOOP
+        edetail := input_data->'eobj'->'edetails'->i;
+        br_name := edetail->>'brname';
+        br_address := edetail->>'braddr';
+        brinfo := edetail->'brinfo';
+		bid := edetail->'bank_id';
+
+        values_list := values_list || '(' ||
+                       quote_literal(eid) || ', ' ||
+                       quote_literal(brevts) || ', ' ||
+                       quote_literal(eby) || ', ' ||
+					   quote_literal(bid) || ', ' ||
+                       quote_literal(br_name) || ', ' ||
+                       quote_literal(br_address) || ', ' ||
+                       quote_literal(brinfo) || '), ';
+		rows_count := rows_count + 1;
+    END LOOP;
+
+    IF length(values_list) > 0 THEN
+        values_list := left(values_list, length(values_list) - 2);
+        insert_query := 'INSERT INTO dmsr.branches (eid, brevt, eby, bid, brname, braddr, brinfo) VALUES ' || values_list ||';' ;
+
+        EXECUTE insert_query;
+
+        RETURN jsonb_build_object('status', 'SUCCESS', 'rows_inserted', rows_count);
+    ELSE
+        RETURN jsonb_build_object('status', 'FAILURE', 'rows_insertedss', 0);
+    END IF;
+
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+
+SELECT dmsr.branches_validator_writer(
+'{
+  "aid": 3,
+  "alid": 28,
+  "eid": 28,
+  "ecode": "ONBOARD_BRANCH",
+  "eobj": {
+    "event": "ONBOARD_BRANCH",
+    "event_by": 1,
+    "edetails": [
+      {
+	  	"bank_id": 160,
+        "brname": "branch1",
+        "braddr": "2nd Main Road",
+        "brinfo": {
+          "name": "abc",
+          "ph_no": "+91987654321",
+          "email": "abc@gmail.com"
+        }
+      },
+      {
+	    "bank_id": 160,
+        "brname": "branch2",
+        "braddr": "3rd Main Road",
+        "brinfo": {
+          "name": "cdc",
+          "ph_no": "+91337654321",
+          "email": "arjc@gmail.com"
+        }
+		}
+      ]
+    }
+  }'::jsonb 
+);
+
+
+
+-----------------------------------------------------------------------------------------------------------------
+---------------------------------------------------ONBOARD DEVICES---------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------
+
+
+CREATE OR REPLACE FUNCTION dmsr.devices_validator(input_data JSONB) 
+RETURNS BOOLEAN AS $$
+DECLARE
+
+    i INT;
+    edetail JSONB;
+    d_name VARCHAR;
+    existing_d_names TEXT[];
+	input_d_names TEXT[] := '{}';
+BEGIN
+    SELECT ARRAY_AGG(dname) INTO existing_d_names FROM dmsr.devices;
+	
+    FOR i IN 0 .. jsonb_array_length(input_data->'eobj'->'edetails') - 1 LOOP
+        edetail := input_data->'eobj'->'edetails'->i;
+        d_name := edetail->>'dname';
+
+		----unique name
+		IF d_name = ANY(input_d_names) THEN   --- checks for each devices name in the input by itself if duplicate found returns error
+            RETURN FALSE;  
+        ELSE
+            input_d_names := array_append(input_d_names, d_name); 
+        END IF;
+
+        IF d_name = ANY(existing_d_names) THEN
+            RETURN FALSE;
+        END IF;
+    END LOOP;
+
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION dmsr.devices_validator_writer(context varchar,input_data JSONB) 
+RETURNS JSON AS $$
+DECLARE
+    values_list TEXT := '';
+    insert_query TEXT;
+    i INT;
+	rows_count INT := 0;
+	
+    eid INTEGER := (input_data->>'eid')::INTEGER;
+    eby INTEGER := (input_data->'eobj'->>'event_by')::INTEGER;
+    devts VARCHAR := 'DEVICE_ONBOARDED';
+   
+    edetail JSONB;
+    d_name VARCHAR;
+	mfid INTEGER;
+	model_id INTEGER;
+	firmware_id INTEGER;
+BEGIN
+ IF context = 'INSERT' THEN
+
+    IF NOT dmsr.devices_validator(input_data) THEN
+        RETURN jsonb_build_object('status', 'FAILURE', 'rows_inserted', 0);
+    END IF;
+
+    FOR i IN 0 .. jsonb_array_length(input_data->'eobj'->'edetails') - 1 LOOP
+        edetail := input_data->'eobj'->'edetails'->i;
+        d_name := edetail->>'dname';
+        mfid := edetail->>'mfid';
+        model_id := edetail->'model_id';
+		firmware_id := edetail->'firmware_id';
+
+        values_list := values_list || '(' ||
+                       quote_literal(eid) || ', ' ||
+                       quote_literal(devts) || ', ' ||
+                       quote_literal(eby) || ', ' ||
+					   quote_literal(d_name) || ', ' ||
+                       quote_literal(mfid) || ', ' ||
+                       quote_literal(model_id) || ', ' ||
+                       quote_literal(firmware_id) || '), ';
+		rows_count := rows_count + 1;
+    END LOOP;
+
+    IF length(values_list) > 0 THEN
+        values_list := left(values_list, length(values_list) - 2);
+        insert_query := 'INSERT INTO dmsr.devices (eid, devt, eby, dname, mfid, mdid, fid) VALUES ' || values_list ||';' ;
+
+        EXECUTE insert_query;
+
+        RETURN jsonb_build_object('status', 'SUCCESS', 'rows_inserted', rows_count);
+    ELSE
+        RETURN jsonb_build_object('status', 'FAILURE', 'rows_insertedss', 0);
+    END IF;
+ ELSE
+        RETURN jsonb_build_object('status', 'FAILURE', 'message', 'Invalid context provided');
+ END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+
+EXPLAIN ANALYZE
+SELECT dmsr.devices_validator_writer('INSERT',
+'{
+  "aid": 3,
+  "alid": 28,
+  "eid": 28,
+  "ecode": "ONBOARD_DEVICE",
+  "eobj": {
+    "event": "ONBOARD_DEVICE",
+    "event_by": 1,
+    "edetails": [
+      {
+        "mfid": 67,
+        "model_id": 1,
+        "firmware_id": 11,
+        "dname": "88"
+      },
+      {
+        "mfid": 65,
+        "model_id": 1,
+        "firmware_id": 11,
+        "dname": "8888"
+      }
+    ]
+  }
+}'::jsonb 
+);
+
+CREATE OR REPLACE FUNCTION dmsr.devices_validator_writer(context varchar, input_data JSONB) 
+RETURNS JSON AS $$
+DECLARE
+    values_list TEXT := '';
+    insert_query TEXT;
+    i INT;
+    rows_count INT := 0;
+    
+    eid INTEGER := (input_data->>'eid')::INTEGER;
+    eby INTEGER := (input_data->'eobj'->>'event_by')::INTEGER;
+    devts dmsr.devts := 'DEVICE_ONBOARDED';  -- Updated type to dmsr.devts
+   
+    edetail JSONB;
+    d_name VARCHAR;
+    mfid INTEGER;
+    model_id INTEGER;
+    firmware_id INTEGER;
+BEGIN
+ IF context = 'INSERT' THEN
+
+    IF NOT dmsr.devices_validator(input_data) THEN
+        RETURN jsonb_build_object('status', 'FAILURE', 'rows_inserted', 0);
+    END IF;
+
+	FOR i IN 0 .. jsonb_array_length(input_data->'eobj'->'edetails') - 1 LOOP
+    	edetail := input_data->'eobj'->'edetails'->i;
+	    d_name := edetail->>'dname';
+	    mfid := (edetail->>'mfid')::INTEGER;
+	    model_id := (edetail->>'model_id')::INTEGER;
+	    firmware_id := (edetail->>'firmware_id')::INTEGER;
+
+	    EXECUTE 'INSERT INTO dmsr.devices (eid, devt, eby, dname, mfid, mdid, fid) 
+             VALUES ($1, $2::dmsr.devts, $3, $4, $5, $6, $7)' 
+	    USING eid, devts, eby, d_name, mfid, model_id, firmware_id;
+    
+	    rows_count := rows_count + 1;
+	END LOOP;
+
+    IF rows_count > 0 THEN
+        RETURN jsonb_build_object('status', 'SUCCESS', 'rows_inserted', rows_count);
+    ELSE
+        RETURN jsonb_build_object('status', 'FAILURE', 'rows_inserted', 0);
+    END IF;
+ ELSE
+        RETURN jsonb_build_object('status', 'FAILURE', 'message', 'Invalid context provided');
+ END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT dmsr.devices_validator_writer('INSERT',
+'{
+  "aid": 3,
+  "alid": 28,
+  "eid": 28,
+  "ecode": "ONBOARD_DEVICE",
+  "eobj": {
+    "event": "ONBOARD_DEVICE",
+    "event_by": 1,
+    "edetails": [
+      {
+        "mfid": 67,
+        "model_id": 1,
+        "firmware_id": 65432,
+        "dname": "12"
+      },
+      {
+        "mfid": 65,
+        "model_id": 1,
+        "firmware_id": 11,
+        "dname": "1234567"
+      }
+    ]
+  }
+}'::jsonb 
+);
+
+
+
+-- preventing SQL INJECTION
+CREATE OR REPLACE FUNCTION dmsr.devices_validator_writer(context varchar, input_data JSONB) 
+RETURNS JSON AS $$
+DECLARE
+    values_list TEXT := '';
+    insert_query TEXT;
+    i INT;
+    rows_count INT := 0;
+    
+    eid INTEGER := (input_data->>'eid')::INTEGER;
+    eby INTEGER := (input_data->'eobj'->>'event_by')::INTEGER;
+    devts dmsr.devts := 'DEVICE_ONBOARDED';  -- Updated type to dmsr.devts
+   
+    edetail JSONB;
+    d_name VARCHAR;
+    mfid INTEGER;
+    model_id INTEGER;
+    firmware_id INTEGER;
+BEGIN
+ IF context = 'INSERT' THEN
+
+    IF NOT dmsr.devices_validator(input_data) THEN
+        RETURN jsonb_build_object('status', 'FAILURE', 'rows_inserted', 0);
+    END IF;
+
+	FOR i IN 0 .. jsonb_array_length(input_data->'eobj'->'edetails') - 1 LOOP
+    	edetail := input_data->'eobj'->'edetails'->i;
+	    d_name := edetail->>'dname';
+	    mfid := (edetail->>'mfid')::INTEGER;
+	    model_id := (edetail->>'model_id')::INTEGER;
+	    firmware_id := (edetail->>'firmware_id')::INTEGER;
+
+	    EXECUTE 'INSERT INTO dmsr.devices (eid, devt, eby, dname, mfid, mdid, fid) 
+             VALUES ($1, $2::dmsr.devts, $3, $4, $5, $6, $7)' 
+	    USING eid, devts, eby, d_name, mfid, model_id, firmware_id;
+    
+	    rows_count := rows_count + 1;
+	END LOOP;
+
+    IF rows_count > 0 THEN
+        RETURN jsonb_build_object('status', 'SUCCESS', 'rows_inserted', rows_count);
+    ELSE
+        RETURN jsonb_build_object('status', 'FAILURE', 'rows_inserted', 0);
+    END IF;
+ ELSE
+        RETURN jsonb_build_object('status', 'FAILURE', 'message', 'Invalid context provided');
+ END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+
+
+
+

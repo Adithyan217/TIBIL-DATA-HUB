@@ -1,0 +1,14 @@
+"cid"	"ecode"	"config"	"isd"
+2	"ONBOARD_BANK_PROCESSED"	"{""headers"": [""row_id"", ""bid""], ""iterator_functions"": [""intel.mi_onboard_bank""]}"	false
+4	"ONBOARD_BRANCH_PROCESSED"	"{""headers"": [""row_id"", ""bid"", ""brid""], ""iterator_functions"": [""intel.mi_onboard_branch""]}"	false
+5	"ONBOARD_MERCHANT_PROCESSED"	"{""headers"": [""row_id"", ""bid"", ""brid""], ""iterator_functions"": [""intel.mi_onboard_merchant""]}"	false
+6	"DEVICE_ISSUE_PROCESSED"	"{""headers"": [""row_id"", ""bid"", ""brid""], ""iterator_functions"": [""intel.mi_device_issue_open""]}"	false
+7	"DEVICE_ISSUE_UPDATE_PROCESSED"	"{""headers"": [""row_id"", ""bid"", ""brid""], ""iterator_functions"": [""intel.mi_device_issue_closed""]}"	false
+8	"ONBOARD_DEVICE_PROCESSED"	"{""headers"": [""row_id"", ""bid"", ""brid"", ""steps""], ""iterator_functions"": [""intel.mi_onboard_device""]}"	false
+10	"ONBOARD_DEVICE_ALLOCATE_TO_BANK_PROCESSED"	"{""headers"": [""row_id"", ""bid""], ""iterator_functions"": [""intel.mi_onboard_device_tobank""]}"	false
+11	"ONBOARD_DEVICE_ALLOCATE_TO_BRANCH_PROCESSED"	"{""headers"": [""row_id"", ""bid"", ""brid""], ""iterator_functions"": [""intel.mi_onboard_device_tobranch""]}"	false
+12	"ONBOARD_DEVICE_ALLOCATE_TO_MERCHANT_PROCESSED"	"{""headers"": [""row_id"", ""bid"", ""brid""], ""iterator_functions"": [""intel.mi_onboard_device_tomerchant""]}"	false
+9	"ONBOARD_DEVICE_ONBOARD_DEVICE_PROCESSED"	"{""headers"": [""row_id""], ""iterator_functions"": [""intel.mi_onboard_device_toinventory""]}"	false
+13	"ALLOCATE_TO_BANK_PROCESSED"	"{""headers"": [""row_id"", ""bid""], ""iterator_functions"": [""intel.mi_allocate_to_bank""]}"	false
+14	"ALLOCATE_TO_BRANCH_PROCESSED"	"{""headers"": [""row_id"", ""bid"", ""brid""], ""iterator_functions"": [""intel.mi_allocate_to_branch""]}"	false
+15	"ALLOCATE_TO_MERCHANT_PROCESSED"	"{""headers"": [""row_id"", ""bid"", ""brid""], ""iterator_functions"": [""intel.mi_allocate_to_merchant""]}"	false

@@ -1,0 +1,59 @@
+name: Deploy to ECR aws 
+
+on:
+  push:
+    branches: [ user-ms ]
+  workflow_dispatch:
+    inputs:
+      ec2_instance_id:
+        description: 'EC2 Instance IP'
+        required: true
+        default: ''
+
+env:
+  ECR_REPOSITORY: uat-dms-ecr
+  AWS_REGION: ap-south-1
+
+jobs:
+  build:
+    name: Deployment
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set Docker Image Details
+        run: |
+          echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_ENV
+          echo "IMAGE_TAG=user-app-runner-${{ github.run_number }}" >> $GITHUB_ENV
+
+      - name: Debug Docker Image Reference
+        run: |
+          echo "ECR_REGISTRY=${{ env.ECR_REGISTRY }}"
+          echo "ECR_REPOSITORY=${{ env.ECR_REPOSITORY }}"
+          echo "IMAGE_TAG=${{ env.IMAGE_TAG }}"
+
+      - name: Build, tag, and push image to Amazon ECR
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

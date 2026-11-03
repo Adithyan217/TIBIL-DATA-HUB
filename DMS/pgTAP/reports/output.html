@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        table, th, td { border: 1px solid black; }
+        th, td { padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .pass { background-color: #d4edda; }
+        .fail { background-color: #f8d7da; }
+    </style>
+</head>
+<body>
+    <h1>Test Report</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Test Suite</th>
+                <th>Test Case</th>
+                <th>Status</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td rowspan="3">tests_sql_test1_sql</td>
+                <td>Testing existing bank name</td>
+                <td class="pass">Passed</td>
+                <td>0.002</td>
+            </tr>
+            <tr>
+                <td>Testing new bank name</td>
+                <td class="pass">Passed</td>
+                <td>0.000</td>
+            </tr>
+            <tr>
+                <td>Testing Empty Update</td>
+                <td class="pass">Passed</td>
+                <td>0.000</td>
+            </tr>
+            <tr>
+                <td rowspan="2">tests_sql_test3_sql</td>
+                <td>Iterator should process 2 rows</td>
+                <td class="pass">Passed</td>
+                <td>0.005</td>
+            </tr>
+            <tr>
+                <td>All iterator operations should return status 1 (success)</td>
+                <td class="fail">Failed</td>
+                <td>0.000</td>
+            </tr>
+            <tr>
+                <td rowspan="1">tests_sql_test2_sql</td>
+                <td>Status and message should match</td>
+                <td class="pass">Passed</td>
+                <td>0.003</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
+

@@ -1,0 +1,25 @@
+CREATE TYPE registry.sb_msgs AS ENUM (
+  'SUCCESS',
+  'INVALID_VPA',
+  'INVALID_DEVICE',
+  'DEVICE_ALREADY_BINDED',
+  'VPA_ALREADY_BINDED',
+  'DEVICE_VPA_NOT_BINDED',
+  'DEVICE_HAS_DEACTIVATED_BANK',
+  'DEVICE_HAS_DEACTIVATED_BRANCH',
+  'DEVICE_HAS_DEACTIVATED_MERCHANT',
+  'BANK_VPA_UNMATCHED_BID',-----allocated banks bid and vpa bid unmatched
+  'INVALID_BANK',
+  'BANK_ALREADY_ALLOCATED',
+  'DEVICE_HAS_DEACTIVATED_VPA',
+  'VPA_BANK_UNMATCHED_BID',-----allocated vpa and banks bid unmatched
+  'INVALID_BRANCH',
+  'BRANCH_ALREADY_ALLOCATED',
+  'BANK_BRANCH_UNMATCHED_BID',------allocated banks and branch bid unmatched
+  'INVALID_MERCHANT',
+  'MERCHANT_ALREADY_ALLOCATED',
+  'BANK_MERCHANT_UNMATCHED_BID',------allocated banks and merchant bid unmatched
+  'INVALID_EVENT',
+  'UNABLE_TO_ALLOCATE'
+);
+

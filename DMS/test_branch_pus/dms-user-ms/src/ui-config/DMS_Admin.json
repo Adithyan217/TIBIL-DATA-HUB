@@ -1,0 +1,114 @@
+
+        {
+          "role": "DMSAdmin",
+          "roleId": 1,
+          "sideMenu": {
+            "visible": true,
+            "items": [
+              { "name": "Dashboard", "activeIcon": "assets/images/dashBoard-yellow.png", "inactiveIcon": "assets/images/dashBoard-white.png", "isActive": false, "routing": "/home/dashboard", "unRead": 0 },
+              { "name": "My Actions", "activeIcon": "assets/images/actions-yellow.png", "inactiveIcon": "assets/images/actions-white.png", "isActive": false, "routing": "/home/actions", "unRead": 0 },
+              { "name": "Devices", "activeIcon": "assets/images/device-yellow.png", "inactiveIcon": "assets/images/device-white.png", "isActive": false, "routing": "/home/devices", "unRead": 0 },
+              { "name": "Banks", "activeIcon": "assets/images/banks-yellow.png", "inactiveIcon": "assets/images/banks-white.png", "isActive": false, "routing": "/home/banks", "unRead": 0 },
+              { "name": "Branches", "activeIcon": "assets/images/branch.png", "inactiveIcon": "assets/images/branch-white.png", "isActive": false, "routing": "/home/branches", "unRead": 0 },
+              { "name": "Users", "activeIcon": "assets/images/user-active.png", "inactiveIcon": "assets/images/user-inactive.png", "isActive": false, "routing": "/home/user", "unRead": 0 }
+            ]
+          },
+          "createActions": {
+            "visible": true,
+            "items": [
+              { "label": "Device(s)", "icon": "assets/images/onboarddevice-blue.png" },
+              { "label": "VPA ID(s)", "icon": "assets/images/create-vpaid.png" },
+              { "label": "Bank(s)", "icon": "assets/images/onboardbank-blue.png" },
+              { "label": "Branch(es)", "icon": "assets/images/create-branch.png" },
+              { "label": "Merchant(s)", "icon": "assets/images/create-merchant.png" },
+              { "label": "Request for Device(s)", "icon": "assets/images/request-device.png" },
+              { "label": "Issue", "icon": "assets/images/issues-actions.png" },
+              { "label": "User", "icon": "assets/images/adduser-blue.png" }
+            ]
+          },
+          "threeDotActions": {
+            "visible": true,
+            "items": [
+              {
+                "label": "Device",
+                "icon": "assets/images/device-black.png",
+                "expanded": true,
+                "children": [
+                  { "label": "Allocate to Bank", "icon": "assets/images/allocate_to_bank_purple.png" },
+                  { "label": "Allocate to Branch", "icon": "assets/images/allocate_to_branch_purple.png" },
+                  { "label": "Allocate to Merchant", "icon": "assets/images/allocate_to_merchant_purple.png" },
+                  { "label": "Deactivate Device", "icon": "assets/images/deactivate_device_purple.png" },
+                  { "label": "Deactivate User", "icon": "assets/images/user_deactivate.png" },
+                  {"label":"Enable Soundbox","icon":"assets/images/enable-soundbox.png"}
+                ]
+              }
+            ]
+          },
+          "page": [
+            {
+              "screen": "Dashboard",
+              "filters": { "visible": true,  "items": ["date","bank"] },
+              "search": { "visible": false, "items": [] },
+              "items": [
+                { "Analytics": "Bank", "visible": true, "items": [{ "sub-analytics": "Branches", "visible": true }, { "sub-analytics": "Merchants", "visible": true }] },
+                { "Analytics": "Devices", "visible": true, 
+                 "items": [
+                        {
+                          "sub-analytics": "Banks",
+                          "visible": false
+                        },
+                        {
+                          "sub-analytics": "Branches",
+                          "visible": false
+                        },
+                        {
+                          "sub-analytics": "Merchants",
+                          "visible": false
+                        },
+                        {
+                          "sub-analytics": "Inventory",
+                          "visible": true
+                        },
+                        {
+                          "sub-analytics": "Allocated",
+                          "visible": true
+                        }
+                      ] },
+                { "Analytics": "Issues", "visible": true, "items": [{ "sub-analytics": "New", "visible": true }, { "sub-analytics": "Open", "visible": true }] },
+                { "Analytics": "Device Requests", "visible": true, "items": [{ "sub-analytics": "New", "visible": true }, { "sub-analytics": "Open", "visible": true }] },
+                { "Analytics": "Total Transactions", "visible": true, "items": [] },
+                { "Analytics": "Transaction Amount", "visible": true, "items": [] }
+              ]
+            },
+            {
+              "screen": "Actions",
+              "filters": { "visible": true, "items": ["date", "ActionType"] },
+              "search": { "visible": true, "items": [{ "value": "Request ID", "label": "Request ID" }] }
+            },
+            {
+              "screen": "Devices",
+              "filters": { "visible": true, "items": ["device", "bank"] },
+              "search": { "visible": true, "items": [{ "value": "Device ID", "label": "Device ID" }, { "value": "VPA ID", "label": "VPA ID" }] },
+              "details": { "items": [{ "label": "Device details", "visible": true, "writeAccess": true }, { "label": "Payments", "visible": true, "writeAccess": true }] }
+            },
+            {
+              "screen": "Banks",
+              "filters": { "visible": false, "items": [] },
+              "search": { "visible": true, "items": [{ "value": "Bank", "label": "Bank" }] },
+              "details": { "items": [{ "label": "Bank details", "visible": true, "writeAccess": true }, { "label": "Branches", "visible": true, "writeAccess": true }] }
+            },
+            {
+              "screen": "Branches",
+              "filters": { "visible": true, "items": ["bank"] },
+              "search": { "visible": true,"items": [{ "value": "Branches", "label": "Branches" }] },
+              "details": { "items": [{ "label": "Branch details", "visible": true, "writeAccess": true }] }
+            },
+            
+            {
+              "screen": "Users",
+              "filters": { "visible": false, "items": [] },
+              "search": { "visible": true, "items": [{ "value": "User Name", "label": "User Name" }] },
+              "details": { "items": [{ "label": "Profile details", "visible": true, "writeAccess": true }, { "label": "Access scope", "visible": true, "writeAccess": true }] }
+            }
+          ]
+        }

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="User Onboarding Test">
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group">
+        <stringProp name="ThreadGroup.num_threads">${__P(Threads,1)}</stringProp>
+        <intProp name="ThreadGroup.ramp_time">1</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">1</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Onboard User API">
+          <stringProp name="HTTPSampler.domain">${__P(Host,d38lz221fk59mg.cloudfront.net)}</stringProp>
+          <stringProp name="HTTPSampler.port">${__P(Port,)}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding">UTF-8</stringProp>
+          <stringProp name="HTTPSampler.path">/user</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;event&quot;: &quot;ONBOARD_USER&quot;,&#xd;
+  &quot;event_by&quot;: &quot;tester@gmail.com&quot;,&#xd;
+  &quot;edetails&quot;: [&#xd;
+    {&#xd;
+      &quot;user_info&quot;: {&#xd;
+        &quot;username&quot;: &quot;sampleemail${__threadNum}@gmail.com&quot;,&#xd;
+        &quot;fname&quot;: &quot;samplefname${__threadNum}&quot;,&#xd;
+        &quot;lname&quot;: &quot;samplelname${__threadNum}&quot;,&#xd;
+        &quot;email&quot;: &quot;sampleemail${__threadNum}@gmail.com&quot;,&#xd;
+        &quot;user_org&quot;: &quot;bank_1&quot;&#xd;
+      },&#xd;
+      &quot;user_role&quot;: &quot;Bank RM&quot;,&#xd;
+      &quot;user_access&quot;: [&#xd;
+        {&#xd;
+          &quot;banks&quot;: {&#xd;
+            &quot;allow&quot;: [&#xd;
+              &quot;bank_1&quot;&#xd;
+            ],&#xd;
+            &quot;deny&quot;: []&#xd;
+          },&#xd;
+          &quot;branches&quot;: {&#xd;
+            &quot;allow&quot;: [&#xd;
+              &quot;branch_1&quot;&#xd;
+            ],&#xd;
+            &quot;deny&quot;: []&#xd;
+          }&#xd;
+        }&#xd;
+      ]&#xd;
+    }&#xd;
+  ],&#xd;
+  &quot;role&quot;: &quot;DMS Admin&quot;,&#xd;
+  &quot;userName&quot;: &quot;tester@gmail.com&quot;&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="Content-Type" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJBRWFPNWFLYkk1TWdUSHlQUXJVMGRfNWJ6Z3hyQ09WNndRM2t5OVVqN3ZjIn0.eyJleHAiOjE3NTc1MDM0NjEsImlhdCI6MTc1NzQxNzA2MSwianRpIjoiMDZkM2FmNWUtYzdmMC00NGQ1LThmNzYtY2MwYWQwY2I1MTU3IiwiaXNzIjoiaHR0cHM6Ly93OGZhYXZwYmNuLmFwLXNvdXRoLTEuYXdzYXBwcnVubmVyLmNvbS9yZWFsbXMvdWF0LWRtcyIsImF1ZCI6WyJpbnRlbC1tcyIsInJlZ2lzdHJ5LW1zIiwid29ya2Zsb3ctbXMiLCJhY2NvdW50Il0sInN1YiI6ImJiYjFiNWM4LWYwNWMtNDA4Mi1hNzgxLTcxY2VlNTM4ZWVmMSIsInR5cCI6IkJlYXJlciIsImF6cCI6InVzZXItbXMiLCJzaWQiOiI1MDA0MThkMC1jMGQ0LTRmNjQtOTk1Zi1lMWE0ZTMwMmI2NjAiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbIi8qIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIiwiZGVmYXVsdC1yb2xlcy11YXQtZG1zIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiaW50ZWwtbXMiOnsicm9sZXMiOlsiRE1TIEFkbWluIl19LCJ1c2VyLW1zIjp7InJvbGVzIjpbIkRNUyBBZG1pbiJdfSwicmVnaXN0cnktbXMiOnsicm9sZXMiOlsiRE1TIEFkbWluIl19LCJ3b3JrZmxvdy1tcyI6eyJyb2xlcyI6WyJETVMgQWRtaW4iXX0sImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpbCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJuYW1lIjoidGVzdGVyIHVzZXIiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJ0ZXN0ZXJAZ21haWwuY29tIiwiZ2l2ZW5fbmFtZSI6InRlc3RlciIsImZhbWlseV9uYW1lIjoidXNlciIsImVtYWlsIjoidGVzdGVyQGdtYWlsLmNvbSJ9.ONfbisr9OiRKLegn1LtrfrHcqDRepi8HEq50NwjCzcgWfZVTOyzWyzs_pr0GkHNI4teniTvg43T0zKO64YZTqLFXueSpz2I4Cl6ULlZro5JsIkbF8M7XpQdjBeEn63IRjjyqJ2_KNUJ3Rl8ZRnHupA3P6vjpuO8X5-HRvs4BRDayHM9zLXJn8JKLR8_lklJiceukHuBrFgSJd8XfFL6YBCONzKOEDsodc8IUIJTmcMAzw4OtJE_QKraY3als6IC5YMMZL88_YAVoHTDVW_MQUTl-1s4E2j5PQSxeKCnUopX87RtHHyPJBWoQERK_AAW2RPy41Ph9Y1wTKRF82-5TFw</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
+            <boolProp name="ResultCollector.error_logging">false</boolProp>
+            <objProp>
+              <name>saveConfig</name>
+              <value class="SampleSaveConfiguration">
+                <time>true</time>
+                <latency>true</latency>
+                <timestamp>true</timestamp>
+                <success>true</success>
+                <label>true</label>
+                <code>true</code>
+                <message>true</message>
+                <threadName>true</threadName>
+                <dataType>true</dataType>
+                <encoding>false</encoding>
+                <assertions>true</assertions>
+                <subresults>true</subresults>
+                <responseData>false</responseData>
+                <samplerData>false</samplerData>
+                <xml>false</xml>
+                <fieldNames>true</fieldNames>
+                <responseHeaders>false</responseHeaders>
+                <requestHeaders>false</requestHeaders>
+                <responseDataOnError>false</responseDataOnError>
+                <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                <assertionsResultsToSave>0</assertionsResultsToSave>
+                <bytes>true</bytes>
+                <sentBytes>true</sentBytes>
+                <url>true</url>
+                <threadCounts>true</threadCounts>
+                <idleTime>true</idleTime>
+                <connectTime>true</connectTime>
+              </value>
+            </objProp>
+            <stringProp name="filename"></stringProp>
+          </ResultCollector>
+          <hashTree/>
+          <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report">
+            <boolProp name="ResultCollector.error_logging">false</boolProp>
+            <objProp>
+              <name>saveConfig</name>
+              <value class="SampleSaveConfiguration">
+                <time>true</time>
+                <latency>true</latency>
+                <timestamp>true</timestamp>
+                <success>true</success>
+                <label>true</label>
+                <code>true</code>
+                <message>true</message>
+                <threadName>true</threadName>
+                <dataType>true</dataType>
+                <encoding>false</encoding>
+                <assertions>true</assertions>
+                <subresults>true</subresults>
+                <responseData>false</responseData>
+                <samplerData>false</samplerData>
+                <xml>false</xml>
+                <fieldNames>true</fieldNames>
+                <responseHeaders>false</responseHeaders>
+                <requestHeaders>false</requestHeaders>
+                <responseDataOnError>false</responseDataOnError>
+                <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                <assertionsResultsToSave>0</assertionsResultsToSave>
+                <bytes>true</bytes>
+                <sentBytes>true</sentBytes>
+                <url>true</url>
+                <threadCounts>true</threadCounts>
+                <idleTime>true</idleTime>
+                <connectTime>true</connectTime>
+              </value>
+            </objProp>
+            <stringProp name="filename"></stringProp>
+          </ResultCollector>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

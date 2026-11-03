@@ -1,0 +1,773 @@
+openapi: 3.0.0
+info:
+  title: Requests API
+  version: 1.0.0
+  description: API for handling workflow events, agents, and handlers.
+  x-microservice: requests-microservice
+
+servers:
+  - url: https://dmsr.api.dev/{basePath}
+    description: Development server
+    variables:
+      basePath:
+        default: "requests"
+        description: Base path for the API
+
+paths:
+  /ping:
+    get:
+      summary: Ping endpoint
+      description: Returns OK to check if the server is running.
+      operationId: pingServer
+      tags:
+        - Workflow
+      responses:
+        '200':
+          description: Successful ping
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: OK
+
+  /request/wfevents:
+    post:
+      summary: Create a workflow event request
+      description: Creates a new workflow event request based on the provided details.
+      operationId: createWfEvent
+      tags:
+        - Workflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            examples:
+              onboard_bank:
+                $ref: "#/components/examples/ONBOARD_BANK"
+              onboard_branch:
+                $ref: "#/components/examples/ONBOARD_BRANCH"
+              onboard_device:
+                $ref: "#/components/examples/ONBOARD_DEVICE"
+              onboard_manufacturer:
+                $ref: "#/components/examples/ONBOARD_MANUFACTURER"
+              onboard_firmware:
+                $ref: "#/components/examples/ONBOARD_FIRMWARE"
+              onboard_device_model:
+                $ref: "#/components/examples/ONBOARD_DEVICE_MODEL"
+              onboard_devices:
+                $ref: "#/components/examples/ONBOARD_DEVICE"
+              onboard_merchant:
+                $ref: "#/components/examples/ONBOARD_MERCHANT"
+      responses:
+        '201':
+          description: Workflow event created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: number
+                    example: 200
+                  event_id:
+                    type: number
+                    example: 2
+                  message:
+                    type: string
+                    example: Request created successfully
+        '400':
+          description: Workflow event not created 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: Request not created 
+        '500':
+          description: Unable to create a record
+
+  /request/wfevents/get:
+    post:
+      summary: get workflow event request
+      description: get workflow event request based on the provided details.
+      operationId: getWfEvent
+      tags:
+        - Workflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                offset:
+                  type: integer
+                  example: 0
+                limit:
+                  type: integer
+                  example: 10
+
+      responses:
+        '201':
+          description: get Workflow events
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: number
+                    example: 200
+                  total:
+                    type: number
+                    example: 26
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        eid:
+                          type: integer
+                          example: 12
+                        aid:
+                          type: integer
+                          example: 23
+                        eby:
+                          type: integer
+                          example: integer
+                        ecode:
+                          type: string
+                          example: ONBOARD_BANK
+                        started_at:
+                          type: string
+                          example: '2024-11-16 07:11:30.340567'
+                        action_status:
+                          type: string
+                          example: "PROCESSED"
+                        handler_status:
+                          type: string
+                          example: "PROCESSED"
+
+        '400':
+          description: Invalid request data
+        '500':
+          description: Unable to create a record
+
+  /request/wfhandler/status/get:
+    post:
+      summary: get workflow event status
+      description: get workflow event status.
+      operationId: getWfEventStatus
+      tags:
+        - Workflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eid:
+                  type: integer
+                  example: 12
+                aid:
+                  type: integer
+                  example: 23
+
+
+      responses:
+        '201':
+          description: get Workflow status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: number
+                    example: 200
+                  data:
+                    type: object
+                    properties:
+
+                      hstatus:
+                        type: string
+                        example: "PROCESSED"
+                      hdetails:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            status:
+                              type: array
+                              items:
+                                type: integer
+                              example: [0, 1, 3]
+                            headers:
+                              type: array
+                              items:
+                                type: string
+                              example: ["row_id", "status", "msg", "bname"]
+                            values:
+                              type: array
+                              items:
+                                type: array
+                                items:
+                                  type: integer
+                                example: [1, 1, "Insertion Successful", "rew"]
+
+
+
+
+        '400':
+          description: Invalid request data
+        '500':
+          description: Unable to create a record
+
+
+  /wfagent:
+    post:
+      summary: Invoke workflow agent
+      description: Invokes the workflow agent to read a new event based on the event ID.
+      operationId: invokeWfAgent
+      tags:
+        - Workflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_id:
+                  type: number
+                  example: 1
+      responses:
+        '201':
+          description: Workflow agent invoked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: Agent processed successfully
+        '400':
+          description: Invalid event ID
+        '500':
+          description: Unable to create a record
+
+  /wfhandler:
+    post:
+      summary: Trigger workflow handler
+      description: Triggers the workflow handler to process an event.
+      operationId: triggerHandler
+      tags:
+        - Workflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Hinfo'
+      responses:
+        '200':
+          description: Handler processed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: Handler executed successfully
+        '400':
+          description: Invalid event data
+        '500':
+          description: Unable to create a record
+            # /wfevents/status/get:
+            #   post:
+            #     summary: Get Request status
+            #     description: Get Request status for an event.
+            #     operationId: requestStatus
+            #     tags:
+            #       - Workflow Status
+            #     requestBody:
+            #       required: true
+            #       content:
+            #         application/json:
+            #           schema:
+            #             type: object
+            #             properties:
+            #               event_id:
+            #                 type: number
+            #                 example: 1
+            #     responses:
+            #       '200':
+            #         description: Status of event
+            #         content:
+            #           application/json:
+            #             schema:
+            #               type: object
+            #               properties:
+            #                 code:
+            #                   type: number
+            #                   example: 200
+            #                 alog:
+            #                   type: array
+            #                   items:
+            #                     type: object
+            #                     properties:
+            #                       aid:
+            #                         type: number
+            #                         example: 2
+            #                       status:
+            #                         type: string
+            #                         enum: ["START", "FAIL", "END"]
+            #                         example: "FAIL"
+            #                       start_time:
+            #                         type: string
+            #                         example: "2024-11-11 07:48:42"
+            #                       end_time:
+          #                         type: string
+          #                         example: "2024-11-11 07:48:42"
+
+
+
+
+
+
+  #       '400':
+  #         description: Invalid event id
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 code:
+  #                   type: number
+  #                   example: 400
+  #                 error:
+  #                   type: string
+  #                   example: "No action present for the given event_id"
+  #       '500':
+  #         description: Unable to create a record
+  /wfhstatus/get:
+    post:
+      summary: Get Handler status
+      description: Get Handler status for an event and status of each steps.
+      operationId: handlerStatus
+      tags:
+        - Workflow Status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_id:
+                  type: number
+                  example: 1
+                aid:
+                  type: number
+                  example: 1
+      responses:
+        '200':
+          description: Status of event
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: number
+                    example: 200
+                  alog:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        event_id:
+                          type: number
+                          example: 2
+                        action_name:
+                          type: string
+                          example: "ONBOARD_BANK"
+                        hid:
+                          type: number
+                          example: 1
+                        hstatus:
+                          type: string
+                          enum: ["START", "FAIL", "COMPLETE"]
+                          example: "FAIL"
+                        start_time:
+                          type: string
+                          example: "2024-11-11 07:48:42"
+                        end_time:
+                          type: string
+                          example: "2024-11-11 07:48:42"
+                        hdetails:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              status:
+                                type: object
+                                properties:
+                                  code:
+                                    type: number
+                                    example: 500
+                                  message:
+                                    type: string
+                                    example: "Error during the bank creation"
+
+
+
+
+
+
+
+
+
+        '400':
+          description: Invalid event id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: number
+                    example: 400
+                  error:
+                    type: string
+                    example: "No handler log present for the given event_id"
+        '500':
+          description: Unable to create a record
+
+components:
+  examples:
+    ONBOARD_BANK:
+      summary: "Example for onboarding bank"
+      value:
+        event: "ONBOARD_BANK"
+        event_by: "bank@123"
+        edetails:
+          - row_id: 1
+            bank_name: "Bank of Brahim"
+            baddr: "123 Finance Street"
+            binfo:
+              name: "John Doe"
+              phno: "+911234567890"
+              email: "johndoe@fnb.com"
+              designation: "Branch Manager"
+
+  
+    ONBOARD_BRANCH:
+      summary: "Example for onboarding branch"
+      value:
+        event: "ONBOARD_BRANCH"
+        event_by: "456"
+        edetails:
+          - row_id: 1
+            bank_id: 5
+            branch_name: "Downtown1"
+            braddr: "123 Main Street, New York, NY"
+            brinfo:
+              name: "Alice Johnson"
+              designation: "Branch Manager"
+              phno: "+911234567890"
+              email: "alice.johnson@bank.com"
+  
+    ONBOARD_MANUFACTURER:
+      summary: "Example for onboarding manufacturer"
+      value:
+        event: "ONBOARD_MANUFACTURER"
+        event_by: "2001"
+        edetails:
+          - row_id: 1
+            mfname: "Manufacturing A11"
+            mfaddr: "123 Industrial Park, New York, NY"
+            mfinfo:
+              name: "John Doe"
+              phno: "+911234567890"
+              email: "john.doe@facilityA.com"
+  
+    ONBOARD_FIRMWARE:
+      summary: "Example for onboarding firmware"
+      value:
+        event: "ONBOARD_FIRMWARE"
+        event_by: "2001"
+        edetails:
+          - row_id: 1
+            mfid: 3
+            fname: "Firmware1 V111.0"
+
+  
+    ONBOARD_DEVICE_MODEL:
+      summary: "Example for onboarding device model"
+      value:
+        event: "ONBOARD_DEVICE_MODEL"
+        event_by: "2001"
+        edetails:
+          - row_id: 1
+            mfid: 3
+            firmware_id: 1
+            model_name: "Model1 1A11"
+
+  
+    ONBOARD_DEVICE:
+      summary: "Example for onboarding device"
+      value:
+        event: "ONBOARD_DEVICE"
+        event_by: "fff"
+        edetails:
+          - row_id: 1
+            mfid: 3
+            model_id: 1
+            firmware_id: 1
+            dname: "Device1 A11"
+
+  
+    ONBOARD_MERCHANT:
+      summary: "Example for onboarding merchant"
+      value:
+        event: "ONBOARD_MERCHANT"
+        event_by: "2001"
+        edetails:
+          - row_id: 1
+            bank_id: 5
+            branch_id: 3
+            mname: "John Retail11"
+            msid: 5001
+            minfo:
+              accNo: "UPqqqq Johnson"
+              accHolderName: "Branch Manager"
+              phno: "+911234567890"
+
+    ONBOARD_VPA:
+      summary: "Example for onboarding VPA"
+      value:
+        event: "ONBOARD_VPA"
+        event_by: "2001"
+        edetails:
+          - row_id: 1
+            vpa: "vpa112345a6@bank1.com"
+            bank_id: 5
+
+    BIND_DEVICE:
+      summary: "Example for binding device"
+      value:
+        event: "BIND_DEVICE"
+        event_by: "d@123"
+        edetails:
+          - row_id: 1
+            vpa_id: 30
+            device_id: 30
+
+  
+    ALLOCATE_TO_MERCHANT:
+      summary: "Example for allocating to merchant"
+      value:
+        event: "ALLOCATE_TO_MERCHANT"
+        event_by: "d@123"
+        edetails:
+          - row_id: 1
+            merchant_id: 13
+            device_id: 21
+  
+    ALLOCATE_TO_BANK:
+      summary: "Example for allocating to bank"
+      value:
+        event: "ALLOCATE_TO_BANK"
+        event_by: "d@123"
+        edetails:
+          - row_id: 1
+            bank_id: 5
+            device_id: 21
+  
+    ALLOCATE_TO_BRANCH:
+      summary: "Example for allocating to branch"
+      value:
+        event: "ALLOCATE_TO_BRANCH"
+        event_by: "d@123"
+        edetails:
+          - row_id: 1
+            branch_id: 5
+            device_id: 21
+  
+    DEACTIVATE_DEVICE:
+      summary: "Example for deactivating device"
+      value:
+        event: "DEACTIVATE_DEVICE"
+        event_by: "d@123"
+        edetails:
+          - row_id: 1
+            device_id: 15
+  
+    DEACTIVATE_VPA:
+      summary: "Example for deactivating VPA"
+      value:
+        event: "DEACTIVATE_VPA"
+        event_by: "d@123"
+        edetails:
+          - row_id: 1
+            vpa_id: 20
+  
+    DEACTIVATE_BRANCH:
+      summary: "Example for deactivating branch"
+      value:
+        event: "DEACTIVATE_BRANCH"
+        event_by: "d@123"
+        edetails:
+          - row_id: 1
+            branch_id: 6
+  
+    DEACTIVATE_MERCHANT:
+      summary: "Example for deactivating merchant"
+      value:
+        event: "DEACTIVATE_MERCHANT"
+        event_by: "d@123"
+        edetails:
+          - row_id: 1
+            merchant_id: 13
+  
+    UPDATE_BANK:
+      summary: "Example for updating bank"
+      value:
+        event: "UPDATE_BANK"
+        event_by: "upb@123"
+        edetails:
+          - row_id: 1
+            bank_id: 5
+            baddr: "BANKK, NY"
+            binfo:
+              name: "UPp qDoe"
+              phno: "+911234567890"
+              email: "johndoe@fnb.com"
+              designation: "Branch Manager"
+  
+    UPDATE_BRANCH:
+      summary: "Example for updating branch"
+      value:
+        event: "UPDATE_BRANCH"
+        event_by: "d@123"
+        edetails:
+          - row_id: 1
+            branch_id: 3
+            braddr: "pppp"
+            brinfo:
+              name: "UPp qDoe"
+              phno: "+911234567890"
+              email: "johndoe@fnb.com"
+              designation: "Branch Manager"
+  
+    UPDATE_DEVICE:
+      summary: "Example for updating device"
+      value:
+        event: "UPDATE_DEVICE"
+        event_by: "d@123"
+        edetails:
+          - row_id: 1
+            device_id: 6
+            firmware_id: 1
+  
+    UPDATE_MERCHANT:
+      summary: "Example for updating merchant"
+      value:
+        event: "UPDATE_MERCHANT"
+        event_by: "m@123"
+        edetails:
+          - row_id: 1
+            merchant_id: 5
+            minfo:
+              accNo: "UPqqqq Johnson"
+              accHolderName: "Branch Manager"
+              phno: "+911234567890"
+          - row_id: 2
+            merchant_id: 5
+            minfo:
+              accNo: "UPqqqq Johnson"
+              accHolderName: "Branch Manager"
+              phno: "+911234567890"
+  schemas:
+    Wrequest:
+      type: object
+      properties:
+        event:
+          type: string
+          example: "ALLOCATE_TO_MERCHANT"
+        details:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: string
+          example:
+            - mid: 123
+              did: 45
+    
+    Revent:
+      type: object
+      properties:
+        eid:
+          type: integer
+          example: 1
+        eby:
+          type: integer
+          example: 101
+        einfo:
+          type: object
+          additionalProperties:
+            type: string
+        ecode:
+          type: string
+          example: "EVT_001"
+        status:
+          type: string
+          example: "PENDING"
+    
+    Hprops:
+      type: object
+      properties:
+        hid:
+          type: integer
+          example: 10
+        htype:
+          type: string
+          example: "api"
+        hinfo:
+          type: object
+          additionalProperties:
+            type: string
+        ecode:
+          type: string
+          example: "HANDLER_001"
+    
+    Hinfo:
+      type: object
+      properties:
+        lid:
+          type: integer
+          example: 1
+        eid:
+          type: integer
+          example: 1001
+        ecode:
+          type: string
+          example: "ALLOCATE_TO_MERCHANT"
+        edetails:
+          $ref: '#/components/schemas/Wrequest'

@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: drouter-deployment
+  namespace: dms-uat
+  labels:
+    app: drouter-ms
+    environment: uat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: drouter-ms
+      environment: uat
+  template:
+    metadata:
+      labels:
+        app: drouter-ms
+        environment: uat
+    spec:
+      serviceAccountName: uat-secrets-sa
+      volumes:
+        - name: drouter-ms-secrets
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: drouter-ms-secrets
+      containers:
+        - name: drouter-ms
+          image: DOCKER_IMAGE_PLACEHOLDER
+          volumeMounts:
+            - name: drouter-ms-secrets
+              mountPath: /app/src/secrets
+          ports:
+            - containerPort: 3004
+          resources:
+            requests:
+              cpu: "400m"
+              memory: "500Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: drouter-ms-service
+  namespace: dms-uat
+spec:
+  selector:
+    app: drouter-ms
+    environment: uat
+  ports:
+    - protocol: TCP
+      port: 8441
+      targetPort: 3004
+  type: NodePort

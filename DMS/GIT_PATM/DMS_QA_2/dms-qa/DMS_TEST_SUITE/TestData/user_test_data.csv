@@ -1,0 +1,184 @@
+Test ID,Test Case,request_type,endpoint,request,response,assertion_function,expected_status,to_replace_in_req,add_to_context_from_res,add_to_context_from_req,delay,headers,
+TU001,Invalid Username And Valid password,POST,/user/session,"{
+""username"": ""abc"",
+""password"": ""32532mkdmf43435""
+}","{
+    ""code"": 4000,
+    ""message"": ""Invalid user credentials""
+}",full_response.assert_full_response,401,,,,0,,
+TU002,Invalid password And Valid Username,POST,/user/session,"{
+""username"": ""abc"",
+""password"": ""32532mkdmf43435""
+}","{""code"":4000,""message"":""Invalid user credentials""}",full_response.assert_full_response,401,,,,0,,
+TU003,Send empty username and password,POST,/user/session,"{
+""username"": """",
+""password"": """"
+}","{""code"":1000,""message"":""PASSWORD REQUIRED""}",full_response.assert_full_response,401,,,,0,,"{""code"":1000,""message"":""password is required""}"
+TU004,Valid username and password,POST,/user/session,"{
+""username"": ""vinuta.hegde@tibilsolutions.com"",
+""password"": ""Welcome@97""
+}","{
+""code"": 2000,
+""data"": {
+""access_token"": ""eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJBRWFPNWFLYkk1TWdUSHlQUXJVMGRfNWJ6Z3hyQ09WNndRM2t5OVVqN3ZjIn0.eyJleHAiOjE3NDQ3ODQ3MDcsImlhdCI6MTc0NDY5ODMwNywianRpIjoiZWNmMTRkOTItNTAwZS00NTY2LTg3NmEtMGUzODdjNDA1NTQwIiwiaXNzIjoiaHR0cHM6Ly9zYW5kYm94LmRtcy5wb2NrZXRhdG0uaW46ODQ0MS9yZWFsbXMvdWF0LWRtcyIsImF1ZCI6WyJpbnRlbC1tcyIsInJlZ2lzdHJ5LW1zIiwid29ya2Zsb3ctbXMiLCJhY2NvdW50Il0sInN1YiI6IjA1ZDY5ODg1LTllOWQtNDhlOC04NjczLTNiYTRkMTFmYmYyMCIsInR5cCI6IkJlYXJlciIsImF6cCI6InVzZXItbXMiLCJzaWQiOiIzNzhhNmY1Zi1kMjE5LTQxYjAtOTVkNS05MjkwOWZiODcxZGUiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbIi8qIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIiwiZGVmYXVsdC1yb2xlcy11YXQtZG1zIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiaW50ZWwtbXMiOnsicm9sZXMiOlsiRE1TIEFkbWluIl19LCJ1c2VyLW1zIjp7InJvbGVzIjpbIkRNUyBBZG1pbiJdfSwicmVnaXN0cnktbXMiOnsicm9sZXMiOlsiRE1TIEFkbWluIl19LCJ3b3JrZmxvdy1tcyI6eyJyb2xlcyI6WyJETVMgQWRtaW4iXX0sImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpbCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJuYW1lIjoidmludXRhIGgiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJ2aW51dGEuaGVnZGVAdGliaWxzb2x1dGlvbnMuY29tIiwiZ2l2ZW5fbmFtZSI6InZpbnV0YSIsImZhbWlseV9uYW1lIjoiaCIsImVtYWlsIjoidmludXRhLmhlZ2RlQHRpYmlsc29sdXRpb25zLmNvbSJ9.cuCwZa9Z1Y4i5Wd6SkpyeltuqFcEKXv6mssamsOMKmYIcgWBdajyxLRZf2Ivqb_TOgR_g9Gz0ikjA9Zsu3u7kxy4G5j7Ve5qikwD6F8GjexM6Ya8NYpsS9Xygjxs7jdF32d0ryw69rNa_fG3_WcMlovZdcITO2GRuwmcOVeHBLxwmkzfX0r895qJe5CBE9uu4NEzAyECXtmR2wynMERKbShRlYMejpxpabzWUeWreUVhSGMUCiqq87ABxZwWBkl_3FYBRDVoatIWcAuVhHa-DlMT5E0srHouMuNqzmvhLLszB7z9p36-_jUn1K7_knuSaKZkf7v20cBMDOcjbqjFgQ"",
+""expires_in"": 86400,
+""refresh_expires_in"": 86400,
+""refresh_token"": ""eyJhbGciOiJIUzUxMiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI0YWQ1ODFmMS0zNjA4LTQxZGQtOWIwMy0zYWQ2NWY2YjRlMWQifQ.eyJleHAiOjE3NDQ3ODQ3MDcsImlhdCI6MTc0NDY5ODMwNywianRpIjoiZWRiMGJlYTMtZjI0Ny00MzFlLWFiNTktMWMxZDczOTk4MWFjIiwiaXNzIjoiaHR0cHM6Ly9zYW5kYm94LmRtcy5wb2NrZXRhdG0uaW46ODQ0MS9yZWFsbXMvdWF0LWRtcyIsImF1ZCI6Imh0dHBzOi8vc2FuZGJveC5kbXMucG9ja2V0YXRtLmluOjg0NDEvcmVhbG1zL3VhdC1kbXMiLCJzdWIiOiIwNWQ2OTg4NS05ZTlkLTQ4ZTgtODY3My0zYmE0ZDExZmJmMjAiLCJ0eXAiOiJSZWZyZXNoIiwiYXpwIjoidXNlci1tcyIsInNpZCI6IjM3OGE2ZjVmLWQyMTktNDFiMC05NWQ1LTkyOTA5ZmI4NzFkZSIsInNjb3BlIjoiYWNyIHByb2ZpbGUgYmFzaWMgcm9sZXMgd2ViLW9yaWdpbnMgZW1haWwifQ.ryNCUEql9xFTo6O4Uw2-b-1n3rWGZSpon30QKEyxneX1bNSSe2APLMe8ZjcEaiznLOPVf-bez_HDjruSGQUePw"",
+""token_type"": ""Bearer"",
+""not-before-policy"": 0,
+
+""session_state"": ""378a6f5f-d219-41b0-95d5-92909fb871de"",
+""scope"": ""profile email""
+}
+}",resp_code.assert_resp_code,200,,,,0,,
+TU005,New password empty,PUT,/user/auth,"{""userName"":""vinuta.hegde@tibilsolutions.com"",""newPassword"":""""}","{""code"":1000,""message"":""NEW PASSWORD REQUIRED""}",full_response.assert_full_response,200,,,,0,,
+TU006,User Name is empty,PUT,/user/auth,"{""userName"":"""",""newPassword"":""Welcome@98""}","{""code"":1000,""message"":""USERNAME IS REQUIRED""}",full_response.assert_full_response,200,,,,0,,
+TU007,username and new password empty,PUT,/user/auth,"{""userName"":"""",""newPassword"":""""}","{
+""code"": 1000,
+""message"": ""NEW PASSWORD REQUIRED""
+}",full_response.assert_full_response,200,,,,0,,
+TU008,username and old pwd,PUT,/user/auth,"{""username"":""vinuta.hegde@tibilsolutions.com"",""newPassword"":""Welcome@97""}","{""code"":1000,""message"":""Invalid password: must not be equal to any of last 3 passwords.""}",full_response.assert_full_response,200,,,,0,,
+TU009,username and new password,PUT,/user/auth,"{""username"":""regtestuser@gmail.com"",""newPassword"":""Welcome@1""}","{""code"":2000,""data"":""PASSWORD SUCCESSFULLY UPDATED""}",full_response.assert_full_response,200,,,,0,,
+TU010,Empty user email,POST,/user/details/get,{},"{
+""code"" : 4000 ,
+""message"" : ""Invalid User""
+}",full_response.assert_full_response,200,,,,0,,
+TU011,Invalid user email,POST,/user/details/get,"{""username"": ""dhanush.1234@gmail.com""}","{""code"":1000,""message"":""INVALID USER""}",full_response.assert_full_response,200,,,,0,,
+TU012,Valid user email,POST,/user/details/get,"{""username"": ""vinuta.hegde@tibilsolutions.com""}","{
+""code"": 2000,
+""data"": [
+{
+""id"": ""4e015f8c-34d8-4371-b213-568e93dd61cc"",
+""username"": ""dhanush.123@gmail.com"",
+""firstName"": ""Dhanush"",
+""lastName"": ""K S"",
+""email"": ""dhanush.123@gmail.com"",
+""attributes"": {
+""branches"": [
+""branch_1,branch_2""
+],
+""banks"": [
+""bank_1""
+]
+},
+""role"": ""Bank Admin"",
+""org"": ""bank_1""
+}
+]
+}",resp_code.assert_resp_code,200,,,,0,,
+TU013,List get without email id,POST,/user/list/get,"{
+  ""pagination"": {
+    ""offset"": 0,
+    ""limit"": 5
+  },
+  ""context"": ""BANK""
+}","{
+    ""code"": 1000,
+    ""message"": ""EMAIL IS REQUIRED""
+}",full_response.assert_full_response,200,,,,0,,
+TU014,Invalid email,POST,/user/list/get,"{
+  ""pagination"": {
+    ""offset"": 0,
+    ""limit"": 5
+  },
+  ""context"": ""BANK"",
+  ""email"": ""tester@gmail.commmm""
+}","{
+    ""code"": 2000,
+    ""data"": []
+}",full_response.assert_full_response,200,,,,0,,
+TU015,Valid email,POST,/user/list/get,"{
+  ""pagination"": {
+    ""offset"": 0,
+    ""limit"": 5
+  },
+  ""context"": ""BANK"",
+  ""email"": ""tester@gmail.com""
+}","{
+    ""code"": 2000,
+    ""data"": [
+        {
+            ""username"": ""anup.nair@tibilsolutions.com"",
+            ""fname"": ""Anup"",
+            ""lname"": ""n""
+        },
+        {
+            ""username"": ""dhanush.123@gmail.com"",
+            ""fname"": ""Dhanush"",
+            ""lname"": ""K S""
+        },
+        {
+            ""username"": ""dhanush.ks@tibilsolutions.com"",
+            ""fname"": ""Dhanush"",
+            ""lname"": ""KS""
+        },
+        {
+            ""username"": ""disha.bhat@tibilsolutions.com"",
+            ""fname"": ""Disha"",
+            ""lname"": ""Bhat""
+        },
+        {
+            ""username"": ""kailesh.k@gmail.com"",
+            ""fname"": ""kailesh"",
+            ""lname"": ""k""
+        }
+    ],
+    ""count"": ""20""
+}",data_limit.assert_data_limit,200,,,,0,,
+TU016,Onbaord bank RM,POST,/user,"{
+  ""event"": ""ONBOARD_USER"",
+  ""event_by"": ""vinuta.hegde@tibilsolutions.com"",
+  ""edetails"": [
+    {
+      ""user_info"": {
+        ""username"": ""bankrmtest"",
+        ""fname"": ""bankrmtest"",
+        ""lname"": ""k"",
+        ""email"": ""bankrmtest@gmail.com"",
+        ""user_org"": ""Tibil-Bank""
+      },
+      ""user_role"": ""Bank RM"",
+      ""user_access"": [
+        {
+          ""banks"": {
+            ""allow"": [
+              ""Tibil-Bank""
+            ],
+            ""deny"": []
+          },
+          ""branches"": {
+            ""allow"": [
+              ""branch_1""
+            ],
+            ""deny"": []
+          }
+        }
+      ]
+    }
+  ],
+  ""role"": ""DMS Admin"",
+  ""userName"": ""vinuta.hegde@tibilsolutions.com""
+}","{
+    ""code"": 2000,
+    ""edata"": {
+        ""headers"": [
+            ""username"",
+            ""msg"",
+            ""status""
+        ],
+        ""values"": [
+            [
+                ""ramna18@gmail.com"",
+                ""USER_ONBOARDED"",
+                1
+            ]
+        ],
+        ""status"": [
+            1,
+            1,
+            0
+        ]
+    },
+    ""message"": ""SUCCESSFULLY USER CREATED""
+}",status_code.assert_status_code,201,,,,0,,
+TU017,fetch client token for the user,POST,/admin/realms/user-ms/users//role-mappings/clients/9fa638f6-1042-405d-8fdb-d472d2b3ea4c,{},{},status_code.assert_status_code,200,,,,0,,

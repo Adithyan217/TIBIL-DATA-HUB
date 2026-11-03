@@ -1,0 +1,91 @@
+CREATE OR REPLACE FUNCTION dmsr.merchant_validator(m_name VARCHAR,br_id INTEGER,b_id INTEGER) 
+RETURNS BOOLEAN AS $$
+BEGIN
+   	IF EXISTS (SELECT 1 FROM dmsr.merchants WHERE mname = m_name ) THEN
+        RETURN FALSE;
+    END IF;
+
+	-- IF EXISTS (SELECT 1 FROM dmsr.merchants WHERE msid = ms_id ) THEN
+ --        RETURN FALSE;
+ --    END IF;
+
+	IF NOT EXISTS (SELECT 1 FROM dmsr.branches WHERE brid = br_id AND isd = 'false') THEN
+    	RETURN FALSE;
+	END IF;
+	
+	IF NOT EXISTS (SELECT 1 FROM dmsr.banks WHERE bid = b_id AND isd = 'false') THEN
+    	RETURN FALSE;
+	END IF;
+
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION dmsr.merchant_validator_writer(
+    rowid INTEGER,
+    mname VARCHAR,
+	bid INTEGER,
+	brid INTEGER,
+	msid INTEGER,
+    eby INTEGER,
+    eid INTEGER
+)
+RETURNS TABLE (row_id INTEGER, status INTEGER, msg TEXT,mp_id INTEGER) AS $$
+DECLARE
+    mevt dmsr.mevts := 'MERCHANT_ONBOARDED';
+	mp_id INTEGER;
+BEGIN
+    IF dmsr.merchant_validator(mname,brid,bid) THEN
+    	INSERT INTO dmsr.merchants (eid, mevt, eby, mname,bid,brid,msid)
+    	VALUES (eid, mevt, eby, mname,bid,brid,msid)
+		RETURNING mpid INTO mp_id;
+		RETURN QUERY SELECT rowid, 1, 'Insertion Successful',mp_id;		
+	ELSE 
+		RETURN QUERY SELECT rowid, 0, 'Validation Failed',0;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION dmsr.merchant_iterator(
+	rowid INT[],
+    mname TEXT[],
+	bid INT[],
+	brid INT[],
+	msid INT[],
+    event_bys INT[],
+    eids INT[]
+) 
+RETURNS TABLE (row_id INTEGER, status INTEGER, msg TEXT,mpid INTEGER) AS
+$$
+DECLARE
+    i INT;
+BEGIN
+    FOR i IN 1..array_length(mname, 1) LOOP
+  
+        RETURN QUERY SELECT * FROM dmsr.merchant_validator_writer(
+			rowid[i],
+    		mname[i],
+			bid[i],
+			brid[i],
+			msid[i],
+    		event_bys[i],   
+            eids[i]
+        ); 
+    END LOOP; 
+END;
+$$ LANGUAGE plpgsql;
+
+
+SELECT * FROM dmsr.merchant_iterator(
+	ARRAY[1,2],
+    ARRAY['te11111', 'tet121'],  
+	ARRAY[1,2],
+	ARRAY[1,2],
+	ARRAY[21,2],
+    ARRAY[1, 1], 
+    ARRAY[28, 28]
+);

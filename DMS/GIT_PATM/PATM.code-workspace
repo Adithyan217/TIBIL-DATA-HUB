@@ -1,0 +1,44 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"path": "../../../../WORKFLOWMS/workflow-ms"
+		},
+		{
+			"path": "../../../../SCHEMA_LIBRARY/schema-library"
+		},
+		{
+			"path": "../../../../DROUTER/drouter"
+		},
+		{
+			"path": "../../../../INTELMS/intel-ms"
+		},
+		{
+			"path": "../../../../USERMS/dms-user-ms"
+		},
+		{
+			"path": "../../../../dtransformer/dms-dtransformer"
+		},
+		{
+			"path": "../../../../DLISTNER/dms-dlistener"
+		},
+		{
+			"path": "../../../../../../DATA_BACKUP/GIT_BACKUP/DATA_SAVER"
+		},
+		{
+			"path": "../../../../DMS_QA_2/dms-qa"
+		},
+		{
+			"path": "../../../../MSB_LISTNER/msb-listener"
+		},
+		{
+			"path": "../../../../MSB-P-TRANSIT/dms-ptransit-ms"
+		},
+		{
+			"path": "../../../../MSB-F-TRANSIT/msb-ftransit-ms"
+		}
+	],
+	"settings": {}
+}

@@ -1,0 +1,26 @@
+def generate_sql_query(start,end):
+    # Prepare the SQL query structure
+    sql_query = "EXPLAIN ANALYZE\nSELECT * \nFROM registry.sb_iterator_v2(\n"
+    
+    # Static parameters for sb_iterator_v2
+    sql_query += "    'BOUND_DEVICE',\n"
+    sql_query += "ARRAY['rowid', 'vid', 'did', 'eid', 'eby'],\n"
+    
+    # Generate the array of arrays (100 to 165)
+    arrays = []
+    for i in range(start, end):  # From 100 to 165 inclusive
+        arrays.append(f" ARRAY[{i}, {i}, {i},null,null,null, 1, {i}]::INTEGER[]")
+
+    # Add the generated arrays to the SQL query
+    sql_query += "ARRAY[\n"
+    sql_query += ",".join(arrays)  # Join all array strings with commas
+    sql_query += "]::INTEGER[]\n);\n"
+    
+    return sql_query
+
+# Example usage:
+sql_query = generate_sql_query(20,10020)
+print(sql_query)
+
+with open("./sb_v2_iterator_query.sql", "w") as file:
+    file.write(sql_query)

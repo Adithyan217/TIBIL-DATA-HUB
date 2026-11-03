@@ -1,0 +1,117 @@
+Test ID,Test Case,request_type,endpoint,header,request,response,assertion_function,expected_status,to_replace_in_req,add_to_context_from_res,add_to_context_from_req,delay
+TDR1,Valid request,POST,/drouter/pnotif,"{""did"":""tester_device""}","{
+""data"": ""VSpELP2lFWL4/QyWqxdbY4MAVwl5e4Grs+WZNS5TlVOU9O5fWX03H389gJOKeEAtl9vFEZ6tdGEESDRVx3gfbqUbiXIXBDyc0kfO+IhxxTmwb3bCw5b0f0A1lTi46PHe4TGlA9RCITWDh9hAKXViyadL1tdYj4u0UWZsrGwtpLBiA7euAZy1yaky40VYSZkWV+jYyF6N24J0gskc4Oql7fNGlf1cQyix3EFAZPsJ1Mxhk648FsH2IFk6QxI2/WKS8ygArtQ=""
+
+}","{
+""data"": ""VSpDMfG0C2X+skaWwlAIMtNDFl4/Jt3ipYfMemlMk1fS7OBEHC51fCJr+8ieAgh9y4iUQ9LqdD5SSCN1x2kUONFW+GpI1lD5JZ1owwQh2gUUVbLqbw==""
+}",status_code.assert_status_code,200,,,,0
+TDR2,Empty payload,POST,/drouter/pnotif,"{""did"" : ""tester_device""}",{},"{
+""statMsg"": ""Failed to Insert"",
+""reqRefNo"": """",
+""statCode"": ""F""
+}",status_code.assert_status_code,400,,,,0
+TDR3,Empty data value,POST,/drouter/pnotif,"{""did"" : ""tester_device""}","{ ""data"" : "" "" }","{
+""statMsg"": ""Failed to Insert"",
+""reqRefNo"": """",
+""statCode"": ""F""
+}",status_code.assert_status_code,400,,,,0
+TDR4,Invalid endpoint,POST,/drouter/invalid,"{""did"" : ""tester_device""}","{
+""data"": ""VSpELP2lFWL4/QyWqxdbY4MAVwl5e4Grs+WZNS5TlVOU9O5fWX03H389gJOKeEAtl9vFEZ6tdGEESDRVx3gfbqUbiXIXBDyc0kfO+IhxxTmwb3bCw5b0f0A1lTi46PHe4TGlA9RCITWDh9hAKXViyadL1tdYj4u0UWZsrGwtpLBiA7euAZy1yaky40VYSZkWV+jYyF7IjsEy0othqK2n/P5i2qVcDXLqqAICc+NWeMJkxn1clnAdRCJhRohO5g==""
+}","{
+""message"": ""Cannot POST /drouter/invalid"",
+""error"": ""Not Found"",
+""statusCode"": 404
+}",status_code.assert_status_code,404,,,,0
+TDR5,Invalid data,POST,/drouter/pnotif,"{""did"" : ""tester_device""}","{
+""data"": ""VSpELP2lFWL4/QyWqxdbY4MAVwl5e4Grs+WZNS5TlVOU9O5fWX03H389gJOKeEAtl9vFEZ6tdGEESDRVx3gfbqUbiXIXBDyc0kfO+IhxxTmwb3bCw5b0f0A1lTi46PHABCDEFGe4TGlA9RCITWDh9hAKXViyadL1tdYj4u0UWZsrGwtpLBiA7euAZy1yaky40VYSZkWV+jYyF7IjsEy0othqK2n/P5i2qVcDXLqqAICc+NWeMJkxn1clnAdRCJhRohO5g==""
+}","{
+""statMsg"": ""Failed to Insert"",
+""reqRefNo"": """",
+""statCode"": ""F""
+}",status_code.assert_status_code,400,,,,0
+TDR6,Invaldi device id,POST,/drouter/pnotif,"{""did"" : ""invalid_device""}","{
+""data"": ""VSpELP2lFWL4/QyWqxdbY4MAVwl5e4Grs+WZNS5TlVOU9O5fWX03H389gJOKeEAtl9vFEZ6tdGEESDRVx3gfbqUbiXIXBDyc0kfO+IhxxTmwb3bCw5b0f0A1lTi46PHABCDEFGe4TGlA9RCITWDh9hAKXViyadL1tdYj4u0UWZsrGwtpLBiA7euAZy1yaky40VYSZkWV+jYyF7IjsEy0othqK2n/P5i2qVcDXLqqAICc+NWeMJkxn1clnAdRCJhRohO5g==""
+}","{
+""statMsg"": ""Failed to Insert"",
+""reqRefNo"": """",
+""statCode"": ""F""
+}",status_code.assert_status_code,400,,,,0
+TDR7,empty value for transaction amount,POST,/drouter/pnotif,"{""did"" : ""tester_device""}","{
+""data"": ""VSpELP2lFWL4/QyWqxdbY4MAVwl5e4Grs+WZNS5TlVOU9O5fWX03H389gJOKeEAtl9vFEZ6tdGEESDRVx3gfbqUbiXIXBDyc0kfO+IhxxTmwb3bCw5b0f0A1lTi46PHe4TGlA9RCITWDh9hAKXViyadL1tdYj4u0UWZsrGwtpLBiA7euAZy1yaky40VYSZkWV+jYyF6N24J0gskc4Oql7fNGlf1cQyix3EFAZPsJw4QcgkiOwM5JiusfESiymm8d""
+}","{
+""statMsg"": ""Failed to Insert"",
+""reqRefNo"": """",
+""statCode"": ""F""
+}",status_code.assert_status_code,400,,,,0
+TDR8,Sending decrypted data in the payload,POST,/drouter/pnotif,"{""did"" : ""tester_device""}","{
+""data"": {
+""timeStamp"": 20250213100600,
+""vpa"": ""9763180546@janabank"",
+""accountNo"": ""3012010044009296"",
+""reqRefNo"": ""JSFidbc1c4704c"",
+""mobile"": ""9763180546"",
+""deviceId"": ""tester_device"",
+""txnAmt"": """"
+}
+}","{
+""statMsg"": ""Failed to Insert"",
+""reqRefNo"": """",
+""statCode"": ""F""
+}",status_code.assert_status_code,400,,,,0
+TDR9,payload without reqRefNo,POST,/drouter/pnotif,"{""did"" : ""tester_device""}","{
+""data"": ""VSpELP2lFWL4/QyWqxdbY4MAVwl5e4Grs+WZNS5TlVOU9O5fWX03H389gJOKeEAtl9vFEZ6tdGEESDRVx3gfbqUbiXIXBDyc0kfO+IhxxTmwb3bCw5b0f18/hgOx652L4TKwf7Q1cGHU0N8BMWA2mLIAmZB8hMvnH3cr5Tpx4dk1V/n3V82hx6dk/05vTY5RJK7Px1LPi9N9Jo1hpms42Q182YDdZP+3lw==""
+}","{
+""statMsg"": ""Failed to Insert"",
+""reqRefNo"": """",
+""statCode"": ""F""
+}",status_code.assert_status_code,400,,,,0
+TDR10,payload without txnAmt,POST,/drouter/pnotif,"{""did"" : ""tester_device""}","{
+""data"": ""VSpELP2lFWL4/QyWqxdbY4MAVwl5e4Grs+WZNS5TlVOU9O5fWX03H389gJOKeEAtl9vFEZ6tdGEESDRVx3gfbqUbiXIXBDyc0kfO+IhxxTmwb3bCw5b0f0A1lTi46PHe4TGlA9RCITWDh9hAKXViyadL1tdYj4u0UWZsrGwtpLBiA7euAZy1yaky40VYSZkWV+jYyF6N24J0gskc4Oql7fNGlaw1xNBSlOQaiZY3ueQTqP1Y""
+}","{
+""statMsg"": ""Failed to Insert"",
+""reqRefNo"": """",
+""statCode"": ""F""
+}",status_code.assert_status_code,400,,,,0
+TDR11,Device id which is not enabled,POST,/drouter/pnotif,"{""did"" : ""unenabled_device""}","{
+""data"": ""VSpELP2lFWL4/QyWqxdbY4MAVwl5e4Grs+WZNS5TlVOU9O5fWX03H389gJOKeEAtl9vFEZ6tdGEESDRVx3gfbqUbiXIXBDyc0kfO+IhxxTmwb3bCw5b0f0A1lTi46PHABCDEFGe4TGlA9RCITWDh9hAKXViyadL1tdYj4u0UWZsrGwtpLBiA7euAZy1yaky40VYSZkWV+jYyF7IjsEy0othqK2n/P5i2qVcDXLqqAICc+NWeMJkxn1clnAdRCJhRohO5g==""
+}","{
+""statMsg"": ""Failed to Insert"",
+""reqRefNo"": """",
+""statCode"": ""F""
+}",status_code.assert_status_code,400,,,,0
+TDR12,Deactivating a device,POST,/drouter/device/deactivation,,"{
+""edetails"":[ {
+""row_id"":1,
+""device_id"": ""tester_device""
+}
+]
+}","{
+""code"": 2000,
+""message"": ""Operation successfully executed."",
+""edata"": {
+""headers"": [
+""row_id"",
+""status"",
+""msg""
+],
+""values"": [
+[
+1,
+1,
+""Successfully Deactivated""
+]
+],
+""status"": [
+1,
+1,
+0
+]
+}
+}",full_response.assert_full_response,200,,,,0
+TDR13,Deactivated device id,POST,/drouter/pnotif,"{""did"" : ""tester_device""}","{
+""data"": ""VSpELP2lFWL4/QyWqxdbY4MAVwl5e4Grs+WZNS5TlVOU9O5fWX03H389gJOKeEAtl9vFEZ6tdGEESDRVx3gfbqUbiXIXBDyc0kfO+IhxxTmwb3bCw5b0f0A1lTi46PHABCDEFGe4TGlA9RCITWDh9hAKXViyadL1tdYj4u0UWZsrGwtpLBiA7euAZy1yaky40VYSZkWV+jYyF7IjsEy0othqK2n/P5i2qVcDXLqqAICc+NWeMJkxn1clnAdRCJhRohO5g==""
+}","{
+""statMsg"": ""Failed to Insert"",
+""reqRefNo"": """",
+""statCode"": ""F""
+}",status_code.assert_status_code,400,,,,0

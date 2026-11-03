@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+      "module": "commonjs",
+      "target": "ES2021",
+      "declaration": true,
+      "outDir": "./dist",
+      "strict": true,                      // Keep strict mode for better type safety
+      "esModuleInterop": true,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "skipLibCheck": true,                // Skip type checking for node_modules
+      "typeRoots": ["node_modules/@types", "./types"],
+      "types": ["node", "lru-cache"],
+      "baseUrl": ".",
+      "paths": {
+        "lru-cache": ["types/lru-cache.d.ts"]
+      }
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist", "**/*.spec.ts"]
+  }
+  

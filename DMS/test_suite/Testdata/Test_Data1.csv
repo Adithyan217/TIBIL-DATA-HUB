@@ -1,0 +1,778 @@
+Testcase ID,Testcase Type,endpoint,method,auth_required,expired_token,headers,payload,params,expected_status_code,expected_response_keys,expected_responce_body,,,,,,,,,,,
+TC_Soundbox_API_001,Positive,/user/otp,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""mobile_number"": ""9738350592""
+}",,200,"code,identification",,,,,,,,,,,,
+TC_Soundbox_API_01-A,negative,/user/otp,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+}",,200,"code,message","{
+    ""code"": 1000,
+    ""message"": [
+        ""Mobile Number is required""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_01-B,negative,/user/otp,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""mobile_number"": """"
+}",,200,"code,message","{
+    ""code"": 1000,
+    ""message"": [
+        ""Mobile Number cannot be empty""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_01-C,negative,/user/otp,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""mobile_number"": ""23394""
+}",,200,"code,message","{
+    ""code"": 1000,
+    ""message"": [
+        ""Mobile Number length must be 10""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_01-D,negative,/user/otp,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""mobile_number"": ""233234567865494""
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": [
+        ""Mobile Number length must be 10""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_01-E,negative,/user/otp,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""mobile_number"": 9738350592
+}",,200,"message,code","{
+  ""code"": 1000,
+  ""message"": [
+    ""Invalid Mobile Number""
+  ]
+}",,,,,,,,,,,
+TC_Soundbox_API_01-F,negative,/user/otp/invalidurl,POST,TRUE,TRUE,"{""Content-Type"":""application/json""}","{
+""mobile_number"": ""765467897""
+}",,403,message,"{
+    ""message"": ""Forbidden""
+}",,,,,,,,,,,
+TC_Soundbox_API_01-G,negative,/user/otp,GET,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""mobile_number"": ""765467897""
+}",,404,,,,,,,,,,,,,
+TC_Soundbox_API_02,negative,/user/otp,PATCH,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""otp"": 345206,
+  ""mobile_number"": ""9731037150"",
+  ""device_id"": ""345343453"",
+  ""identification"": ""333""
+}",,200,"code,message","{
+    ""code"": 2000,
+    ""message"": ""VALID OTP""
+}",,,,,,,,,,,
+TC_Soundbox_API_02-A,negative,/user/otp/invalidurl,PATCH,TRUE,TRUE,"{""Content-Type"":""application/json""}","{
+  ""otp"": 345206,
+  ""mobile_number"": ""9731037150"",
+  ""device_id"": ""345343453"",
+  ""identification"": ""333""
+}",,403,message,"{
+    ""message"": ""Forbidden""
+}",,,,,,,,,,,
+TC_Soundbox_API_02-B,negative,/user/otp,PATCH,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""otp"": 315206,
+  ""mobile_number"": ""9731037150"",
+  ""device_id"": ""345343453"",
+  ""identification"": ""333""
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": ""INVALID OTP""
+}",,,,,,,,,,,
+TC_Soundbox_API_02-C,negative,/user/otp,GET,FALSE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""otp"": 345206,
+  ""mobile_number"": ""9731037150"",
+  ""deve_id"": ""345343453"",
+  ""identification"": ""234554""
+}",,401,,,,,,,,,,,,,
+TC_Soundbox_API_02-D,negative,/user/otp,PATCH,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""otp"": 156,
+  ""mobile_number"": ""9731037150"",
+  ""device_id"": ""345343453"",
+  ""identification"": ""333""
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": ""INVALID OTP""
+}",,,,,,,,,,,
+TC_Soundbox_API_02-E,negative,/user/otp,PATCH,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""otp"": 345206,
+  ""device_id"": ""345343453"",
+  ""identification"": ""333""
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": [
+        ""Mobile Number is required""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_02-F,negative,/user/otp,PATCH,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""otp"": 345206,
+  ""mobile_number"": ""9731037150"",
+  ""identification"": ""333""
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": [
+        ""Device Id is required""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_02-G,negative,/user/otp,PATCH,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""mobile_number"": ""9731037150"",
+  ""device_id"": ""345343453"",
+  ""identification"": ""333""
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": [
+        ""OTP is required""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_02-H,negative,/user/otp,PATCH,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""otp"": 345206,
+  ""device_id"": ""345343453"",
+  ""identification"": ""333""
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": [
+        ""Mobile Number is required""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_02-I,negative,/user/otp,PATCH,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""otp"": 345206,
+  ""mobile_number"": ""this is number"",
+  ""device_id"": ""345343453"",
+  ""identification"": ""333""
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": [
+        ""Mobile Number length must be 10"",
+        ""Mobile Number must only contain numbers""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_02-J,negative,/user/otp,PATCH,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""otp"": 345206,
+  ""mobile_number"": ""9731037150"",
+  ""device_id"": 345343453,
+  ""identification"": 333
+}",,200,"message,code","{
+  ""code"": 1000,
+  ""message"": [
+    ""Invalid Device Id""
+  ]
+}",,,,,,,,,,,
+TC_Soundbox_API_02-K,negative,/user/otp,PATCH,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""otp"": ""345206"",
+  ""mobile_number"": ""9731037150"",
+  ""device_id"": ""345343453"",
+  ""identification"": ""333""
+}",,200,"message,code","{""code"": 2000, ""message"": ""VALID OTP""}",,,,,,,,,,,
+TC_Soundbox_API_02-L,negative,/user/otp,PATCH,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""otp"": 3311324453,
+  ""mobile_number"": ""9731037150"",
+  ""device_id"": ""345343453"",
+  ""identification"": ""333""
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": ""INVALID OTP""
+}",,,,,,,,,,,
+TC_Soundbox_API_03,Positive,/user/secrets,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""mobile_number"": ""9731037150"",
+  ""mpin"": 12432
+}",,200,"code,data",,,,,,,,,,,,
+TC_Soundbox_API_03-A,negative,/user/secrets,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""mpin"": 123456
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": [
+        ""Mobile Number is required""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_03-B,negative,/user/secrets,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""mobile_number"": ""9731037150""
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": [
+        ""MPIN is required""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_03-C,negative,/user/secrets,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""mobile_number"": ""9731037150"",
+  ""mpin"": 12432
+}",,200,,,,,,,,,,,,,
+TC_Soundbox_API_03-D,negative,/user/secrets,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""mobile_number"": ""973107150"",
+  ""mpin"": 12432
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": [
+        ""Mobile Number length must be 10""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_03-E,negative,/user/secrets,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""mobile_number"": ""97310317150"",
+  ""mpin"": 12432
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": [
+        ""Mobile Number length must be 10""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_03-F,negative,/user/secrets,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""mobile_number"": ""9731037150"",
+  ""mpin"": 123457
+}",,200,"code,data",,,,,,,,,,,,
+TC_Soundbox_API_03-G,negative,/user/invalid,POST,TRUE,TRUE,"{""Content-Type"":""application/json""}","{
+  ""mobile_number"": ""9731037150"",
+  ""mpin"": 12432
+}",,403,message,"{
+    ""message"": ""Forbidden""
+}",,,,,,,,,,,
+TC_Soundbox_API_03-H,negative,/user/secrets,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""mobile_number"": 9731037150,
+  ""mpin"": 12432
+}",,200,"code,message","{
+  ""code"": 1000,
+  ""message"": [
+    ""Invalid Mobile Number""
+  ]
+}",,,,,,,,,,,
+TC_Soundbox_API_03-I,negative,/user/secrets,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""mobile_number"": ""9731037150"",
+  ""mpin"": ""12432""
+}",,200,"data,code",,,,,,,,,,,,
+TC_Soundbox_API_04,positive,/user/preferences,PUT,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""uuid"": ""57653f43-5d49-44b6-bff7-76a5a1324caf"",
+""preferences"": {
+""language"": ""kn"",
+""mute"": ""0""
+}
+}",,200,"message,code","{
+""code"": 2000,
+""message"": ""USER DETAILS UPDATED SUCCESSFULLY""
+}",,,,,,,,,,,
+TC_Soundbox_API_04-A,negative,/user/preferences,PUT,FALSE,FALSE,"{""Content-Type"":""application/json""}","{
+""uuid"": ""57653f43-5d49-44b6-bff7-76a5a1324caf"",
+""preferences"": {
+""language"": ""kn"",
+""mute"": ""0""
+}
+}",,401,message,"{""message"": ""Unauthorized""}",,,,,,,,,,,
+TC_Soundbox_API_04-B,negative,/user/preferences,PUT,TRUE,TRUE,"{""Content-Type"":""application/json""}","{
+""uuid"": ""57653f43-5d49-44b6-bff7-76a5a1324caf"",
+""preferences"": {
+""language"": ""kn"",
+""mute"": ""0""
+}
+}",,403,message,"{""message"": ""Forbidden""}",,,,,,,,,,,
+TC_Soundbox_API_04-C,negative,/user/preferences/invalid,PUT,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""uuid"": ""57653f43-5d49"",
+""preferences"": {
+""language"": ""kn"",
+""mute"": ""0""
+}
+}",,404,,,,,,,,,,,,,
+TC_Soundbox_API_04-D,negative,/user/preferences,PUT,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""uuid"": ""1234"",
+""preferences"": {
+""language"": ""kn"",
+""mute"": ""0""
+}
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": ""Request failed with status code 404""
+}",,,,,,,,,,,
+TC_Soundbox_API_04_E,negative,/user/preferences,PUT,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""preferences"": {
+    ""language"": ""kn"",
+    ""mute"": ""0""
+  }
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": [
+        ""UUID is required""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_04-F,negative,/user/preferences/invalid,PUT,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""uuid"": ""57653f43-5d49-44b6-bff7-76a5a1324caf"",
+""preferences"": {
+""language"": ""kn"",
+""mute"": ""0""
+}
+}",,404,,,,,,,,,,,,,
+TC_Soundbox_API_04_G,negative,/user/preferences,PUT,TRUE,FALSE,"{""Content-Type"":""application/json""}","{""uuid"": ""57653f43-5d49-44b6-bff7-76a5a1324caf"", ""preferences"": {""language"": ""kn"", ""mute"": ""0""}}",,200,"message,code","{
+""code"": 2000,
+""message"": ""USER DETAILS UPDATED SUCCESSFULLY""
+}",,,,,,,,,,,
+TC_Soundbox_API_04-H,negative,/user/preferences,PUT,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""uuid"": ""57653f43-5d49-44b6-bff7-76a5a1324caf"",
+""preferences"": {
+""language"": ""kannada"",
+""mute"": ""0""
+}
+}",,200,"message,code","{ ""code"": 1000, ""message"": [ ""\""preferences.language\"" must be one of [en, kn, hi]"" ]}",,,,,,,,,,,
+TC_Soundbox_API_04-I,negative,/user/preferences,GET,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""uuid"": ""57653f43-5d49-44b6-bff7-76a5a1324caf"",
+""preferences"": {
+""language"": ""kn"",
+""mute"": ""0""
+}
+}",,404,,,,,,,,,,,,,
+TC_Soundbox_API_04-J,negative,/user/preferences,PUT,TRUE,TRUE,"{""Content-Type"":""application/json""}","{
+""uuid"": ""57653f43-5d49-44b6-bff7-76a5a1324caf"",
+""preferences"": {
+""language"": ""kn"",
+""mute"": ""0""
+}
+}",,403,,,,,,,,,,,,,
+TC_Soundbox_API_04-K,negative,/user/preferences,PUT,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""uuid"": ""57653f43-5d49-44b6-bff7-76a5a1324caf"",
+""preferences"": {
+""language"": ""kn"",
+""mute"": 0
+}
+}",,200,"message,code","{
+  ""code"": 1000,
+  ""message"": [
+    ""\""preferences.mute\"" must be one of [0, 1]"",
+    ""Invalid Preferences.mute""
+  ]
+}",,,,,,,,,,,
+TC_Soundbox_API_04-L,negative,/user/preferences,PUT,TRUE,TRUE,"{""Content-Type"":""application/json""}","{
+""uuid"": ""57653f43-5d49-44b6-bff7-76a5a1324caf"",
+""preferences"": {
+""language"": ""kn"",
+""mute"": ""0""
+}
+}",,403,,,,,,,,,,,,,
+TC_Soundbox_API_04-M,negative,/user/preferences,PUT,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""uuid"": ""57653f43-5d49-44b6-bff7-76a5a1324caf""
+}",,200,"message,code","{ ""code"": 1000, ""message"": [ ""Preferences is required"" ]}",,,,,,,,,,,
+TC_Soundbox_API_05,Positive,/user/accounts/get,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""mobile"": ""9738350592""
+}",,200,"code,data",,,,,,,,,,,,
+TC_Soundbox_API_05-A,negative,/user/accounts/get/invalid,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""mobile"": ""9738350592""
+}",,404,,,,,,,,,,,,,
+TC_Soundbox_API_05-B,negative,/user/accounts/get,GET,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""mobile"": ""9738350592""
+}",,404,,,,,,,,,,,,,
+TC_Soundbox_API_05-C,negative,/user/accounts/get,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""mobile"": """"
+}",,200,"message,code","{
+  ""code"": 1000,
+  ""message"": [
+    ""Mobile Number cannot be empty""
+  ]
+}",,,,,,,,,,,
+TC_Soundbox_API_05-D,negative,/user/accounts/get,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+
+}",,200,"message,code","{ ""code"": 1000, ""message"": [ ""Mobile Number is required"" ]}",,,,,,,,,,,
+TC_Soundbox_API_05-E,negative,/user/accounts/get,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""mobile"": 9738350592
+}",,200,"message,code","{""code"": 1000, ""message"": [""Invalid Mobile Number""]}",,,,,,,,,,,
+TC_Soundbox_API_05-F,negative,/user/accounts/get,POST,TRUE,TRUE,"{""Content-Type"":""application/json""}","{
+""mobile"": 9738350592
+}",,403,message,"{
+    ""message"": ""Forbidden""
+}",,,,,,,,,,,
+TC_Soundbox_API_05-G,negative,/user/accounts/get,POST,FALSE,FALSE,"{""Content-Type"":""application/json""}","{
+""mobile"": 9738350592
+}",,401,message,"{
+    ""message"": ""Unauthorized""
+}",,,,,,,,,,,
+TC_Soundbox_API_05-H,negative,/user/accounts/get,POST,TRUE,TRUE,"{""Content-Type"":""application/json""}","{
+""mobile"": 9738350592
+}",,403,message,"{
+    ""message"": ""Forbidden""
+}",,,,,,,,,,,
+TC_Soundbox_API_06,Positive,/user/account/upi/get,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""mobile_number"": ""9738350592"",
+""account_number"": ""4534020000881700""
+}",,200,"code,data",,,,,,,,,,,,
+TC_Soundbox_API_06-A,negative,/user/accounts/get/invalid,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""mobile_number"": ""9738350592"",
+""account_number"": ""4534020000881700""
+}",,404,,,,,,,,,,,,,
+TC_Soundbox_API_06-B,negative,/user/accounts/get,GET,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""mobile_number"": ""9738350592"",
+""account_number"": ""4534020000881700""
+}",,404,,,,,,,,,,,,,
+TC_Soundbox_API_06-C,negative,/user/accounts/get,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""mobile_number"": """",
+""account_number"": ""4534020000881700""
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": [
+        ""Mobile Number is required""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_06-D,negative,/user/accounts/get,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""account_number"": ""4534020000881700""
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": [
+        ""Mobile Number is required""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_06-E,negative,/user/accounts/get,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""mobile_number"": 9738350592,
+""account_number"": ""4534020000881700""
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": [
+        ""Mobile Number must be string""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_06-F,negative,/user/accounts/get,POST,TRUE,TRUE,"{""Content-Type"":""application/json""}","{
+""mobile_number"": ""9738350592"",
+""account_number"": ""4534020000881700""
+}",,403,message,"{
+    ""message"": ""Forbidden""
+}",,,,,,,,,,,
+TC_Soundbox_API_06-G,negative,/user/accounts/get,POST,FALSE,FALSE,"{""Content-Type"":""application/json""}","{
+""mobile_number"": ""9738350592"",
+""account_number"": ""4534020000881700""
+}",,401,message,"{
+    ""message"": ""Unauthorized""
+}",,,,,,,,,,,
+TC_Soundbox_API_06-H,negative,/user/accounts/get,POST,TRUE,TRUE,"{""Content-Type"":""application/json""}","{
+""mobile_number"": ""9738350592"",
+""account_number"": ""4534020000881700""
+}",,403,message,"{
+    ""message"": ""Forbidden""
+}",,,,,,,,,,,
+TC_Soundbox_API_06-I,negative,/user/accounts/get,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""mobile_number"": ""9738350592"",
+""account_number"":"""" 
+}",,200,"message,code","{
+""code"": 1000,
+""message"": ""Account number is Required""
+}",,,,,,,,,,,
+TC_Soundbox_API_06-J,negative,/user/accounts/get,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""mobile_number"": ""9738350592""
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": [
+        ""Account Number is required""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_06-K,negative,/user/accounts/get,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""mobile_number"": ""9738350592"",
+""account_number"": 4534020000881700
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": [
+        ""Account Number must be string""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_07,Positive,/payments/summary/get,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{ 
+    ""uuid"": ""57653f43-5d49-44b6-bff7-76a5a1324caf"",
+    ""vpa"": ""jana2407390682@janabank"",
+    ""date"": ""25-07-2024""
+
+}",,200,"code,data","{
+    ""code"": 2000,
+    ""data"": {
+        ""count"": 32320,
+        ""amount"": 180355,
+        ""updated_at"": ""25-07-2024 17:42"",
+        ""current_date"": ""25-07-2024""
+    }
+}",,,,,,,,,,,
+TC_Soundbox_API_07-A,negative,/payments/summary/invalid,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{ 
+    ""uuid"": ""57653f43-5d49-44b6-bff7-76a5a1324caf"",
+    ""vpa"": ""jana2407390682@janabank"",
+    ""date"": ""25-07-2024""
+
+}",,404,,,,,,,,,,,,,
+TC_Soundbox_API_07-B,negative,/payments/summary/get,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{ 
+    ""uuid"": ""invaldi"",
+    ""vpa"": ""jana2407390682@janabank"",
+    ""date"": ""25-07-2024""
+
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": ""no record found""
+}",,,,,,,,,,,
+TC_Soundbox_API_07-C,Positive,/payments/summary/get,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{ 
+    ""uuid"": ""1234"",
+    ""vpa"": ""jana2407390682@janabank"",
+    ""date"": ""25-07-2024""
+
+}",,200,"code,message","{
+    ""code"": 1000,
+    ""message"": ""no record found""
+}",,,,,,,,,,,
+TC_Soundbox_API_07-D,negative,/payments/summary/get,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{ 
+        ""vpa"": ""jana2407390682@janabank"",
+    ""date"": ""25-07-2024""
+
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": [
+        ""UUID is required""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_07-E,negative,/payments/summary/get,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{ 
+    ""uuid"": 1234,
+    ""vpa"": ""jana2407390682@janabank"",
+    ""date"": ""25-07-2024""
+
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": [
+        ""Invalid UUID""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_07-F,negative,/payments/summary/get,GET,TRUE,FALSE,"{""Content-Type"":""application/json""}","{ 
+    ""uuid"": ""1234"",
+    ""vpa"": ""jana2407390682@janabank"",
+    ""date"": ""25-07-2024""
+
+}",,404,,,,,,,,,,,,,
+TC_Soundbox_API_07-G,negative,/payments/summary/get,POST,TRUE,TRUE,"{""Content-Type"":""application/json""}","{ 
+    ""uuid"":""1234"",
+    ""date"": ""2024-07-05""
+}",,403,message,"{
+    ""message"": ""Forbidden""
+}",,,,,,,,,,,
+TC_Soundbox_API_07-H,negative,/payments/summary/get,POST,FALSE,FALSE,"{""Content-Type"":""application/json""}","{ 
+    ""uuid"":""1234"",
+    ""date"": ""2024-07-05""
+}",,401,message,"{
+    ""message"": ""Unauthorized""
+}",,,,,,,,,,,
+TC_Soundbox_API_07-I,negative,/payments/summary/get,POST,TRUE,TRUE,"{""Content-Type"":""application/json""}","{ 
+    ""uuid"":""1234"",
+    ""date"": ""2024-07-05""
+}",,403,message,"{
+    ""message"": ""Forbidden""
+}",,,,,,,,,,,
+TC_Soundbox_API_08,Positive,/payments/get,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+    ""uuid"": ""57653f43-5d49-44b6-bff7-76a5a1324caf""
+    ,""vpa"": ""jana2407390682@janabank"",
+    ""Date"":""25-07-2024"",
+    ""limit"": 10
+}",,200,"code,data",,,,,,,,,,,,
+TC_Soundbox_API_08-A,negative,/payments/get/invalid,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+    ""uuid"": ""57653f43-5d49-44b6-bff7-76a5a1324caf""
+    ,""vpa"": ""jana2407390682@janabank"",
+    ""Date"":""25-07-2024"",
+    ""limit"": 10
+}",,404,,,,,,,,,,,,,
+TC_Soundbox_API_08-B,negative,/payments/get,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+    ""uuid"": ""invalid""
+    ,""vpa"": ""jana2407390682@janabank"",
+    ""Date"":""25-07-2024"",
+    ""limit"": 10
+}",,200,"message,code","{ ""code"": 1000, ""message"": ""No records""}",,,,,,,,,,,
+TC_Soundbox_API_08-C,Positive,/payments/get,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+    ""uuid"": ""12345""
+    ,""vpa"": ""jana2407390682@janabank"",
+    ""Date"":""25-07-2024"",
+    ""limit"": 10
+}",,200,"code,message","{ ""code"": 1000, ""message"": ""No records""}",,,,,,,,,,,
+TC_Soundbox_API_08-D,negative,/payments/get,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+    ""uuid"": ""57653f43-5d49-44b6-bff7-76a5a1324caf""
+    ,""vpa"": ""jana2407390682@janabank"",
+    ""Date"":""25/07/2024"",
+    ""limit"": 10
+}",,200,"code,data",,,,,,,,,,,,0
+TC_Soundbox_API_08-E,negative,/payments/get,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+    ""vpa"": ""jana2407390682@janabank"",
+    ""Date"":""25/07/2024"",
+    ""limit"": 10
+}",,200,"message,code","{
+    ""code"": 1000,
+    ""message"": ""UUID is required""
+}",,,,,,,,,,,0
+TC_Soundbox_API_08-F,negative,/payments/get,GET,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+    ""uuid"": ""57653f43-5d49-44b6-bff7-76a5a1324caf""
+    ,""vpa"": ""jana2407390682@janabank"",
+    ""Date"":""25/07/2024"",
+    ""limit"": 10
+}",,404,,,,,,,,,,,,,0
+TC_Soundbox_API_08-G,Positive,/payments/get,POST,TRUE,TRUE,"{""Content-Type"":""application/json""}","{
+    ""uuid"": ""57653f43-5d49-44b6-bff7-76a5a1324caf""
+    ,""vpa"": ""jana2407390682@janabank"",
+    ""Date"":""25/07/2024"",
+    ""limit"": 10
+}",,403,message,"{
+    ""message"": ""Forbidden""
+}",,,,,,,,,,,
+TC_Soundbox_API_08-H,Positive,/payments/get,POST,FALSE,FALSE,"{""Content-Type"":""application/json""}","{
+    ""uuid"": ""57653f43-5d49-44b6-bff7-76a5a1324caf""
+    ,""vpa"": ""jana2407390682@janabank"",
+    ""Date"":""25/07/2024"",
+    ""limit"": 10
+}",,401,message,"{
+    ""message"": ""Unauthorized""
+}",,,,,,,,,,,
+TC_Soundbox_API_08-I,Positive,/payments/get,POST,TRUE,TRUE,"{""Content-Type"":""application/json""}","{
+    ""uuid"": ""57653f43-5d49-44b6-bff7-76a5a1324caf""
+    ,""vpa"": ""jana2407390682@janabank"",
+    ""Date"":""25/07/2024"",
+    ""limit"": 10
+}",,403,message,"{
+    ""message"": ""Forbidden""
+}",,,,,,,,,,,
+TC_Soundbox_API_09,Positive,/payments/simulate,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{ ""merchant_mobile"": ""9738350592"",
+""payee_vpa"": ""abc-123-defghi-567890"",
+""datetime"": ""22/07/2024"",
+""amount"": 10,
+""payer_vpa"": ""6437890"",
+""payer_name"": ""abc"" }",,200,"statusText,success","{""statusText"": ""Call Back message received"", ""success"": ""0""}",,,,,,,,,,,
+TC_Soundbox_API_09-A,negative,/payments/simulate/invalid,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""merchant_mobile"": ""9738350592"",
+""payee_vpa"": ""abc-123-defghi-9738350592"",
+""datetime"": ""22/07/2024"",
+""amount"": 100,
+""payer_vpa"": ""6437890"",
+""payer_name"": ""abc""
+}",,404,"message,code","{
+""message"": ""Not Found"",
+""code"": 404
+}",,,,,,,,,,,
+TC_Soundbox_API_09-B,negative,/payments/simulate,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""merchant_mobile"": ""9738350592"",
+""payee_vpa"": ""abc-123-defghi-9738350592"",
+""datetime"": ""22/07/2024"",
+""amount"": -100,
+""payer_vpa"": ""6437890"",
+""payer_name"": ""abc""
+}",,200,"code,message","{
+    ""code"": 1000,
+    ""message"": [
+        ""Amount must be positive integer""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_09-C,negative,/payments/simulate,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""merchant_mobile"": ""9738350592"",
+""payee_vpa"": ""abc-123-defghi-9738350592"",
+""datetime"": ""02/2020/12"",
+""amount"": 100,
+""payer_vpa"": ""6437890"",
+""payer_name"": ""abc""
+}",,200,"statusText,success","{""statusText"": ""Call Back message received"", ""success"": ""0""}",,,,,,,,,,,
+TC_Soundbox_API_09-D,negative,/payments/simulate,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""merchant_mobile"": ""9738350592"",
+""payee_vpa"": ""34892invalid"",
+""datetime"": ""22/07/2024"",
+""amount"": 100,
+""payer_vpa"": ""6437890"",
+""payer_name"": ""abc""
+}",,200,"statusText,success","{""statusText"": ""Call Back message received"", ""success"": ""0""}",,,,,,,,,,,
+TC_Soundbox_API_09-E,negative,/payments/simulate,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""merchant_mobile"": ""9738350592"",
+""payee_vpa"": ""abc-123-defghi-9738350592"",
+""datetime"": ""22/07/2024"",
+""amount"": 100,
+""payer_vpa"": ""6437890""
+}",,200,"message,code","{
+""code"": 1000,
+""message"": [
+""Payer Name is required""
+]
+}",,,,,,,,,,,
+TC_Soundbox_API_09-F,negative,/payments/simulate,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""merchant_mobile"": ""9738350592"",
+""payee_vpa"": ""abc-123-defghi-9738350592"",
+""datetime"": ""22/07/2024"",
+""amount"": 100,
+""payer_name"": ""abc""
+}",,200,"message,code","{
+""code"": 1000,
+""message"": [
+""Payer vpa is required""
+]
+}",,,,,,,,,,,
+TC_Soundbox_API_09-G,negative,/payments/simulate,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""merchant_mobile"": ""9738350592"",
+""payee_vpa"": ""abc-123-defghi-9738350592"",
+""amount"": 100,
+""payer_vpa"": ""6437890"",
+""payer_name"": ""abc""
+}",,200,"message,code","{
+""code"": 1000,
+""message"": [
+""Datetime is required""
+]
+}",,,,,,,,,,,
+TC_Soundbox_API_09-H,negative,/payments/simulate,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""merchant_mobile"": """",
+""payee_vpa"": ""abc-123-defghi-9738350592"",
+""datetime"": ""22/07/2024"",
+""amount"": 100,
+""payer_vpa"": ""6437890"",
+""payer_name"": ""abc""
+}",,200,"message,code","{
+""code"": 1000,
+""message"": [
+""Mobile Number cannot be empty""
+]
+}",,,,,,,,,,,
+TC_Soundbox_API_09-I,negative,/payments/simulate,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{ 
+""merchant_mobile"": 9738350592, ""payee_vpa"": ""abc-123-defghi-9738350592"", ""datetime"": ""22/07/2024"", ""amount"": 100, ""payer_vpa"": ""6437890"", ""payer_name"": ""abc""
+}",,200,"message,code","{ 
+""code"": 1000, 
+""message"": [ 
+""Invalid Mobile Number"" 
+] 
+}",,,,,,,,,,,
+TC_Soundbox_API_09-J,negative,/payments/simulate,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+""merchant_mobile"": ""9738350592"", ""payee_vpa"": 34892, ""datetime"": ""22/07/2024"", ""amount"": 100, ""payer_vpa"": ""6437890"", ""payer_name"": ""abc"" 
+}",,200,"message,code","{
+""code"": 1000,
+""message"": [
+""Invalid Payee vpa""
+]
+}",,,,,,,,,,,
+TC_Soundbox_API_09-K,negative,/payments/simulate,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{ 
+""merchant_mobile"": ""9738350592"", ""payee_vpa"": ""abc-123-defghi-9738350592"", ""datetime"": 12102020, ""amount"": 100, ""payer_vpa"": ""6437890"", ""payer_name"": ""abc""
+}",,200,"message,code","{ 
+""code"": 1000, 
+""message"": [ 
+""Invalid Datetime"" 
+] 
+}",,,,,,,,,,,
+TC_Soundbox_API_09-L,negative,/payments/simulate,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{ 
+""merchant_mobile"": ""9738350592"", ""payee_vpa"": ""abc-123-defghi-9738350592"", ""datetime"": ""22/07/2024"", ""amount"": ""100"", ""payer_vpa"": ""6437890"", ""payer_name"": ""abc""
+}",,200,"code,message","{
+    ""code"": 1000,
+    ""message"": [
+        ""Amount must be integer""
+    ]
+}",,,,,,,,,,,
+TC_Soundbox_API_09-M,negative,/payments/simulate,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{ 
+""merchant_mobile"": ""9738350592"", ""payee_vpa"": ""abc-123-defghi-9738350592"", ""datetime"": ""22/07/2024"", ""amount"": 100, ""payer_vpa"": 6437890, ""payer_name"": ""abc""
+}",,200,"message,code","{
+""code"": 1000,
+""message"": [
+""Invalid Payer vpa""
+]
+}",,,,,,,,,,,
+TC_Soundbox_API_09-N,negative,/payments/simulate,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{ 
+""merchant_mobile"": ""9738350592"", ""payee_vpa"": ""abc-123-defghi-9738350592"", ""datetime"": ""22/07/2024"", ""amount"": 100, ""payer_vpa"": ""6437890"", ""payer_name"": 123 
+}",,200,"message,code","{ 
+""code"": 1000, 
+""message"": [ 
+""Invalid Payer Name"" 
+] 
+}",,,,,,,,,,,
+TC_Soundbox_API_09_O,negative,/payments/simulate,POST,TRUE,TRUE,"{""Content-Type"":""application/json""}","{ ""merchant_mobile"": ""9738350592"",
+""payee_vpa"": ""abc-123-defghi-567890"",
+""datetime"": ""22/07/2024"",
+""amount"": 10,
+""payer_vpa"": ""6437890"",
+""payer_name"": ""abc"" }",,403,message,"{
+    ""message"": ""Forbidden""
+}",,,,,,,,,,,
+TC_Soundbox_API_09_P,Positive,/payments/simulate,POST,FALSE,FALSE,"{""Content-Type"":""application/json""}","{ ""merchant_mobile"": ""9738350592"",
+""payee_vpa"": ""abc-123-defghi-567890"",
+""datetime"": ""22/07/2024"",
+""amount"": 10,
+""payer_vpa"": ""6437890"",
+""payer_name"": ""abc"" }",,401,message,"{
+    ""message"": ""Unauthorized""
+}",,,,,,,,,,,
+TC_Soundbox_API_09_Q,Positive,/payments/simulate,POST,TRUE,TRUE,"{""Content-Type"":""application/json""}","{ ""merchant_mobile"": ""9738350592"",
+""payee_vpa"": ""abc-123-defghi-567890"",
+""datetime"": ""22/07/2024"",
+""amount"": 10,
+""payer_vpa"": ""6437890"",
+""payer_name"": ""abc"" }",,403,message,"{
+    ""message"": ""Forbidden""
+}",,,,,,,,,,,

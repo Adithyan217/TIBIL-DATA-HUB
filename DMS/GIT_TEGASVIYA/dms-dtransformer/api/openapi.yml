@@ -1,0 +1,291 @@
+openapi: 3.0.3
+info:
+  title: transformer
+  description: |-
+    transform switch data 
+
+  contact:
+    email: bharghava.k@tibilsolutions.com
+  version: 1.0.0
+
+servers:
+  - url: https://dms.o
+tags:
+  - name: switch
+    description: every thing about transformation
+
+paths:
+  /encryption/get:
+    post:
+      tags:
+        - switch
+      summary: data encryption
+      description: encryption
+      operationId: encryption
+      requestBody:
+        description: data encryptrion
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+                  example: "hello how are"
+                config:
+                  type: object
+                  properties:
+                    iv:
+                      type: string
+                      example: "njjhfskfsfs"
+                    key:
+                      type: string
+                      example: ".mskfksdnfsd"
+                    algo:
+                      type: string
+                      example: 'rsa256'
+
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+                  data:
+                    type: string
+                    example: "sngskdfkjlfksbfs@cjsnidfn@cs"
+
+        '400':
+          description: Invalid
+        '404':
+          description: Pet not found
+        '422':
+          description: Validation exception
+
+  /decryption/get:
+    post:
+      tags:
+        - switch
+      summary: data decryption
+      description: decryption
+      operationId: decryption
+      requestBody:
+        description: decryption data
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+                  example: "mdbfjdncksmjcmsmdfsd"
+                config:
+                  type: object
+                  properties:
+                    iv:
+                      type: string
+                      example: "njjhfskfsfs"
+                    key:
+                      type: string
+                      example: ".mskfksdnfsd"
+                    algo:
+                      type: string
+                      example: 'rsa256'
+
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+                  data:
+                    type: string
+                    example: "hi hello"
+
+        '400':
+          description: Invalid
+        '404':
+          description: Pet not found
+        '422':
+          description: Validation exception
+
+  /transformation/get:
+    post:
+      tags:
+        - switch
+      summary: data transformation
+      description: transform
+      operationId: datatransform
+      requestBody:
+        description: tsform data using config
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    msg:
+                      type: string
+                      example: "hello"
+                    reqRefNo:
+                      type: string
+                      example: "123"
+                    statusCode:
+                      type: string
+                      example: "S"
+                config:
+                  type: object
+                  properties:
+                    payload:
+                      type: object
+                      properties:
+                        statMsg:
+                          type: string
+                          example: "Successfully Received"
+                        reqRefNo:
+                          type: string
+                          example: "snfkd"
+                        statCode:
+                          type: string
+                          example: "S"
+                    replacer:
+                      type: object
+                      properties:
+                        statMsg:
+                          type: string
+                          example: "data.msg"
+                        reqRefNo:
+                          type: string
+                          example: "data.reqRefNo"
+                        statCode:
+                          type: string
+                          example: "data.statCode"
+
+
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+                  data:
+                    type: object
+                    properties:
+                      statMsg:
+                        type: string
+                        example: "successfully"
+                      reqRefNo:
+                        type: string
+                        example: "29342"
+                      statCode:
+                        type: string
+                        example: "S"
+
+        '400':
+          description: Invalid
+        '404':
+          description: Pet not found
+        '422':
+          description: Validation exception
+
+  /decryt_tranform/get:
+    post:
+      tags:
+        - switch
+      summary: data encryption
+      description: encryption
+      operationId: decryptionTransform
+      requestBody:
+        description: data encryptrion
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+                  example: "dajdajska"
+                secure_config:
+                  type: object
+                  properties:
+                    iv:
+                      type: string
+                      example: "njjhfskfsfs"
+                    key:
+                      type: string
+                      example: ".mskfksdnfsd"
+                    algo:
+                      type: string
+                      example: 'rsa256'
+                transform_config:
+                  type: object
+                  properties:
+                    payload:
+                      type: object
+                      properties:
+                        statMsg:
+                          type: string
+                          example: "Successfully Received"
+                        reqRefNo:
+                          type: string
+                          example: "snfkd"
+                        statCode:
+                          type: string
+                          example: "S"
+                    replacer:
+                      type: object
+                      properties:
+                        statMsg:
+                          type: string
+                          example: "data.msg"
+                        reqRefNo:
+                          type: string
+                          example: "data.reqRefNo"
+                        statCode:
+                          type: string
+                          example: "data.statCode"
+
+
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+                  data:
+                    type: string
+                    example: "sngskdfkjlfksbfs@cjsnidfn@cs"
+
+        '400':
+          description: Invalid
+        '404':
+          description: Pet not found
+        '422':
+          description: Validation exception
+

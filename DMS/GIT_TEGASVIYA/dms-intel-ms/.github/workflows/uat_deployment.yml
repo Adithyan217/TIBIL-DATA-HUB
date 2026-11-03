@@ -1,0 +1,85 @@
+name: Deploy to Azure ACR (Central India)
+
+on:
+  push:
+    branches: [ uat-apprunner ]
+  workflow_dispatch:
+    inputs:
+      acr_repo_name:
+        description: 'Azure ACR Repository Name'
+        required: true
+        default: 'intel-ms'
+
+env:
+  REGISTRY_NAME: dmsuatcontainerregistry
+  DEFAULT_IMAGE_NAME: intel-ms         # 👈 fallback image name
+  AZURE_REGION: centralindia
+
+jobs:
+  build:
+    name: Build & Push to ACR
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout the repo
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      # 2️⃣ Setup Node.js (Node 20 for latest dependencies)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # 3️⃣ Install dependencies with safe fallback
+      - name: Install dependencies
+        run: |
+          echo "🟢 Installing dependencies..."
+          npm ci || (echo "⚠️ npm ci failed, falling back to npm install" && npm install)
+      # 4️⃣ Log in to Azure
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # 5️⃣ Log in to ACR
+      - name: Login to Azure Container Registry
+        run: |
+          echo "🔐 Logging into ACR..."
+          az acr login --name ${{ env.REGISTRY_NAME }} --only-show-errors
+      # 6️⃣ Set Docker image metadata (with fallback)
+      - name: Set Docker Image Details
+        run: |
+          # Use workflow input if available, otherwise fallback to default
+          if [ -n "${{ github.event.inputs.acr_repo_name }}" ]; then
+            IMAGE_NAME="${{ github.event.inputs.acr_repo_name }}"
+          else
+            IMAGE_NAME="${{ env.DEFAULT_IMAGE_NAME }}"
+          fi
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
+          echo "ACR_REGISTRY=${{ env.REGISTRY_NAME }}.azurecr.io" >> $GITHUB_ENV
+          echo "IMAGE_TAG=intel-container-apps-${{ github.run_number }}" >> $GITHUB_ENV
+          echo "✅ Image details set:"
+          echo "  Registry: ${{ env.REGISTRY_NAME }}"
+          echo "  Repository: $IMAGE_NAME"
+          echo "  Tag: intel-conatiner-apps-${{ github.run_number }}"
+          echo "  Region: ${{ env.AZURE_REGION }}"
+      # 7️⃣ Debug values
+      - name: Debug Docker Image Reference
+        run: |
+          echo "ACR_REGISTRY=${{ env.ACR_REGISTRY }}"
+          echo "IMAGE_NAME=${{ env.IMAGE_NAME }}"
+          echo "IMAGE_TAG=${{ env.IMAGE_TAG }}"
+          echo "AZURE_REGION=${{ env.AZURE_REGION }}"
+      # 8️⃣ Build and push Docker image
+      - name: Build, tag, and push image
+        run: |
+          echo "🚀 Building Docker image..."
+          docker build -t $ACR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG -f Dockerfile .
+          echo "📤 Pushing image to ACR..."
+          docker push $ACR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+      # ✅ 9️⃣ Confirm successful push
+      - name: Show pushed image info
+        run: |
+          echo "✅ Successfully pushed: $ACR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG"

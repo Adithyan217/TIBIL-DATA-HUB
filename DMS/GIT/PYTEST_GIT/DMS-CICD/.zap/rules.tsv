@@ -1,0 +1,9 @@
+
+# Rule to adjust attack strength
+ATTACK_STRENGTH	High
+
+# Rule to adjust alert threshold
+ALERT_THRESHOLD	MEDIUM
+
+# Rule to specify additional parameters or options
+ADD_PARAM	param_name=value

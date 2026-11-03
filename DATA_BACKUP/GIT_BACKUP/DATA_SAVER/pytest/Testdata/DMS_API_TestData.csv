@@ -1,0 +1,20 @@
+Testcase ID,Testcase,Testcase Type,endpoint,method,auth_required,headers,params,payload,expected_status_code,expected_response_keys,expected_responce_body
+TC_DMS_001,sending positive request for onboarding bank,Postive,/requests/wfevents,POST,FALSE,"{""Content-Type"":""application/json""}",,"{
+  ""event"": ""ONBOARD_BANK"",
+  ""event_by"": ""bank@1432"",
+  ""edetails"": [
+    {
+      ""row_id"": 1,
+      ""bank_name"": ""Bank of Brahim"",
+      ""baddr"": ""123 Finance Street"",
+      ""binfo"": {
+        ""name"": ""John Doe"",
+        ""phno"": ""+911234567890"",
+        ""email"": ""johndoe@fnb.com""
+      }
+    }
+  ]
+}",201,"code,event_id,message","{
+    ""code"": 200,
+    ""message"": ""Request added successfully""
+}"

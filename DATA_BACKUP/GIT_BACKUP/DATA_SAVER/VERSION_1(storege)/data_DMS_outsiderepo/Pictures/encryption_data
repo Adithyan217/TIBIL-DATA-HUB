@@ -1,0 +1,14 @@
+{
+  decryptedData: '{"reqRefNo":"ae81ca6b-e527-4201-aaae-1c861a517f06","statCode":"S","statMsg":"Successfully Received"}'
+}
+
+
+"reqRefNo":"ae81ca6b-e527-4201-aaae-1c861a517f06"
+
+
+
+data=decryptData("VSpCIOGSI3DX/16OsxRZY4UDRxRoOcX68ZbGfWkH3xDl7OBEHT9lWgp+0oWGGnk5mtnCA4OgIyFKUHdkzW4Uc50Rz2pIbsD+5SLn6eyoJpHLBji9wg==")
+console.log(data)
+
+// data=encryptData('{ "accountNo": "ACCT_NUM_123", "mobile": "1234567890", "vpa": "coop.123@janabank", "reqRefNo": "12233", "deviceId": 100000, "txnAmt": "445.12", "timeStamp": 1700741921 }')
+// console.log(data)

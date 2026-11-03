@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workflow-handler-deployment
+  namespace: dms-uat
+  labels:
+    app: workflow-handler-ms
+    environment: uat  
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: workflow-handler-ms
+      environment: uat  
+  template:
+    metadata:
+      labels:
+        app: workflow-handler-ms
+        environment: uat  
+    spec:
+      serviceAccountName: uat-secrets-sa
+      volumes:
+        - name: wf-ms-secrets
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: wf-ms-secrets
+      containers:
+      - name: workflow-handler-ms
+        image: DOCKER_IMAGE_PLACEHOLDER
+        volumeMounts:
+            - name: wf-ms-secrets
+              mountPath: /app/src/secrets
+        ports:
+        - containerPort: 3006
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "200Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: workflow-handler-service
+  namespace: dms-uat
+spec:
+  selector:
+    app: workflow-handler-ms
+    environment: uat  
+  ports:
+    - protocol: TCP
+      port: 8441
+      targetPort: 3006
+  type: NodePort

@@ -1,0 +1,1086 @@
+openapi: 3.0.3
+info:
+  title: user-ms
+  description: |-
+
+  contact:
+    email: bharghava.k@tibilsolutions.com
+  version: 1.0.0
+
+servers:
+  - url: http://api.example.com/v1
+    description: Optional server description, e.g. Main (production) server
+
+
+
+tags:
+
+  - name: user-ms
+    description: Access to user
+
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+
+  schemas:
+    ConfigBody:
+      properties:
+        cname:
+          type: string
+        data:
+          type: array
+          items:
+            properties:
+              rname:
+                type: string
+              config:
+                type: object
+
+    Actions:
+      properties:
+        aname:
+          type: string
+    SuccessResponse:
+      properties:
+        code:
+          type: number
+        data:
+          type: array
+      example:
+        code: 2000
+        data:
+          - rid: 1
+            message: "ROLE CREATED"
+    SuccessResponseNoRoleCreated:
+      properties:
+        code:
+          type: number
+        message:
+          type: array
+      example:
+        code: 1000
+        message: "ROLE NOT CREATED"
+    FailureError:
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+      example:
+        code: 4000
+        message: "ERROR OCCURED"
+
+
+paths:
+
+  /user/session:
+    post:
+      tags:
+        - login
+      summary: user login
+      description: ''
+      operationId: usersLogin
+
+      requestBody:
+        description: request body
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "abc"
+                password:
+                  type: string
+                  example: "32532mkdmf43435"
+      
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+                  message:
+                    type: string
+                    example: reset password
+
+
+
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 4001
+                  message:
+                    type: string
+                    example: unauthorized user.
+    delete:
+      tags:
+        - logout
+      summary: user logout
+      description: ''
+      operationId: logout
+      security:
+        - bearerAuth: [ ]
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+                  message:
+                    type: string
+                    example: logout successfull
+
+        '400':
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 4001
+                  message:
+                    type: string
+                    example: invalid/Token
+
+  /user/auth:
+    put:
+      tags:
+        - user-ms
+      summary: authentication modification
+      description: ''
+      operationId: authentication
+
+      requestBody:
+        description: request body
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: "new_password"
+                username:
+                  type: string
+                  example: "abc@gmail.com"
+                newPassword:
+                  type: string
+                  example: "32532mkdmf43435"
+
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+                  message:
+                    type: string
+                    example: "password changed successfull"
+
+        '400':
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 4001
+                  message:
+                    type: string
+                    example: invalid/missing uuid
+
+  
+  /user:
+    patch:
+      tags:
+        - user info
+      summary: To update the users info
+      description: ''
+      operationId: getUsersDetails
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+          example: "Bearer <token>"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                  example: 56588bf9-1a62-41d7-bbff-e17f7236df8c
+                fname:
+                  type: string
+                  example: "abc"
+                lname:
+                  type: string
+                  example: "abc"
+                enable:
+                  type: boolean
+                  example: true
+                access_scope:
+                  type: object
+                  properties:
+                    banks:
+                      type: string
+                      example:
+                        - abc
+                        - bcx
+                    branches:
+                      type: string
+                      example:
+                        - abc
+                        - ncm
+                    role:
+                      type: string
+                      example: DMS Admin
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+                  message:
+                    type: string
+                    example: user info updates successfully.
+
+        '400':
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 4000
+                  message:
+                    type: string
+                    example: invalid/missing uuid
+
+
+  /user/list/get:
+    post:
+      tags:
+        - user info
+      summary: To list the users
+      description: ''
+      operationId: getUserslist
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+          example: "Bearer <token>"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+
+                pagination:
+                  type: object
+                  properties:
+                    limit:
+                      type: number
+                      example: 10
+                    offset:
+                      type: number
+                      example: 0
+                email:
+                  type: string
+                  example: "user@gmail.com"
+                context:
+                  type: string
+                  example: "BANK"
+                search:
+                  type: string
+                  example: "search_value"
+
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+                  count:
+                    type: number
+                    example: 20
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "56588bf9-1a62-41d7-bbff-e17f7236df8c"
+                        username:
+                          type: string
+                          example: abc@gmail.com
+                        firstName:
+                          type: string
+                          example: abc
+                        lastName:
+                          type: string
+                          example: xyz
+
+
+
+        '400':
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 4000
+                  message:
+                    type: string
+                    example: invalid/missing uuid
+  /user/search/get:
+    post:
+      tags:
+        - user info
+      summary: Search for a user
+      description: ''
+      operationId: search User
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+          example: "Bearer <token>"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+
+                pagination:
+                  type: object
+                  properties:
+                    limit:
+                      type: number
+                      example: 10
+                    offset:
+                      type: number
+                      example: 0
+                userName:
+                  type: string
+                  example: "john"
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+                  count:
+                    type: number
+                    example: 1
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "56588bf9-1a62-41d7-bbff-e17f7236df8c"
+                        username:
+                          type: string
+                          example: abc@gmail.com
+                        firstName:
+                          type: string
+                          example: abc
+                        lastName:
+                          type: string
+                          example: xyz
+
+
+
+
+
+
+
+        '400':
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 4000
+                  message:
+                    type: string
+                    example: invalid/missing uuid
+
+
+  /user/otp:
+    post:
+      tags:
+        - user-ms
+      summary: generate otp
+      description: ''
+      operationId: generateotp
+      requestBody:
+        description: request body
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+
+                userName:
+                  type: string
+                  example: "abc@gmail.com"
+
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+
+                  data:
+                    type: object
+                    properties:
+                      identification:
+                        type: string
+                        example: "sbjdfbdsjfb234325"
+                      message:
+                        type: string
+                        example: otp Sent Successfully
+
+
+
+        '400':
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 4000
+                  message:
+                    type: string
+                    example: invalid/missing username
+
+
+    put:
+      tags:
+        - user-ms
+      summary: validate otp
+      description: ''
+      operationId: validateOtp
+      requestBody:
+        description: request body
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                flow:
+                  type: string
+                  example: username_passwd || reset_passwd
+                userName:
+                  type: string
+                  example: "abc@gmail.com"
+                otp:
+                  type: integer
+                  example: 265632
+                identification:
+                  type: string
+                  example: "sbjdfbdsjfb234325"
+
+
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            reset_password:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+                  auth:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: reset password
+            username_passwd:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+                  data:
+                    type: object
+                    properties:
+                      access_token:
+                        type: string
+                        example: "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJUWVpDdm1NRmM5QmdGUU1rYWF3UFNJVDhITUYxd0tFcFZ6aHNRNTdmS0k4In0"
+                      refresh_token:
+                        type: string
+                        example: "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJUWVpDdm1NRmM5QmdGUU1rYWF3UFNJVDhITUYxd0tFcFZ6aHNRNTdmS0k4In0"
+
+
+
+
+        '400':
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 4000
+                  message:
+                    type: string
+                    example: invalid/missing otp
+
+  /user/roles/config:
+    post:
+      tags:
+        - user-roles
+      summary: To add config for roles
+      operationId: addUserRolesAndConfig
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+          example: "Bearer <token>"
+      requestBody:
+        description: To create a role
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigBody"
+            examples:
+              uiConfigExample:
+                summary: Example to add UI config
+                value:
+                  cname: "ui"
+                  data:
+                    - rname: "Bank RM"
+                    - config:
+                        visible: true
+                        items:
+                          - label: "Request for Device(s)"
+                            icon: "assets/images/request-device.png"
+              actionConfigExample:
+                summary: Example to add the Action Config
+                value:
+                  cname: "action"
+                  data:
+                    - rname: "Bank RM"
+                    - actions:
+                        - 1
+                        - 2
+                        - 3
+
+      responses:
+        "201":
+          description: "On succuessful creation of a role"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        # "200":
+        #   description: "Role cou"
+        #   content:
+        #     application/json:
+        #       schema:
+        #         $ref: "#/components/schemas/SuccessResponseNoRoleCreated"
+        "400":
+          description: "On error during creation of a role"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureError"
+    patch:
+      tags:
+        - user-roles
+      summary: To update config for roles
+      operationId: updateUserRolesConfig
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+          example: "Bearer <token>"
+      requestBody:
+        description: To create a role
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigBody"
+            examples:
+              uiConfigExample:
+                summary: Example to update UI config
+                value:
+                  cname: "ui"
+                  operation: "grant"
+                  data:
+                    - rname: "Bank RM"
+                    - config:
+                        visible: true
+                        items:
+                          - label: "Request for Device(s)"
+                            icon: "assets/images/request-device.png"
+              actionConfigExample:
+                summary: Example to add the Action Config
+                value:
+                  cname: "action"
+                  operation: "revoke"
+                  data:
+                    - rname: "Bank RM"
+                    - actions:
+                        - 1
+                        - 2
+                        - 4
+
+      responses:
+        "200":
+          description: "On succuessful creation of a role"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+              example:
+                code: 2000
+                data: []
+                message: "UPDATED ACCESS"
+
+
+        "400":
+          description: "On error during creation of a role"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureError"
+
+
+  /user/roles/availability/get:
+    post:
+      tags:
+        - user-roles
+      summary: To get Roles
+      description: ''
+      operationId: getUserRoles
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+          example: "Bearer <token>"
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+                  data:
+                    type: string
+                    example:
+                      - "DMS Admin"
+                      - "Bank Admin"
+                      - "Bank RM"
+
+        '400':
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 4000
+                  message:
+                    type: string
+                    example: invalid/missing uuid
+
+  /user/ui-permissions/get:
+    post:
+      tags:
+        - user info
+      summary: To ui permissions
+      description: ''
+      operationId: getuseruipermission
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+                  example: "DMS Admin"
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+                  data:
+                    type: object
+                    properties:
+                      role:
+                        type: string
+                        example: BankAdmin
+                      roleId:
+                        type: integer
+                        example: 1213
+                      sideMenu:
+                        type: object
+
+                      createActions:
+                        type: object
+                      threeDotActions:
+                        type: object
+                      page:
+                        type: array
+                        items:
+                          type: object
+        '400':
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 4000
+                  message:
+                    type: string
+                    example: invalid/missing uuid
+  /user/roles/config/get:
+    post:
+      tags:
+        - user-roles
+      summary: To get config for roles
+      operationId: getUserRolesAndConfig
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: To create a role
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ctype:
+                  type: string
+            examples:
+              getUIConfigForRoleExample:
+                summary: Example to get UI config for a Role
+                value:
+                  ctype: "ui"
+              getactionConfigForRoleExample:
+                summary: Example to get the Action Config for a Role
+                value:
+                  ctype: "actions"
+
+
+      responses:
+        "200":
+          description: "On succuessful creation of a role"
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    properties:
+                      code:
+                        type: number
+                      data:
+                        type: array
+                        items:
+
+                          type: object
+                          properties:
+                            rname:
+                              type: string
+                            available_actions:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  aid:
+                                    type: integer
+                                  aname:
+                                    type: string
+                  - type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+              examples:
+                DataPresentResponseFormatForActionType:
+                  summary: "If there is config for a role and ctype is actions"
+                  value:
+                    code: 2000
+                    data:
+                      - rname: "Bank RM"
+                        available_actions:
+                          -  aid:  1
+                             aname: "ONBOARD_USER"
+
+                DataPresentResponseFormatForUIType:
+                  summary: "If there is config for a role and ctype is actions"
+                  value:
+                    code: 2000
+                    data:
+                      - rname: "Bank RM"
+                        config:
+                          visible: true
+                DataPresentResponseFormatNoRecords:
+                  summary: "If no records"
+                  value:
+                    code: 1000
+                    message: "NO RECORDS"
+
+
+        "400":
+          description: "On error during creation of a role"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureError"
+  /user/roles:
+    post:
+      tags:
+        - user-roles
+      summary: To add roles
+      operationId: Add Roles
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: To create a role
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rname:
+                  type: string
+                viewable_roles:
+                  type: array
+                  items:
+                    type: integer
+            examples:
+              addRoleExample:
+                summary: Example to add a role
+                value:
+                  rname: "Co-Op Admin"
+                  viewable_roles:
+                    - 1
+                    - 2
+                    - 3
+
+
+      responses:
+        "201":
+          description: "On succuessful creation of a role"
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    properties:
+                      code:
+                        type: number
+                      data:
+                        type: array
+                        items:
+                          type: object
+                  - type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+              examples:
+                SuccessfulRoleAddedResponse:
+                  summary: "If the new role is created successfully"
+                  value:
+                    code: 2000
+                    data:
+                      - rname: "Bank RM"
+                        message: "ROLE CREATED"
+
+
+
+        "400":
+          description: "On error during creation of a role"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureError"
+
+
+
+  /user/firebase-config/get:
+    post:
+      tags:
+        - firebase-config
+      summary: To firebase congig
+      description: ''
+      operationId: get firebase config
+
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+                  data:
+                    type: object
+                    properties:
+                      apiKey:
+                        type: string
+                        example: 'AIzaSyBiu34JPStnskdfn4jgysqcQtjv7SQMgmL-u4'
+                      authDomain:
+                        type: string
+                        example: 'dms-uat-6fc-b7ca0.firebaseapp.com'
+                      projectId:
+                        type: string
+                        example: 'dms-uat-6fc2c-b7ca0'
+                      storageBucket:
+                        type: string
+                        example:  'dms-uat-62c-ca0.firebasestorage.app'
+                      messagingSenderId:
+                        type: string
+                        example: '80988589887879'
+                      appId:
+                        type: string
+                        example: '1:809885899449:web:c0420ee633b7edc102d968'
+                      measurementId:
+                        type: string
+                        example: 'G-60MYJ8Y3RN'
+
+
+        '400':
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 4000
+                  message:
+                    type: string
+                    example: invalid/missing uuid
+
+
+
+

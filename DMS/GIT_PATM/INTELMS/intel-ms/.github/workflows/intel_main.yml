@@ -1,0 +1,50 @@
+name: Deploy to ECR AWS
+
+on:
+  push:
+    branches: [vtests]
+  workflow_dispatch:
+    inputs:
+      ec2_instance_id:
+        description: 'EC2 Instance IP'
+        required: true
+        default: ''
+
+env:
+  ECR_REPOSITORY: dms-ecr
+  AWS_REGION: ap-south-1
+
+jobs:
+  deploy:
+    name: Build and Deploy to AWS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set Up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build and Push Docker Image to ECR
+        run: |
+          IMAGE_TAG=intel${{ github.run_number }}
+          docker build -t ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG .
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV

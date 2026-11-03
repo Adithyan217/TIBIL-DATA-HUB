@@ -1,0 +1,442 @@
+Enum vevts{
+  VPA_ONBOARDED
+  VPA_DEACTIVATED
+  VPA_DELETED
+}
+
+Enum frevts{
+  FIRMWARE_ONBOARDED
+  FIRMWARE_DEACTIVATED
+}
+
+Enum mfevts{
+  MF_ONBOARDED
+  MF_DEACTIVATED
+}
+
+Enum devts{
+  DEVICE_ONBOARDED
+  DEVICE_DEACTIVATED [note: 'This is a soft delete']
+}
+ 
+Enum mevts{
+  MERCHANT_ONBOARDED
+  MERCHANT_DEACTIVATED 
+}
+
+Enum bevts{
+  BANK_ONBOARDED
+  BANK_DEACTIVATED [note: 'This is a soft Delete']
+}
+Enum brevts{
+ BRANCH_ONBOARDED
+ BRANCH_DEACTIVATED
+}
+
+Enum mdevts{
+ MODEL_ONBOARDED
+ MODEL_DEACTIVATED
+}
+
+enum sbevts {
+ VPA_DEVICE_BINND
+ VPA_DEVICE_UNBINND
+ ALLOCATED_TO_MERCHANT
+ REALLOCATED_TO_MERCHANT 
+ ALLOCATED_TO_BRANCH
+ REALLOCATED_TO_BRANCH
+ ALLOCATED_TO_BANK
+ REALLOCATED_TO_BANK
+ DELIVERY_INITIATED
+ DELIVERY_ACKNOWLEDGED
+ DEVICE_RETURNED 
+ ISSUE_REPORTED
+ BANK_DEACTIVATED
+ BRANCH_DEACTIVATED
+ MERCHANT_DEACTIVATED
+ VPA_DEACTIVATED
+ VPA_DELETED
+}
+
+Enum tevts{
+  CREATED
+  UPDATED
+  DELETED
+}
+
+Table registry.vpa{
+  vid integer [pk]
+  vpa char [unique, not null]
+  bid integer
+  vevt vevts
+  eid integer
+  eat timestamp
+  eby varchar
+  isd bool
+  isa bool
+  indexes {
+      (vpa,isd)
+      vpa
+      bid
+      (bid,isd)
+      (vid,vpa)
+    }
+}
+
+Table registry.vpa_v{
+    pid integer [pk]
+    vid integer
+    vpa char [not null]
+    vevt vevts
+    eid integer [not null]
+    eat timestamp
+    eby varchar
+    isd bool
+    op tevents
+    isa boolean
+    indexes {
+      vid
+      vpa
+    }
+}
+
+
+
+Table registry.mf{
+  mfid integer [pk]
+  mfname varchar [unique,not null]
+  mfaddr varchar
+  mfinfo json
+  mfevt mfevts
+  eid integer [not null]
+  eat timestamp
+  eby varchar
+  isd bool
+  indexes {
+      (mfid,mfname)
+      mfname
+    }
+}
+
+Table registry.mf_v {
+  pid integer [pk]
+  mfid integer
+  mfname varchar [not null]
+  mfevt mfevts
+  eid integer [not null]
+  eat timestamp
+  eby varchar
+  isd bool
+  op tevts
+  indexes {
+      mfid
+      mfname
+    }
+}
+
+Table registry.firmware{
+  fid integer [pk]
+  mfid integer
+  fname varchar [not null]
+  frevt frevts
+  eid integer [not null]
+  isd bool
+  eat timestamp
+  eby varchar
+  indexes {
+    (fid,mfid)
+    mfid
+    fname
+  }
+}
+
+Table registry.firmware_v{
+  pid integre [pk]
+  fid integer 
+  mfid integer
+  fname varchar [not null]
+  frevt frevts
+  eid integer [not null]
+  isd bool
+  eat timestamp
+  eby varchar
+  op tevets
+  indexes {
+    fid
+    mfid
+  }
+}
+
+Table registry.model{
+  mdid integer [pk]
+  mfid integer
+  fid integer
+  eid integer [not null]
+  mdname varchar
+  mdevt mdevts
+  isd bool
+  eat timestamp
+  eby varchar
+  indexes {
+    fid
+    mdname
+    mfid
+  }
+}
+
+Table registry.model_v{
+  pid integre [pk]
+  mdid integer 
+  mfid integer
+  fid integer
+  eid integer [not null]
+  mdname varchar
+  mdevt mdevts
+  isd bool
+  eat timestamp
+  eby varchar
+  op tevts
+  indexes {
+  }
+}
+
+Table registry.devices {
+  did integer [pk]
+  dname varchar [unique, not null] 
+  mfid integer
+  fid integer
+  mdid integer
+  devt devts
+  eid integer [not null]
+  isd boolean [default: false]
+  eat timestamp
+  eby varchar
+  isa boolean
+  indexes {
+      (did,dname)
+      dname
+      fid
+      mdid
+      mfid
+    }
+}
+
+Table registry.devices_v {
+  pid integer [pk]
+  did integer 
+  dname varchar [unique, not null] 
+  mfid integer
+  fid integer
+  mdid integer
+  devt devts
+  eid integer [not null]
+  isd boolean [default: false]
+  eat timestamp
+  eby varchar
+  isa boolean
+  op tevts
+    indexes {
+    }
+}
+
+
+
+Table registry.merchants {
+  mpid integer [pk]
+  msid number
+  mname char
+  minfo json [note: 'This column contains addtional details of merchants in json format']
+  mevt mevts
+  eid integer [not null]
+  bid integer
+  brid integer
+  isd bool
+  eat timestamp
+  eby varchar
+  maddr varchar
+  isa boolean
+  indexes {
+      bid
+      mname
+      (mpid,mname)
+    }
+ 
+}
+
+Table registry.merchants_v {
+  pid integer [pk]
+  mpid integer 
+  msid number
+  mname char
+  minfo json [note: 'This column contains addtional details of merchants in json format']
+  mevt mevts
+  eid integer [not null]
+  brid integer
+  isd bool
+  eat timestamp
+  eby varchar
+  isa boolean
+  maddr varchar
+  bid integer
+  op tevts
+   indexes {
+      (mpid,mname)
+    }
+}
+
+Table registry.banks {
+  bid integer [pk]
+  baddr varchar
+  bname varchar
+  binfo json
+  bevt bevts
+  eid integer [not null]
+  isd bool
+  eat timestamp
+  eby varchar 
+  isa boolean
+   indexes {
+      (bid,bname)
+      bname
+      (bname,isd)
+    } 
+}
+
+Table registry.banks_v {
+    bid integer 
+    baddr varchar
+    bname varchar
+    bevt bevts
+    eid integer [not null]
+    isd bool
+    eat timestamp
+    eby varchar
+    op tevts
+    isa boolean
+    indexes {
+      (bid,bname)
+    }
+}
+
+Table registry.branches {
+  brid integer [pk]
+  brname varchar
+  braddr varchar
+  bid integer
+  brinfo json
+  brevt brevts
+  eid integer [not null]
+  isd bool
+  eat timestamp
+  eby varchar
+  isa boolean
+  indexes {
+    (brid,brname)
+    brname
+    bid
+  }
+  
+}
+
+Table registry.branches_v {
+  pid integer [pk]
+  brid integer 
+  brname varchar
+  braddr varchar
+  bid integer
+  brinfo json
+  brevt brevts
+  eid integer [not null]
+  isd bool
+  eat timestamp
+  eby varchar
+  op tevts
+  isa boolean
+  indexes {
+    (brid,brname)
+  }
+}
+
+
+Table registry.sb {
+  sid integer [pk]
+  vid integer
+  mid integer
+  did integer
+  bid integer
+  brid integer
+  sbevt sbevts
+  eid integer [not null]
+  isd bool
+  eat timestamp
+  eby varchar
+  isa boolean
+  indexes {
+    (vid, did, bid, brid,mid) [unique]
+    vid
+    bid
+    brid
+    mid
+  }
+  
+}
+
+Table registry.sb_v{
+  pid integer [pk]
+  sid integer 
+  vid integer
+  mid integer
+  did integer
+  bid integer
+  brid integer
+  sbevt sbevts
+  eid integer [not null]
+  isd bool
+  eat timestamp
+  eby varchar
+  op tevts
+  isa boolean
+} 
+
+// Devices Foreign Key references
+Ref: registry.devices.mfid > registry.mf.mfid
+Ref: registry.devices.fid > registry.firmware.fid
+Ref: registry.devices.mdid > registry.model.mdid
+Ref: registry.devices_v.did > registry.devices.did
+
+// firmware
+Ref: registry.firmware.mfid > registry.mf.mfid
+Ref: registry.firmware.fid < registry.firmware_v.fid
+
+//model
+Ref: registry.model.mfid > registry.mf.mfid
+Ref: registry.model.mdid < registry.model_v.mdid
+
+//branches
+Ref: registry.branches.bid > registry.banks.bid
+Ref: registry.branches_v.brid > registry.branches.brid
+
+//vpa
+Ref: registry.vpa.bid > registry.banks.bid
+Ref: registry.vpa_v.vid > registry.vpa.vid
+
+//banks
+Ref: registry.banks_v.bid > registry.banks.bid
+
+//merchants
+Ref: registry.merchants.brid > registry.branches.brid
+Ref: registry.merchants_v.mpid > registry.merchants.mpid
+
+// sb
+Ref: registry.sb.bid <> registry.banks.bid
+Ref: registry.sb.brid <> registry.branches.brid
+Ref: registry.sb.vid <> registry.vpa.vid
+Ref: registry.sb.did <> registry.devices.did
+Ref: registry.sb.mid <> registry.merchants.mpid
+Ref: registry.sb_v.sid <> registry.sb.sid
+
+
+//mf
+Ref: registry.mf.mfid < registry.mf_v.mfid
+
+

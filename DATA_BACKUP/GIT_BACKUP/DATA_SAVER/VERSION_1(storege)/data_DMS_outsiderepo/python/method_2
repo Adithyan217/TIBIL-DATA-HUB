@@ -1,0 +1,372 @@
+CREATE OR REPLACE FUNCTION dmsr.bank_validator(b_name ) 
+RETURNS BOOLEAN AS $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM dmsr.banks WHERE dmsr.banks.bname = b_name) THEN
+        RETURN FALSE;
+    END IF;
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION dmsr.bank_validator_writer(
+    bname VARCHAR,
+    baddr VARCHAR,
+    binfo jsonb,
+    eby integer,
+    eid integer
+)
+RETURNS boolean AS $$
+DECLARE
+bevt dmsr.bevts := 'BANK_ONBOARDED';
+BEGIN
+    IF NOT dmsr.bank_validator(bname) THEN
+        RETURN FALSE;
+    END IF;
+	INSERT INTO dmsr.banks (bname,baddr,bevt,binfo, eby, eid) 
+             VALUES (bname, baddr, bevt,binfo, eby, eid);
+
+	RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION dmsr.bank_processor(
+    bank_names TEXT[],
+    bank_addrs TEXT[],
+    binfo_list JSONB[],
+    event_bys INT[],
+    eids INT[]
+) 
+RETURNS BOOLEAN AS
+$$
+DECLARE
+    i INT;
+	result BOOLEAN;
+BEGIN
+    FOR i IN 1..array_length(bank_names, 1) LOOP
+  
+        SELECT dmsr.bank_validator_writer(
+            bank_names[i], 
+            bank_addrs[i], 
+            binfo_list[i], 
+            event_bys[i], 
+            eids[i]
+        )INTO result; 
+    END LOOP;
+	RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- CREATE OR REPLACE FUNCTION dmsr.bank_processor(data TEXT[][])
+-- RETURNS BOOLEAN AS $$
+-- DECLARE
+--     bank_name TEXT;
+--     bank_addr TEXT;
+--     bank_info JSONB;
+--     event_id INTEGER;
+--     event_by INTEGER;
+--     i INT;
+--     result BOOLEAN;
+-- BEGIN
+--     -- Debugging notice to check the input data
+--     RAISE NOTICE 'Input Data: %', data;
+
+--     -- Loop through each row in the data array
+--     FOR i IN 1..array_length(data, 1) LOOP
+--         -- Extract each element from the multi-dimensional array
+--         bank_name := data[i][1];
+--         bank_addr := data[i][2];
+--         bank_info := data[i][3]::JSONB;
+--         event_id := data[i][4]::INTEGER;
+--         event_by := data[i][5]::INTEGER;
+		
+--         SELECT dmsr.bank_validator_writer(bank_name, bank_addr, bank_info, event_id, event_by) INTO result;
+--     END LOOP;
+
+--     -- Return TRUE to indicate successful processing
+--     RETURN TRUE;
+-- END;
+-- $$ LANGUAGE plpgsql;
+
+
+
+
+
+-- SELECT dmsr.bank_processor(ARRAY[
+--     ARRAY['testsample4', 'Bangalore', '{"name": "sbi", "designation": "manager", "phno": "+919876543211", "email": "xyz@gmail.com"}', '1', '28'],
+--     ARRAY['testsample3', 'Bangalore', '{"name": "sbi", "designation": "manager", "phno": "+919876543211", "email": "xyz@gmail.com"}', '2', '29']
+-- ]::TEXT[][]);
+
+
+
+
+
+-- Example input data
+SELECT dmsr.bank_processor(
+    ARRAY['testxxxx', 'test@xx'], 
+    ARRAY['1st Main Road', '2nd Main Road'], 
+    ARRAY[
+        '{"name": "sbi", "designation": "manager", "phno": "+919876543211", "email": "xyz@gmail.com"}',
+        '{"name": "aaa", "designation": "manager", "phno": "+919876543211", "email": "xyz@gmail.com"}'
+    ]::jsonb[], 
+    ARRAY[1, 2], 
+    ARRAY[28, 29]
+);
+
+
+
+
+
+
+EXPLAIN ANALYZE
+SELECT dmsr.bank_processor(
+    ARRAY['Bank_A', 'Bank_B', 'Bank_C', 'Bank_D', 'Bank_E', 'Bank_F', 'Bank_G', 'Bank_H', 'Bank_I', 'Bank_J'], 
+    ARRAY['1st Main Road', '2nd Main Road', '1st Main Road', '2nd Main Road', '1st Main Road', '2nd Main Road', '1st Main Road', '2nd Main Road', '1st Main Road', '2nd Main Road'], 
+    ARRAY[
+        '{"name": "Bank_A", "designation": "manager", "phno": "+919876543210", "email": "a@gmail.com"}',
+        '{"name": "Bank_B", "designation": "manager", "phno": "+919876543211", "email": "b@gmail.com"}',
+        '{"name": "Bank_C", "designation": "manager", "phno": "+919876543212", "email": "c@gmail.com"}',
+        '{"name": "Bank_D", "designation": "manager", "phno": "+919876543213", "email": "d@gmail.com"}',
+        '{"name": "Bank_E", "designation": "manager", "phno": "+919876543214", "email": "e@gmail.com"}',
+        '{"name": "Bank_F", "designation": "manager", "phno": "+919876543215", "email": "f@gmail.com"}',
+        '{"name": "Bank_G", "designation": "manager", "phno": "+919876543216", "email": "g@gmail.com"}',
+        '{"name": "Bank_H", "designation": "manager", "phno": "+919876543217", "email": "h@gmail.com"}',
+        '{"name": "Bank_I", "designation": "manager", "phno": "+919876543218", "email": "i@gmail.com"}',
+        '{"name": "Bank_J", "designation": "manager", "phno": "+919876543219", "email": "j@gmail.com"}'
+    ]::jsonb[], 
+    ARRAY[1, 2, 1, 2, 1, 2, 1, 2, 1, 2], 
+    ARRAY[28, 29, 28, 29, 28, 29, 28, 29, 28, 29]
+);
+
+
+EXPLAIN ANALYZE
+SELECT dmsr.bank_processor(
+    ARRAY['Bank_U', 'Bank_V', 'Bank_W', 'Bank_X', 'Bank_Y', 'Bank_Z', 'Bank_AA', 'Bank_BB', 'Bank_CC', 'Bank_DD', 
+          'Bank_EE', 'Bank_FF', 'Bank_GG', 'Bank_HH', 'Bank_II', 'Bank_JJ', 'Bank_KK', 'Bank_LL', 'Bank_MM', 'Bank_NN'], 
+    ARRAY['3rd Avenue', '4th Street', '5th Avenue', '6th Street', '7th Avenue', '8th Street', '9th Avenue', '10th Street', 
+          '11th Avenue', '12th Street', '13th Avenue', '14th Street', '15th Avenue', '16th Street', '17th Avenue', '18th Street', 
+          '19th Avenue', '20th Street', '21st Avenue', '22nd Street'], 
+    ARRAY[
+        '{"name": "Bank_U", "designation": "assistant manager", "phno": "+919876543220", "email": "u@gmail.com"}',
+        '{"name": "Bank_V", "designation": "assistant manager", "phno": "+919876543221", "email": "v@gmail.com"}',
+        '{"name": "Bank_W", "designation": "assistant manager", "phno": "+919876543222", "email": "w@gmail.com"}',
+        '{"name": "Bank_X", "designation": "assistant manager", "phno": "+919876543223", "email": "x@gmail.com"}',
+        '{"name": "Bank_Y", "designation": "assistant manager", "phno": "+919876543224", "email": "y@gmail.com"}',
+        '{"name": "Bank_Z", "designation": "assistant manager", "phno": "+919876543225", "email": "z@gmail.com"}',
+        '{"name": "Bank_AA", "designation": "assistant manager", "phno": "+919876543226", "email": "aa@gmail.com"}',
+        '{"name": "Bank_BB", "designation": "assistant manager", "phno": "+919876543227", "email": "bb@gmail.com"}',
+        '{"name": "Bank_CC", "designation": "assistant manager", "phno": "+919876543228", "email": "cc@gmail.com"}',
+        '{"name": "Bank_DD", "designation": "assistant manager", "phno": "+919876543229", "email": "dd@gmail.com"}',
+        '{"name": "Bank_EE", "designation": "assistant manager", "phno": "+919876543230", "email": "ee@gmail.com"}',
+        '{"name": "Bank_FF", "designation": "assistant manager", "phno": "+919876543231", "email": "ff@gmail.com"}',
+        '{"name": "Bank_GG", "designation": "assistant manager", "phno": "+919876543232", "email": "gg@gmail.com"}',
+        '{"name": "Bank_HH", "designation": "assistant manager", "phno": "+919876543233", "email": "hh@gmail.com"}',
+        '{"name": "Bank_II", "designation": "assistant manager", "phno": "+919876543234", "email": "ii@gmail.com"}',
+        '{"name": "Bank_JJ", "designation": "assistant manager", "phno": "+919876543235", "email": "jj@gmail.com"}',
+        '{"name": "Bank_KK", "designation": "assistant manager", "phno": "+919876543236", "email": "kk@gmail.com"}',
+        '{"name": "Bank_LL", "designation": "assistant manager", "phno": "+919876543237", "email": "ll@gmail.com"}',
+        '{"name": "Bank_MM", "designation": "assistant manager", "phno": "+919876543238", "email": "mm@gmail.com"}',
+        '{"name": "Bank_NN", "designation": "assistant manager", "phno": "+919876543239", "email": "nn@gmail.com"}'
+    ]::jsonb[], 
+    ARRAY[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20], 
+    ARRAY[30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49]
+);
+
+
+
+
+EXPLAIN ANALYZE
+SELECT dmsr.bank_processor(
+    ARRAY[
+        'Bank_OO', 'Bank_PP', 'Bank_QQ', 'Bank_RR', 'Bank_SS', 'Bank_TT', 'Bank_UU', 'Bank_VV', 'Bank_WW', 'Bank_XX', 
+        'Bank_YY', 'Bank_ZZ', 'Bank_AAA', 'Bank_BBB', 'Bank_CCC', 'Bank_DDD', 'Bank_EEE', 'Bank_FFF', 'Bank_GGG', 'Bank_HHH', 
+        'Bank_III', 'Bank_JJJ', 'Bank_KKK', 'Bank_LLL', 'Bank_MMM', 'Bank_NNN', 'Bank_OOO', 'Bank_PPP', 'Bank_QQQ', 'Bank_RRR', 
+        'Bank_SSS', 'Bank_TTT', 'Bank_UUU', 'Bank_VVV', 'Bank_WWW', 'Bank_XXX', 'Bank_YYY', 'Bank_ZZZ', 'Bank_ABA', 'Bank_BBB', 
+        'Bank_CCA', 'Bank_DDA', 'Bank_EEA', 'Bank_FFA', 'Bank_GGA', 'Bank_HHA', 'Bank_IIA', 'Bank_JJA', 'Bank_KKA', 'Bank_LLA', 
+        'Bank_MMA', 'Bank_NNA', 'Bank_OOA', 'Bank_PPA', 'Bank_QQA', 'Bank_RRA', 'Bank_SSA', 'Bank_TTA', 'Bank_UUA', 'Bank_VVA', 
+        'Bank_WWA', 'Bank_XXA', 'Bank_YYA', 'Bank_ZZA', 'Bank_ABB', 'Bank_BBC', 'Bank_CCC', 'Bank_DDD', 'Bank_EEE', 'Bank_FFF', 
+        'Bank_GGG', 'Bank_HHH', 'Bank_III', 'Bank_JJJ', 'Bank_KKK', 'Bank_LLL', 'Bank_MMM', 'Bank_NNN', 'Bank_OOO', 'Bank_PPP', 
+        'Bank_QQQ', 'Bank_RRR', 'Bank_SSS', 'Bank_TTT', 'Bank_UUU', 'Bank_VVV', 'Bank_WWW', 'Bank_XXX', 'Bank_YYY', 'Bank_ZZZ', 
+        'Bank_AAAA', 'Bank_BBBB', 'Bank_CCCC', 'Bank_DDDD', 'Bank_EEEE', 'Bank_FFFF', 'Bank_GGGG', 'Bank_HHHH', 'Bank_IIII', 'Bank_JJJJ'
+    ], 
+     ARRAY[
+        '23rd Avenue', '24th Street', '25th Avenue', '26th Street', '27th Avenue', '28th Street', '29th Avenue', '30th Street', 
+        '31st Avenue', '32nd Street', '33rd Avenue', '34th Street', '35th Avenue', '36th Street', '37th Avenue', '38th Street', 
+        '39th Avenue', '40th Street', '41st Avenue', '42nd Street', '43rd Avenue', '44th Street', '45th Avenue', '46th Street', 
+        '47th Avenue', '48th Street', '49th Avenue', '50th Street', '51st Avenue', '52nd Street', '53rd Avenue', '54th Street', 
+        '55th Avenue', '56th Street', '57th Avenue', '58th Street', '59th Avenue', '60th Street', '61st Avenue', '62nd Street', 
+        '63rd Avenue', '64th Street', '65th Avenue', '66th Street', '67th Avenue', '68th Street', '69th Avenue', '70th Street', 
+        '71st Avenue', '72nd Street', '73rd Avenue', '74th Street', '75th Avenue', '76th Street', '77th Avenue', '78th Street', 
+        '79th Avenue', '80th Street', '81st Avenue', '82nd Street', '83rd Avenue', '84th Street', '85th Avenue', '86th Street', 
+        '87th Avenue', '88th Street', '89th Avenue', '90th Street', '91st Avenue', '92nd Street', '93rd Avenue', '94th Street', 
+        '95th Avenue', '96th Street', '97th Avenue', '98th Street', '99th Avenue', '100th Street', '101st Avenue', '102nd Street', 
+        '103rd Avenue', '104th Street', '105th Avenue', '106th Street', '107th Avenue', '108th Street', '109th Avenue', '110th Street', 
+        '111th Avenue', '112th Street', '113th Avenue', '114th Street', '115th Avenue', '116th Street', '117th Avenue', '118th Street'
+    ],  
+    ARRAY[
+        '{"name": "Bank_U", "designation": "assistant manager", "phno": "+919876543220", "email": "u@gmail.com"}',
+        '{"name": "Bank_V", "designation": "assistant manager", "phno": "+919876543221", "email": "v@gmail.com"}',
+        '{"name": "Bank_W", "designation": "assistant manager", "phno": "+919876543222", "email": "w@gmail.com"}',
+        '{"name": "Bank_X", "designation": "assistant manager", "phno": "+919876543223", "email": "x@gmail.com"}',
+        '{"name": "Bank_Y", "designation": "assistant manager", "phno": "+919876543224", "email": "y@gmail.com"}',
+        '{"name": "Bank_Z", "designation": "assistant manager", "phno": "+919876543225", "email": "z@gmail.com"}',
+        '{"name": "Bank_AA", "designation": "assistant manager", "phno": "+919876543226", "email": "aa@gmail.com"}',
+        '{"name": "Bank_BB", "designation": "assistant manager", "phno": "+919876543227", "email": "bb@gmail.com"}',
+        '{"name": "Bank_CC", "designation": "assistant manager", "phno": "+919876543228", "email": "cc@gmail.com"}',
+        '{"name": "Bank_DD", "designation": "assistant manager", "phno": "+919876543229", "email": "dd@gmail.com"}',
+        '{"name": "Bank_EE", "designation": "assistant manager", "phno": "+919876543230", "email": "ee@gmail.com"}',
+        '{"name": "Bank_FF", "designation": "assistant manager", "phno": "+919876543231", "email": "ff@gmail.com"}',
+        '{"name": "Bank_GG", "designation": "assistant manager", "phno": "+919876543232", "email": "gg@gmail.com"}',
+        '{"name": "Bank_HH", "designation": "assistant manager", "phno": "+919876543233", "email": "hh@gmail.com"}',
+        '{"name": "Bank_II", "designation": "assistant manager", "phno": "+919876543234", "email": "ii@gmail.com"}',
+        '{"name": "Bank_JJ", "designation": "assistant manager", "phno": "+919876543235", "email": "jj@gmail.com"}',
+        '{"name": "Bank_KK", "designation": "assistant manager", "phno": "+919876543236", "email": "kk@gmail.com"}',
+        '{"name": "Bank_LL", "designation": "assistant manager", "phno": "+919876543237", "email": "ll@gmail.com"}',
+        '{"name": "Bank_MM", "designation": "assistant manager", "phno": "+919876543238", "email": "mm@gmail.com"}',
+        '{"name": "Bank_NN", "designation": "assistant manager", "phno": "+919876543239", "email": "nn@gmail.com"}',
+        '{"name": "Bank_U", "designation": "assistant manager", "phno": "+919876543220", "email": "u@gmail.com"}',
+        '{"name": "Bank_V", "designation": "assistant manager", "phno": "+919876543221", "email": "v@gmail.com"}',
+        '{"name": "Bank_W", "designation": "assistant manager", "phno": "+919876543222", "email": "w@gmail.com"}',
+        '{"name": "Bank_X", "designation": "assistant manager", "phno": "+919876543223", "email": "x@gmail.com"}',
+        '{"name": "Bank_Y", "designation": "assistant manager", "phno": "+919876543224", "email": "y@gmail.com"}',
+        '{"name": "Bank_Z", "designation": "assistant manager", "phno": "+919876543225", "email": "z@gmail.com"}',
+        '{"name": "Bank_AA", "designation": "assistant manager", "phno": "+919876543226", "email": "aa@gmail.com"}',
+        '{"name": "Bank_BB", "designation": "assistant manager", "phno": "+919876543227", "email": "bb@gmail.com"}',
+        '{"name": "Bank_CC", "designation": "assistant manager", "phno": "+919876543228", "email": "cc@gmail.com"}',
+        '{"name": "Bank_DD", "designation": "assistant manager", "phno": "+919876543229", "email": "dd@gmail.com"}',
+        '{"name": "Bank_EE", "designation": "assistant manager", "phno": "+919876543230", "email": "ee@gmail.com"}',
+        '{"name": "Bank_FF", "designation": "assistant manager", "phno": "+919876543231", "email": "ff@gmail.com"}',
+        '{"name": "Bank_GG", "designation": "assistant manager", "phno": "+919876543232", "email": "gg@gmail.com"}',
+        '{"name": "Bank_HH", "designation": "assistant manager", "phno": "+919876543233", "email": "hh@gmail.com"}',
+        '{"name": "Bank_II", "designation": "assistant manager", "phno": "+919876543234", "email": "ii@gmail.com"}',
+        '{"name": "Bank_JJ", "designation": "assistant manager", "phno": "+919876543235", "email": "jj@gmail.com"}',
+        '{"name": "Bank_KK", "designation": "assistant manager", "phno": "+919876543236", "email": "kk@gmail.com"}',
+        '{"name": "Bank_LL", "designation": "assistant manager", "phno": "+919876543237", "email": "ll@gmail.com"}',
+        '{"name": "Bank_MM", "designation": "assistant manager", "phno": "+919876543238", "email": "mm@gmail.com"}',
+        '{"name": "Bank_NN", "designation": "assistant manager", "phno": "+919876543239", "email": "nn@gmail.com"}',
+        '{"name": "Bank_U", "designation": "assistant manager", "phno": "+919876543220", "email": "u@gmail.com"}',
+        '{"name": "Bank_V", "designation": "assistant manager", "phno": "+919876543221", "email": "v@gmail.com"}',
+        '{"name": "Bank_W", "designation": "assistant manager", "phno": "+919876543222", "email": "w@gmail.com"}',
+        '{"name": "Bank_X", "designation": "assistant manager", "phno": "+919876543223", "email": "x@gmail.com"}',
+        '{"name": "Bank_Y", "designation": "assistant manager", "phno": "+919876543224", "email": "y@gmail.com"}',
+        '{"name": "Bank_Z", "designation": "assistant manager", "phno": "+919876543225", "email": "z@gmail.com"}',
+        '{"name": "Bank_AA", "designation": "assistant manager", "phno": "+919876543226", "email": "aa@gmail.com"}',
+        '{"name": "Bank_BB", "designation": "assistant manager", "phno": "+919876543227", "email": "bb@gmail.com"}',
+        '{"name": "Bank_CC", "designation": "assistant manager", "phno": "+919876543228", "email": "cc@gmail.com"}',
+        '{"name": "Bank_DD", "designation": "assistant manager", "phno": "+919876543229", "email": "dd@gmail.com"}',
+        '{"name": "Bank_EE", "designation": "assistant manager", "phno": "+919876543230", "email": "ee@gmail.com"}',
+        '{"name": "Bank_FF", "designation": "assistant manager", "phno": "+919876543231", "email": "ff@gmail.com"}',
+        '{"name": "Bank_GG", "designation": "assistant manager", "phno": "+919876543232", "email": "gg@gmail.com"}',
+        '{"name": "Bank_HH", "designation": "assistant manager", "phno": "+919876543233", "email": "hh@gmail.com"}',
+        '{"name": "Bank_II", "designation": "assistant manager", "phno": "+919876543234", "email": "ii@gmail.com"}',
+        '{"name": "Bank_JJ", "designation": "assistant manager", "phno": "+919876543235", "email": "jj@gmail.com"}',
+        '{"name": "Bank_KK", "designation": "assistant manager", "phno": "+919876543236", "email": "kk@gmail.com"}',
+        '{"name": "Bank_LL", "designation": "assistant manager", "phno": "+919876543237", "email": "ll@gmail.com"}',
+        '{"name": "Bank_MM", "designation": "assistant manager", "phno": "+919876543238", "email": "mm@gmail.com"}',
+        '{"name": "Bank_NN", "designation": "assistant manager", "phno": "+919876543239", "email": "nn@gmail.com"}',
+        '{"name": "Bank_U", "designation": "assistant manager", "phno": "+919876543220", "email": "u@gmail.com"}',
+        '{"name": "Bank_V", "designation": "assistant manager", "phno": "+919876543221", "email": "v@gmail.com"}',
+        '{"name": "Bank_W", "designation": "assistant manager", "phno": "+919876543222", "email": "w@gmail.com"}',
+        '{"name": "Bank_X", "designation": "assistant manager", "phno": "+919876543223", "email": "x@gmail.com"}',
+        '{"name": "Bank_Y", "designation": "assistant manager", "phno": "+919876543224", "email": "y@gmail.com"}',
+        '{"name": "Bank_Z", "designation": "assistant manager", "phno": "+919876543225", "email": "z@gmail.com"}',
+        '{"name": "Bank_AA", "designation": "assistant manager", "phno": "+919876543226", "email": "aa@gmail.com"}',
+        '{"name": "Bank_BB", "designation": "assistant manager", "phno": "+919876543227", "email": "bb@gmail.com"}',
+        '{"name": "Bank_CC", "designation": "assistant manager", "phno": "+919876543228", "email": "cc@gmail.com"}',
+        '{"name": "Bank_DD", "designation": "assistant manager", "phno": "+919876543229", "email": "dd@gmail.com"}',
+        '{"name": "Bank_EE", "designation": "assistant manager", "phno": "+919876543230", "email": "ee@gmail.com"}',
+        '{"name": "Bank_FF", "designation": "assistant manager", "phno": "+919876543231", "email": "ff@gmail.com"}',
+        '{"name": "Bank_GG", "designation": "assistant manager", "phno": "+919876543232", "email": "gg@gmail.com"}',
+        '{"name": "Bank_HH", "designation": "assistant manager", "phno": "+919876543233", "email": "hh@gmail.com"}',
+        '{"name": "Bank_II", "designation": "assistant manager", "phno": "+919876543234", "email": "ii@gmail.com"}',
+        '{"name": "Bank_JJ", "designation": "assistant manager", "phno": "+919876543235", "email": "jj@gmail.com"}',
+        '{"name": "Bank_KK", "designation": "assistant manager", "phno": "+919876543236", "email": "kk@gmail.com"}',
+        '{"name": "Bank_LL", "designation": "assistant manager", "phno": "+919876543237", "email": "ll@gmail.com"}',
+        '{"name": "Bank_MM", "designation": "assistant manager", "phno": "+919876543238", "email": "mm@gmail.com"}',
+        '{"name": "Bank_NN", "designation": "assistant manager", "phno": "+919876543239", "email": "nn@gmail.com"}',
+        '{"name": "Bank_U", "designation": "assistant manager", "phno": "+919876543220", "email": "u@gmail.com"}',
+        '{"name": "Bank_V", "designation": "assistant manager", "phno": "+919876543221", "email": "v@gmail.com"}',
+        '{"name": "Bank_W", "designation": "assistant manager", "phno": "+919876543222", "email": "w@gmail.com"}',
+        '{"name": "Bank_X", "designation": "assistant manager", "phno": "+919876543223", "email": "x@gmail.com"}',
+        '{"name": "Bank_Y", "designation": "assistant manager", "phno": "+919876543224", "email": "y@gmail.com"}',
+        '{"name": "Bank_Z", "designation": "assistant manager", "phno": "+919876543225", "email": "z@gmail.com"}',
+        '{"name": "Bank_AA", "designation": "assistant manager", "phno": "+919876543226", "email": "aa@gmail.com"}',
+        '{"name": "Bank_BB", "designation": "assistant manager", "phno": "+919876543227", "email": "bb@gmail.com"}',
+        '{"name": "Bank_CC", "designation": "assistant manager", "phno": "+919876543228", "email": "cc@gmail.com"}',
+        '{"name": "Bank_DD", "designation": "assistant manager", "phno": "+919876543229", "email": "dd@gmail.com"}',
+        '{"name": "Bank_EE", "designation": "assistant manager", "phno": "+919876543230", "email": "ee@gmail.com"}',
+        '{"name": "Bank_FF", "designation": "assistant manager", "phno": "+919876543231", "email": "ff@gmail.com"}',
+        '{"name": "Bank_GG", "designation": "assistant manager", "phno": "+919876543232", "email": "gg@gmail.com"}',
+        '{"name": "Bank_HH", "designation": "assistant manager", "phno": "+919876543233", "email": "hh@gmail.com"}',
+        '{"name": "Bank_II", "designation": "assistant manager", "phno": "+919876543234", "email": "ii@gmail.com"}',
+        '{"name": "Bank_JJ", "designation": "assistant manager", "phno": "+919876543235", "email": "jj@gmail.com"}',
+        '{"name": "Bank_KK", "designation": "assistant manager", "phno": "+919876543236", "email": "kk@gmail.com"}',
+        '{"name": "Bank_LL", "designation": "assistant manager", "phno": "+919876543237", "email": "ll@gmail.com"}',
+        '{"name": "Bank_MM", "designation": "assistant manager", "phno": "+919876543238", "email": "mm@gmail.com"}',
+        '{"name": "Bank_NN", "designation": "assistant manager", "phno": "+919876543239", "email": "nn@gmail.com"}'		
+    ]::jsonb[], 
+    ARRAY[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20], 
+    ARRAY[30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49,30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49,30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49,30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49,30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49]
+);
+
+
+
+EXPLAIN ANALYZE
+SELECT dmsr.bank_processor(
+    ARRAY['Bank_1', 'Bank_2', 'Bank_3', 'Bank_4', 'Bank_5', 'Bank_6', 'Bank_7', 'Bank_8', 'Bank_9', 'Bank_10', 'Bank_11', 'Bank_12', 'Bank_13', 'Bank_14', 'Bank_15', 'Bank_16', 'Bank_17', 'Bank_18', 'Bank_19', 'Bank_20', 'Bank_21', 'Bank_22', 'Bank_23', 'Bank_24', 'Bank_25', 'Bank_26', 'Bank_27', 'Bank_28', 'Bank_29', 'Bank_30', 'Bank_31', 'Bank_32', 'Bank_33', 'Bank_34', 'Bank_35', 'Bank_36', 'Bank_37', 'Bank_38', 'Bank_39', 'Bank_40', 'Bank_41', 'Bank_42', 'Bank_43', 'Bank_44', 'Bank_45', 'Bank_46', 'Bank_47', 'Bank_48', 'Bank_49', 'Bank_50', 'Bank_51', 'Bank_52', 'Bank_53', 'Bank_54', 'Bank_55', 'Bank_56', 'Bank_57', 'Bank_58', 'Bank_59', 'Bank_60', 'Bank_61', 'Bank_62', 'Bank_63', 'Bank_64', 'Bank_65', 'Bank_66', 'Bank_67', 'Bank_68', 'Bank_69', 'Bank_70', 'Bank_71', 'Bank_72', 'Bank_73', 'Bank_74', 'Bank_75', 'Bank_76', 'Bank_77', 'Bank_78', 'Bank_79', 'Bank_80', 'Bank_81', 'Bank_82', 'Bank_83', 'Bank_84', 'Bank_85', 'Bank_86', 'Bank_87', 'Bank_88', 'Bank_89', 'Bank_90', 'Bank_91', 'Bank_92', 'Bank_93', 'Bank_94', 'Bank_95', 'Bank_96', 'Bank_97', 'Bank_98', 'Bank_99', 'Bank_100'],
+    ARRAY['2nd Main Road', '1st Main Road', '1st Main Road', '2nd Main Road', '2nd Main Road', '2nd Main Road', '1st Main Road', '1st Main Road', '2nd Main Road', '1st Main Road', '2nd Main Road', '1st Main Road', '1st Main Road', '2nd Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '2nd Main Road', '2nd Main Road', '2nd Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '2nd Main Road', '1st Main Road', '1st Main Road', '2nd Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '2nd Main Road', '2nd Main Road', '1st Main Road', '2nd Main Road', '1st Main Road', '2nd Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '2nd Main Road', '2nd Main Road', '1st Main Road', '2nd Main Road', '1st Main Road', '2nd Main Road', '1st Main Road', '1st Main Road', '2nd Main Road', '2nd Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '2nd Main Road', '2nd Main Road', '2nd Main Road', '2nd Main Road', '1st Main Road', '2nd Main Road', '1st Main Road', '2nd Main Road', '1st Main Road', '2nd Main Road', '1st Main Road', '2nd Main Road', '1st Main Road', '1st Main Road', '2nd Main Road', '1st Main Road', '2nd Main Road', '1st Main Road', '2nd Main Road', '2nd Main Road', '1st Main Road', '1st Main Road', '2nd Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '2nd Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '1st Main Road', '2nd Main Road', '2nd Main Road', '2nd Main Road'],
+    ARRAY['{"name": "Bank_1", "designation": "Barrister", "phno": "(246)367-3096x551", "email": "michael89@example.com"}', '{"name": "Bank_2", "designation": "Geographical information systems officer", "phno": "+1-800-796-3896x8568", "email": "andre55@example.net"}', '{"name": "Bank_3", "designation": "Corporate treasurer", "phno": "493-489-5371x61839", "email": "marilyncruz@example.com"}', '{"name": "Bank_4", "designation": "Runner, broadcasting/film/video", "phno": "(822)673-5561", "email": "kylebooth@example.net"}', '{"name": "Bank_5", "designation": "Engineer, agricultural", "phno": "321.946.0245x096", "email": "kevin13@example.org"}', '{"name": "Bank_6", "designation": "Sports development officer", "phno": "+1-768-706-6157x928", "email": "ashleyward@example.org"}', '{"name": "Bank_7", "designation": "Adult nurse", "phno": "001-879-854-3526x71045", "email": "danielrussell@example.net"}', '{"name": "Bank_8", "designation": "Immigration officer", "phno": "001-327-604-0505x23507", "email": "eric87@example.org"}', '{"name": "Bank_9", "designation": "Chartered public finance accountant", "phno": "+1-499-749-2637x11767", "email": "sarahanderson@example.net"}', '{"name": "Bank_10", "designation": "Higher education careers adviser", "phno": "802.847.7393x5049", "email": "garzashaun@example.com"}', '{"name": "Bank_11", "designation": "Television/film/video producer", "phno": "773-755-7223x30464", "email": "williamsmatthew@example.net"}', '{"name": "Bank_12", "designation": "Archivist", "phno": "839.861.0531x4877", "email": "diamondsmith@example.net"}', '{"name": "Bank_13", "designation": "Licensed conveyancer", "phno": "912-677-0087", "email": "vanthony@example.org"}', '{"name": "Bank_14", "designation": "Camera operator", "phno": "+1-460-703-0639", "email": "steven44@example.com"}', '{"name": "Bank_15", "designation": "Telecommunications researcher", "phno": "(897)729-4218x8073", "email": "jamessmith@example.net"}', '{"name": "Bank_16", "designation": "Government social research officer", "phno": "+1-865-701-6771x200", "email": "annalittle@example.net"}', '{"name": "Bank_17", "designation": "Armed forces training and education officer", "phno": "431.549.9672x8937", "email": "charles40@example.net"}', '{"name": "Bank_18", "designation": "Make", "phno": "880-413-4815x8046", "email": "yowens@example.org"}', '{"name": "Bank_19", "designation": "Transport planner", "phno": "+1-882-807-4852", "email": "toneal@example.com"}', '{"name": "Bank_20", "designation": "Rural practice surveyor", "phno": "(637)311-4033x08272", "email": "brianwilson@example.net"}', '{"name": "Bank_21", "designation": "Research officer, trade union", "phno": "435-388-0199x67464", "email": "bishopmary@example.net"}', '{"name": "Bank_22", "designation": "Sales professional, IT", "phno": "001-833-551-4382x83325", "email": "ericyoung@example.com"}', '{"name": "Bank_23", "designation": "Copy", "phno": "(821)445-3256x905", "email": "robertgray@example.com"}', '{"name": "Bank_24", "designation": "Chartered public finance accountant", "phno": "001-357-919-9248x28477", "email": "adamssharon@example.net"}', '{"name": "Bank_25", "designation": "Maintenance engineer", "phno": "(526)832-9781x6489", "email": "ginamiller@example.net"}', '{"name": "Bank_26", "designation": "Therapist, art", "phno": "+1-718-302-7289", "email": "jacobsstacy@example.org"}', '{"name": "Bank_27", "designation": "Advertising copywriter", "phno": "639.636.9620x0600", "email": "slawson@example.com"}', '{"name": "Bank_28", "designation": "Company secretary", "phno": "877-614-7830x000", "email": "stewartkelly@example.com"}', '{"name": "Bank_29", "designation": "Educational psychologist", "phno": "(876)917-4050", "email": "williamsangela@example.org"}', '{"name": "Bank_30", "designation": "Merchandiser, retail", "phno": "608-827-0281x1905", "email": "walkercourtney@example.org"}', '{"name": "Bank_31", "designation": "Engineer, maintenance (IT)", "phno": "273-480-1791x081", "email": "bethany99@example.org"}', '{"name": "Bank_32", "designation": "Designer, industrial/product", "phno": "001-670-634-0727x820", "email": "moorebryan@example.com"}', '{"name": "Bank_33", "designation": "Research scientist (medical)", "phno": "(889)750-8719", "email": "emily26@example.org"}', '{"name": "Bank_34", "designation": "Private music teacher", "phno": "678-916-0337", "email": "sdaniels@example.net"}', '{"name": "Bank_35", "designation": "Transport planner", "phno": "+1-990-561-6753x8862", "email": "lisa17@example.net"}', '{"name": "Bank_36", "designation": "Environmental education officer", "phno": "630-899-3528", "email": "jennifer26@example.org"}', '{"name": "Bank_37", "designation": "Automotive engineer", "phno": "+1-238-350-7521x36875", "email": "hensonwilliam@example.net"}', '{"name": "Bank_38", "designation": "Structural engineer", "phno": "+1-244-315-3518x233", "email": "phillipsandrew@example.net"}', '{"name": "Bank_39", "designation": "Production engineer", "phno": "001-821-481-7354", "email": "angela27@example.net"}', '{"name": "Bank_40", "designation": "Analytical chemist", "phno": "683.476.7646x672", "email": "taylorboyd@example.org"}', '{"name": "Bank_41", "designation": "Toxicologist", "phno": "954.755.7961", "email": "rsmith@example.com"}', '{"name": "Bank_42", "designation": "Copywriter, advertising", "phno": "461.451.8948", "email": "iroberts@example.net"}', '{"name": "Bank_43", "designation": "Designer, graphic", "phno": "513.447.8533", "email": "rhonda56@example.com"}', '{"name": "Bank_44", "designation": "Licensed conveyancer", "phno": "001-461-706-6378x48724", "email": "ithompson@example.com"}', '{"name": "Bank_45", "designation": "Higher education lecturer", "phno": "603.345.5582x374", "email": "josephschmidt@example.org"}', '{"name": "Bank_46", "designation": "Optometrist", "phno": "362-438-8810x1597", "email": "sarahbarnes@example.net"}', '{"name": "Bank_47", "designation": "Magazine journalist", "phno": "001-821-877-9771", "email": "harveyjonathan@example.com"}', '{"name": "Bank_48", "designation": "Mudlogger", "phno": "(985)703-0344x69475", "email": "uanderson@example.net"}', '{"name": "Bank_49", "designation": "Teacher, adult education", "phno": "743-213-6155x93040", "email": "garychen@example.org"}', '{"name": "Bank_50", "designation": "Insurance underwriter", "phno": "272.634.5406", "email": "kylefrancis@example.com"}', '{"name": "Bank_51", "designation": "Purchasing manager", "phno": "583-695-6159", "email": "edwardrussell@example.org"}', '{"name": "Bank_52", "designation": "Advice worker", "phno": "001-908-631-6255", "email": "julia13@example.com"}', '{"name": "Bank_53", "designation": "Writer", "phno": "453-510-6753", "email": "ocalderon@example.net"}', '{"name": "Bank_54", "designation": "Field trials officer", "phno": "4024680622", "email": "steven69@example.org"}', '{"name": "Bank_55", "designation": "Special effects artist", "phno": "+1-722-888-0122x714", "email": "william46@example.com"}', '{"name": "Bank_56", "designation": "Firefighter", "phno": "979-429-2720x161", "email": "npeterson@example.net"}', '{"name": "Bank_57", "designation": "Clinical molecular geneticist", "phno": "686.524.5316x019", "email": "michaelperez@example.com"}', '{"name": "Bank_58", "designation": "Broadcast journalist", "phno": "2408956457", "email": "stephanie67@example.org"}', '{"name": "Bank_59", "designation": "Web designer", "phno": "001-228-649-0058x48141", "email": "ellen57@example.org"}', '{"name": "Bank_60", "designation": "Scientific laboratory technician", "phno": "+1-277-931-1920x345", "email": "jsmith@example.net"}', '{"name": "Bank_61", "designation": "Estate agent", "phno": "+1-225-570-5256", "email": "taylorjessica@example.net"}', '{"name": "Bank_62", "designation": "Surveyor, insurance", "phno": "378.630.4114", "email": "vanessa27@example.net"}', '{"name": "Bank_63", "designation": "Health visitor", "phno": "6622077758", "email": "kparker@example.com"}', '{"name": "Bank_64", "designation": "Education officer, community", "phno": "+1-531-904-2161x096", "email": "ujohnson@example.org"}', '{"name": "Bank_65", "designation": "Psychologist, educational", "phno": "549-434-4366x26423", "email": "kgeorge@example.org"}', '{"name": "Bank_66", "designation": "Public relations account executive", "phno": "999-906-2010x5873", "email": "gordonjennifer@example.net"}', '{"name": "Bank_67", "designation": "Lexicographer", "phno": "001-923-700-7586x440", "email": "ybest@example.com"}', '{"name": "Bank_68", "designation": "Development worker, international aid", "phno": "9725987312", "email": "warrenrebekah@example.org"}', '{"name": "Bank_69", "designation": "Lexicographer", "phno": "824.284.1196", "email": "michaeljohnson@example.org"}', '{"name": "Bank_70", "designation": "Probation officer", "phno": "243-555-3588", "email": "mooneyelizabeth@example.net"}', '{"name": "Bank_71", "designation": "Primary school teacher", "phno": "+1-538-636-1679x05500", "email": "jamesbrown@example.org"}', '{"name": "Bank_72", "designation": "Writer", "phno": "496.217.0368x9390", "email": "emilyflores@example.net"}', '{"name": "Bank_73", "designation": "Further education lecturer", "phno": "281.761.9882", "email": "kevinmartin@example.com"}', '{"name": "Bank_74", "designation": "Midwife", "phno": "001-202-578-8746", "email": "jgutierrez@example.net"}', '{"name": "Bank_75", "designation": "Doctor, hospital", "phno": "6099784753", "email": "penaaustin@example.net"}', '{"name": "Bank_76", "designation": "Trade mark attorney", "phno": "4045822374", "email": "jamie19@example.net"}', '{"name": "Bank_77", "designation": "Freight forwarder", "phno": "(453)863-0825", "email": "jeremy01@example.org"}', '{"name": "Bank_78", "designation": "Doctor, general practice", "phno": "001-268-792-8800", "email": "cesar55@example.org"}', '{"name": "Bank_79", "designation": "Designer, interior/spatial", "phno": "2875620823", "email": "darrell37@example.com"}', '{"name": "Bank_80", "designation": "Broadcast presenter", "phno": "(356)301-2174", "email": "allenanthony@example.net"}', '{"name": "Bank_81", "designation": "Corporate investment banker", "phno": "001-600-873-7162", "email": "ashleyprince@example.net"}', '{"name": "Bank_82", "designation": "Occupational hygienist", "phno": "(893)616-5999", "email": "holmesangela@example.net"}', '{"name": "Bank_83", "designation": "Chartered certified accountant", "phno": "+1-793-429-6585x1098", "email": "kevin96@example.net"}', '{"name": "Bank_84", "designation": "Forest/woodland manager", "phno": "(413)605-1423x119", "email": "canderson@example.org"}', '{"name": "Bank_85", "designation": "Armed forces training and education officer", "phno": "6474384069", "email": "josecosta@example.com"}', '{"name": "Bank_86", "designation": "Jewellery designer", "phno": "+1-702-830-8165x45723", "email": "meredithtran@example.net"}', '{"name": "Bank_87", "designation": "Media buyer", "phno": "6616053416", "email": "andrew05@example.org"}', '{"name": "Bank_88", "designation": "Hospital pharmacist", "phno": "001-460-813-3886x811", "email": "melendezdouglas@example.net"}', '{"name": "Bank_89", "designation": "Patent examiner", "phno": "001-436-422-1930", "email": "paul92@example.com"}', '{"name": "Bank_90", "designation": "Higher education careers adviser", "phno": "(583)212-8953", "email": "lisakim@example.com"}', '{"name": "Bank_91", "designation": "Engineer, civil (consulting)", "phno": "001-365-870-8735x81975", "email": "sarahmeza@example.com"}', '{"name": "Bank_92", "designation": "Data scientist", "phno": "001-645-541-9803x62663", "email": "joneshaley@example.com"}', '{"name": "Bank_93", "designation": "Production assistant, television", "phno": "583.417.8920x97975", "email": "estradamichael@example.net"}', '{"name": "Bank_94", "designation": "Advertising copywriter", "phno": "7378386609", "email": "diazangel@example.org"}', '{"name": "Bank_95", "designation": "Games developer", "phno": "989.265.3440", "email": "dianekane@example.com"}', '{"name": "Bank_96", "designation": "Counselling psychologist", "phno": "001-200-358-7652x426", "email": "wfigueroa@example.net"}', '{"name": "Bank_97", "designation": "Hydrographic surveyor", "phno": "001-478-677-5793x659", "email": "cookmark@example.org"}', '{"name": "Bank_98", "designation": "Designer, graphic", "phno": "443.930.1350x4742", "email": "dstephens@example.com"}', '{"name": "Bank_99", "designation": "Chief Executive Officer", "phno": "794-535-5706", "email": "nelsonlaura@example.net"}', '{"name": "Bank_100", "designation": "Television/film/video producer", "phno": "578-833-7632", "email": "xthompson@example.net"}']::jsonb[],
+    ARRAY[2, 1, 1, 2, 1, 1, 2, 1, 2, 1, 1, 2, 1, 2, 1, 1, 2, 1, 1, 2, 2, 1, 2, 1, 1, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1, 2, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 1, 1, 2, 2, 2, 2, 1, 2, 2, 1, 1, 1, 2, 1, 1, 1, 2, 2, 2, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1],
+    ARRAY[29, 29, 28, 28, 29, 28, 28, 28, 29, 28, 28, 28, 28, 28, 29, 28, 28, 29, 28, 29, 28, 28, 28, 28, 29, 28, 29, 29, 29, 29, 28, 28, 28, 28, 29, 29, 28, 29, 28, 29, 28, 29, 28, 29, 28, 29, 29, 29, 29, 29, 28, 28, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 28, 28, 29, 28, 29, 29, 28, 29, 29, 29, 28, 29, 29, 29, 28, 28, 28, 29, 28, 29, 29, 29, 29, 29, 28, 29, 28, 28, 28, 29, 29, 28, 28, 28, 28, 29, 29, 28]
+);

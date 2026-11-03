@@ -1,0 +1,32 @@
+
+export enum switch_drouter_msg {
+    RECEIVED = "RECEIVED",
+    TRANSFORMED = "TRANSFORMED",
+    DECRYPTED = "DECRYPTED",
+    ENCRYPTED = "ENCRYPTED",
+    DECRYPTION_FAILED = "DECRYPTION_FAILED",
+    ENCRYPTION_FAILED = "ENCRYPTION_FAILED",
+    TRANSFORMATION_FAILED = "TRANSFORMATION_FAILED",
+    RECEIVED_AND_FAILED = "RECEIVED_AND_FAILED",
+    DEACTIVATED_DEVICE = "DEACTIVATED_DEVICE"
+   
+}
+
+export enum drouter_mqtt_msg {
+    SENT_REQUEST_TO_MQTT = "SENT_REQUEST_TO_MQTT",
+    SUCCESS_RESPONSE_FROM_MQTT = "SUCCESS_RESPONSE_FROM_MQTT",
+    FAILURE_RESPONSE_FROM_MQTT= "FAILURE_RESPONSE_FROM_MQTT"
+   
+}
+
+export enum paymentsMessage {
+    SUCCESS_MESSAGE= "payment request received",
+    SUCCESS_CODE = 200,
+    FAILURE_MESSAGE = "payment request failure",
+    FAILURE_CODE = 100
+}
+
+export enum notifierType{
+    MQTT = "mqtt",
+    HTTPS = "https"
+}

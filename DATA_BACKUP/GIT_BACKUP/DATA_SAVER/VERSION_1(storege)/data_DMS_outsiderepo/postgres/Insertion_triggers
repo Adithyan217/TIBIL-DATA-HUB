@@ -1,0 +1,692 @@
+CREATE SCHEMA IF NOT EXISTS dmsr
+
+
+------ENUMS------
+CREATE TYPE dmsr.vevts AS ENUM (
+  'VPA_GENERATED',
+  'VPA_DEACTIVATED'
+);
+
+CREATE TYPE dmsr.mfevts AS ENUM (
+  'MF_ONBOARDED',
+  'MF_DEACTIVATED'
+);
+
+CREATE TYPE dmsr.devts AS ENUM (
+  'DEVICE_ONBOARDED',
+  'DEVICE_DEACTIVATED'
+);
+
+CREATE TYPE dmsr.mevts AS ENUM (
+  'MERCHANT_ONBOARDED',
+  'MERCHANT_DEACTIVATED'
+);
+
+CREATE TYPE dmsr.bevts AS ENUM (
+  'BANK_ONBOARDED',
+  'BANK_DEACTIVATED'
+);
+
+CREATE TYPE dmsr.brevts AS ENUM (
+  'BRANCH_ONBOARDED',
+  'BRANCH_DEACTIVATED'
+);
+
+CREATE TYPE dmsr.frevts AS ENUM (
+  'FIRMWARE_CREATED',
+  'FIRMWARE_DELETED'
+);
+
+CREATE TYPE dmsr.mdevts AS ENUM (
+ 'MODEL_CREATED',
+  'MODEL_DELETED'
+);
+
+CREATE TYPE dmsr.sbevts AS ENUM (
+  'VPA_DEVICE_BOUND',
+  'VPA_DEVICE_UNBOUND',
+  'ALLOCATED_TO_MERCHANT',
+  'REALLOCATED_TO_MERCHANT',
+  'ALLOCATED_TO_BRANCH',
+  'REALLOCATED_TO_BRANCH',
+  'ALLOCATED_TO_BANK',
+  'REALLOCATED_TO_BANK',
+  'DELIVERY_INITIATED',
+  'DELIVERY_ACKNOWLEDGED',
+  'DEVICE_RETURNED',
+  'ISSUE_REPORTED'
+);
+
+CREATE TYPE dmsr.tevts AS ENUM (
+  'CREATED',
+  'UPDATED',
+  'DELETED'
+);
+
+
+---------------Table--------------
+
+CREATE TABLE IF NOT EXISTS dmsr.banks (
+  bid SERIAL PRIMARY KEY,
+  bcode VARCHAR,
+  bname VARCHAR,
+  bevt dmsr.bevts,
+  eid INTEGER NOT NULL,
+  isd BOOLEAN DEFAULT false,
+  eat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  eby INTEGER NOT NULL
+	);
+
+CREATE TABLE IF NOT EXISTS dmsr.vpa (
+  vid SERIAL PRIMARY KEY,
+  vpa VARCHAR UNIQUE NOT NULL,
+  bid INTEGER,
+  vevt dmsr.vevts,
+  eid INTEGER,
+  eat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  eby INTEGER NOT NULL,
+  isd BOOLEAN DEFAULT false,
+  FOREIGN KEY ("bid") REFERENCES dmsr.banks ("bid")
+);
+
+CREATE TABLE IF NOT EXISTS dmsr.mf (
+  mfid SERIAL PRIMARY KEY,
+  mfname VARCHAR UNIQUE,
+  mfevt dmsr.mfevts,
+  eid INTEGER NOT NULL,
+  eat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  eby INTEGER NOT NULL,
+  isd BOOLEAN DEFAULT false
+	);
+
+
+CREATE TABLE IF NOT EXISTS dmsr.firmware (
+  fid SERIAL PRIMARY KEY,
+  mfid INTEGER,
+  fdesc JSON,
+  frevt dmsr.frevts,
+  eid INTEGER NOT NULL,
+  isd BOOLEAN DEFAULT false,
+  eat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  eby INTEGER NOT NULL,
+  FOREIGN KEY ("mfid") REFERENCES dmsr.mf ("mfid")
+);
+
+CREATE TABLE IF NOT EXISTS dmsr.model (
+  mdid SERIAL PRIMARY KEY,
+  mfid INTEGER,
+  fid INTEGER,
+  eid INTEGER NOT NULL,
+  mdesc VARCHAR,
+  mevt dmsr.mevts,
+  isd BOOLEAN DEFAULT false,
+  eat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  eby INTEGER NOT NULL,
+  FOREIGN KEY ("mfid") REFERENCES dmsr.mf ("mfid"),
+  FOREIGN KEY ("fid") REFERENCES dmsr.firmware ("fid")
+);
+
+CREATE TABLE IF NOT EXISTS dmsr.devices (
+  did SERIAL PRIMARY KEY,
+  dname VARCHAR UNIQUE NOT NULL,
+  mfid INTEGER,
+  fid INTEGER,
+  mdid INTEGER,
+  devt dmsr.devts,
+  eid INTEGER NOT NULL,
+  isd BOOLEAN DEFAULT false,
+  eat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  eby INTEGER NOT NULL,
+  FOREIGN KEY ("mfid") REFERENCES dmsr.mf ("mfid"),
+  FOREIGN KEY ("fid") REFERENCES dmsr.firmware ("fid"),
+  FOREIGN KEY ("mdid") REFERENCES dmsr.model ("mdid")
+);
+
+
+CREATE TABLE IF NOT EXISTS dmsr.branches (
+  brid SERIAL PRIMARY KEY,
+  brname VARCHAR,
+  braddr VARCHAR,
+  bid INTEGER,
+  brevt dmsr.brevts,
+  eid INTEGER NOT NULL,
+  isd BOOLEAN DEFAULT false,
+  eat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  eby INTEGER NOT NULL,
+  FOREIGN KEY ("bid") REFERENCES dmsr.banks ("bid"),
+  UNIQUE (bid, brid) 
+);
+
+CREATE TABLE IF NOT EXISTS dmsr.merchants (
+  mpid SERIAL PRIMARY KEY,
+  mid INTEGER NOT NULL,
+  msid INTEGER,
+  mname VARCHAR,
+  minfo JSON,
+  mevt dmsr.mevts,
+  eid INTEGER NOT NULL,
+  brid INTEGER,
+  isd BOOLEAN DEFAULT false,
+  eat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  eby INTEGER NOT NULL,
+  FOREIGN KEY ("brid") REFERENCES dmsr.branches ("brid")
+);
+
+
+
+CREATE TABLE IF NOT EXISTS dmsr.sb (
+  sid SERIAL PRIMARY KEY,
+  vid INTEGER,
+  mid INTEGER,
+  did INTEGER,
+  bid INTEGER,
+  brid INTEGER,
+  sbevt dmsr.sbevts,
+  eid INTEGER NOT NULL,
+  isd BOOLEAN DEFAULT false,
+  eat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  eby INTEGER NOT NULL NOT NULL,
+  UNIQUE (vid, did, bid, brid, mid),
+  FOREIGN KEY ("vid") REFERENCES dmsr.vpa ("vid"),
+  FOREIGN KEY ("mid") REFERENCES dmsr.merchants ("mpid"),
+  FOREIGN KEY ("did") REFERENCES dmsr.devices ("did"),
+  FOREIGN KEY ("bid") REFERENCES dmsr.banks ("bid"),
+  FOREIGN KEY ("bid", "brid") REFERENCES dmsr.branches ("bid", "brid")
+);
+
+
+-----------Version Table-----------
+
+
+
+CREATE TABLE IF NOT EXISTS dmsr.banks_v (
+  bid INTEGER,
+  bcode VARCHAR,
+  bname VARCHAR,
+  bevt dmsr.bevts,
+  eid INTEGER NOT NULL,
+  isd BOOLEAN DEFAULT false,
+  eat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  eby INTEGER NOT NULL,
+  op dmsr.tevts,
+  FOREIGN KEY ("bid") REFERENCES dmsr.banks ("bid")
+);
+
+	
+
+CREATE TABLE IF NOT EXISTS dmsr.vpa_v (
+  vid INTEGER,
+  vpa VARCHAR NOT NULL,
+  vevt dmsr.vevts,
+  eid INTEGER NOT NULL,
+  eat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  eby INTEGER NOT NULL,
+  isd BOOLEAN DEFAULT false,
+  op dmsr.tevts,
+  FOREIGN KEY ("vid") REFERENCES dmsr.vpa ("vid")
+);
+
+
+
+CREATE TABLE IF NOT EXISTS dmsr.mf_v (
+  mfid INTEGER,
+  mfname VARCHAR,
+  mfevt dmsr.mfevts,
+  eid INTEGER NOT NULL,
+  eat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  eby INTEGER NOT NULL,
+  isd BOOLEAN DEFAULT false,
+  op dmsr.tevts,
+  FOREIGN KEY ("mfid") REFERENCES dmsr.mf ("mfid")
+);
+
+CREATE TABLE IF NOT EXISTS dmsr.firmware_v (
+  fid SERIAL PRIMARY KEY,
+  mfid INTEGER,
+  fdesc JSON,
+  frevt dmsr.frevts,
+  eid INTEGER NOT NULL,
+  eat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  eby INTEGER NOT NULL,
+  isd BOOLEAN DEFAULT false,
+  op dmsr.tevts,
+  FOREIGN KEY ("fid") REFERENCES dmsr.firmware ("fid"),
+  FOREIGN KEY ("mfid") REFERENCES dmsr.mf ("mfid")
+);
+
+CREATE TABLE IF NOT EXISTS dmsr.model_v (
+  mdid SERIAL PRIMARY KEY,
+  mfid INTEGER,
+  fid INTEGER,
+  mdevt dmsr.mdevts,
+  eid INTEGER NOT NULL,
+  mdesc VARCHAR,
+  eat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  eby INTEGER NOT NULL,
+  isd BOOLEAN DEFAULT false,
+  op dmsr.tevts,
+  FOREIGN KEY ("mdid") REFERENCES dmsr.model ("mdid"),
+  FOREIGN KEY ("mfid") REFERENCES dmsr.mf ("mfid"),
+  FOREIGN KEY ("fid") REFERENCES dmsr.firmware ("fid")
+);
+
+CREATE TABLE IF NOT EXISTS dmsr.devices_v (
+  did INTEGER PRIMARY KEY,
+  dname VARCHAR UNIQUE NOT NULL,
+  mfid INTEGER,
+  fid INTEGER,
+  mdid INTEGER,
+  devt dmsr.devts,
+  eid INTEGER NOT NULL,
+  isd BOOLEAN DEFAULT false,
+  eat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  eby INTEGER NOT NULL,
+  op dmsr.tevts,
+  FOREIGN KEY ("did") REFERENCES dmsr.devices ("did"),
+  FOREIGN KEY ("mfid") REFERENCES dmsr.mf ("mfid"),
+  FOREIGN KEY ("fid") REFERENCES dmsr.firmware ("fid"),
+  FOREIGN KEY ("mdid") REFERENCES dmsr.model ("mdid")
+);
+
+
+CREATE TABLE IF NOT EXISTS dmsr.branches_v (
+  brid INTEGER,
+  brname VARCHAR,
+  braddr VARCHAR,
+  bid INTEGER,
+  brevt dmsr.brevts,
+  eid INTEGER NOT NULL,
+  isd BOOLEAN DEFAULT false,
+  eat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  eby INTEGER NOT NULL,
+  op dmsr.tevts,
+  FOREIGN KEY ("brid") REFERENCES dmsr.branches ("brid"),
+  FOREIGN KEY ("bid") REFERENCES dmsr.banks ("bid")
+);
+
+
+
+CREATE TABLE IF NOT EXISTS dmsr.merchants_v (
+  mpid INTEGER,
+  mid INTEGER NOT NULL,
+  msid INTEGER,
+  mname VARCHAR,
+  minfo JSON,
+  mevt dmsr.mevts,
+  eid INTEGER NOT NULL,
+  brid INTEGER,
+  isd BOOLEAN DEFAULT false,
+  eat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  eby INTEGER NOT NULL,
+  op dmsr.tevts,
+  FOREIGN KEY ("mpid") REFERENCES dmsr.merchants ("mpid"),
+  FOREIGN KEY ("brid") REFERENCES dmsr.branches ("brid")
+);
+
+
+
+
+CREATE TABLE IF NOT EXISTS dmsr.sb_v (
+  sid INTEGER PRIMARY KEY,
+  vid INTEGER,
+  mid INTEGER,
+  did INTEGER,
+  bid INTEGER,
+  brid INTEGER,
+  sbevt dmsr.sbevts,
+  eid INTEGER NOT NULL,
+  isd BOOLEAN DEFAULT false,
+  eat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  eby INTEGER NOT NULL,
+  op dmsr.tevts,
+  FOREIGN KEY ("sid") REFERENCES dmsr.sb ("sid"),
+  FOREIGN KEY ("vid") REFERENCES dmsr.vpa ("vid"),
+  FOREIGN KEY ("mid") REFERENCES dmsr.merchants ("mpid"),
+  FOREIGN KEY ("did") REFERENCES dmsr.devices ("did"),
+  FOREIGN KEY ("bid") REFERENCES dmsr.banks ("bid"),
+  FOREIGN KEY ("brid") REFERENCES dmsr.branches ("brid")
+);
+
+
+---------------Indexes-------------
+
+CREATE INDEX IF NOT EXISTS idx_vpa_vid_vpa ON dmsr.vpa (vid, vpa);
+CREATE INDEX IF NOT EXISTS idx_vpa_v_vid_vpa ON dmsr.vpa_v (vid, vpa);
+CREATE INDEX IF NOT EXISTS idx_mf_mfid_mfname ON dmsr.mf (mfid, mfname);
+CREATE INDEX IF NOT EXISTS idx_mf_v_mfid_mfname ON dmsr.mf_v (mfid, mfname);
+CREATE INDEX IF NOT EXISTS idx_firmware_fid_mfid ON dmsr.firmware (fid, mfid);
+CREATE INDEX IF NOT EXISTS idx_firmware_fid_v_mfid ON dmsr.firmware_v (fid, mfid);
+CREATE INDEX IF NOT EXISTS idx_model_mdid ON dmsr.model (mdid);
+CREATE INDEX IF NOT EXISTS idx_model_v_mdid ON dmsr.model_v (mdid);
+CREATE INDEX IF NOT EXISTS idx_devices_did_dname ON dmsr.devices (did, dname);
+CREATE INDEX IF NOT EXISTS idx_devices_v_did_dname ON dmsr.devices_v (did, dname);
+CREATE INDEX IF NOT EXISTS idx_merchants_mid_mname ON dmsr.merchants (mpid, mname);
+CREATE INDEX IF NOT EXISTS idx_merchants_v_mid_mname ON dmsr.merchants_v (mid, mname);
+CREATE INDEX IF NOT EXISTS idx_banks_bid_bname ON dmsr.banks (bid, bname);
+CREATE INDEX IF NOT EXISTS idx_banks_v_bid_bname ON dmsr.banks_v (bid, bname);
+CREATE INDEX IF NOT EXISTS idx_branches_brid_brname ON dmsr.branches (brid, brname);
+CREATE INDEX IF NOT EXISTS idx_branches_v_brid_brname ON dmsr.branches_v (brid, brname);
+CREATE INDEX IF NOT EXISTS idx_sb_vid_bid_brid_mid ON dmsr.sb (vid, bid, brid, mid);
+
+
+
+-------------------------------------------TRIGGERS
+
+--banks
+
+CREATE OR REPLACE FUNCTION dmsr.banks_trigger_function()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    INSERT INTO dmsr.banks_v (bid, bcode, bname, bevt, eid, isd, eat, eby, op)
+    VALUES (NEW.bid, NEW.bcode, NEW.bname, NEW.bevt, NEW.eid, NEW.isd, NEW.eat, NEW.eby, 'CREATED');
+  ELSIF TG_OP = 'UPDATE' THEN
+    IF NEW.isd = true AND OLD.isd = false THEN
+      INSERT INTO dmsr.banks_v (bid, bcode, bname, bevt, eid, isd, eat, eby, op)
+      VALUES (NEW.bid, NEW.bcode, NEW.bname, NEW.bevt, NEW.eid, NEW.isd, NEW.eat, NEW.eby, 'DELETED');
+    ELSE
+      INSERT INTO dmsr.banks_v (bid, bcode, bname, bevt, eid, isd, eat, eby, op)
+      VALUES (NEW.bid, NEW.bcode, NEW.bname, NEW.bevt, NEW.eid, NEW.isd, NEW.eat, NEW.eby, 'UPDATED');
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER banks_trigger
+AFTER INSERT OR UPDATE ON dmsr.banks
+FOR EACH ROW
+EXECUTE FUNCTION dmsr.banks_trigger_function();
+
+
+-----branches-------------
+CREATE OR REPLACE FUNCTION dmsr.branches_trigger_function()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    INSERT INTO dmsr.branches_v (brid, brname, braddr, bid, brevt, eid, isd, eat, eby, op)
+    VALUES (NEW.brid, NEW.brname, NEW.braddr, NEW.bid, NEW.brevt, NEW.eid, NEW.isd, NEW.eat, NEW.eby, 'CREATED');
+  ELSIF TG_OP = 'UPDATE' THEN
+    IF NEW.isd = true AND OLD.isd = false THEN
+      INSERT INTO dmsr.branches_v (brid, brname, braddr, bid, brevt, eid, isd, eat, eby, op)
+      VALUES (NEW.brid, NEW.brname, NEW.braddr, NEW.bid, NEW.brevt, NEW.eid, NEW.isd, NEW.eat, NEW.eby, 'DELETED');
+    ELSE
+      INSERT INTO dmsr.branches_v (brid, brname, braddr, bid, brevt, eid, isd, eat, eby, op)
+      VALUES (NEW.brid, NEW.brname, NEW.braddr, NEW.bid, NEW.brevt, NEW.eid, NEW.isd, NEW.eat, NEW.eby, 'UPDATED');
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER branches_trigger
+AFTER INSERT OR UPDATE ON dmsr.branches
+FOR EACH ROW
+EXECUTE FUNCTION dmsr.branches_trigger_function();
+
+
+---------------devices-----------
+CREATE OR REPLACE FUNCTION dmsr.devices_trigger_function()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    INSERT INTO dmsr.devices_v (did, dname, mfid, fid, mdid, devt, eid, isd, eat, eby, op)
+    VALUES (NEW.did, NEW.dname, NEW.mfid, NEW.fid, NEW.mdid, NEW.devt, NEW.eid, NEW.isd, NEW.eat, NEW.eby, 'CREATED');
+  ELSIF TG_OP = 'UPDATE' THEN
+    IF NEW.isd = true AND OLD.isd = false THEN
+      INSERT INTO dmsr.devices_v (did, dname, mfid, fid, mdid, devt, eid, isd, eat, eby, op)
+      VALUES (NEW.did, NEW.dname, NEW.mfid, NEW.fid, NEW.mdid, NEW.devt, NEW.eid, NEW.isd, NEW.eat, NEW.eby, 'DELETED');
+    ELSE
+      INSERT INTO dmsr.devices_v (did, dname, mfid, fid, mdid, devt, eid, isd, eat, eby, op)
+      VALUES (NEW.did, NEW.dname, NEW.mfid, NEW.fid, NEW.mdid, NEW.devt, NEW.eid, NEW.isd, NEW.eat, NEW.eby, 'UPDATED');
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER devices_trigger
+AFTER INSERT OR UPDATE ON dmsr.devices
+FOR EACH ROW
+EXECUTE FUNCTION dmsr.devices_trigger_function();
+
+-----firmware-----------
+
+CREATE OR REPLACE FUNCTION dmsr.firmware_trigger_function()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    INSERT INTO dmsr.firmware_v (fid, mfid, fname, frevt, eid, eat, eby, isd, op)
+    VALUES (NEW.fid, NEW.mfid, NEW.fname, NEW.frevt, NEW.eid, NEW.eat, NEW.eby, NEW.isd, 'CREATED');
+  ELSIF TG_OP = 'UPDATE' THEN
+    IF NEW.isd = true AND OLD.isd = false THEN
+      INSERT INTO dmsr.firmware_v (fid, mfid, fname, frevt, eid, eat, eby, isd, op)
+      VALUES (NEW.fid, NEW.mfid, NEW.fname, NEW.frevt, NEW.eid, NEW.eat, NEW.eby, NEW.isd, 'DELETED');
+    ELSE
+      INSERT INTO dmsr.firmware_v (fid, mfid, fname, frevt, eid, eat, eby, isd, op)
+      VALUES (NEW.fid, NEW.mfid, NEW.fname, NEW.frevt, NEW.eid, NEW.eat, NEW.eby, NEW.isd, 'UPDATED');
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER firmware_trigger
+AFTER INSERT OR UPDATE ON dmsr.firmware
+FOR EACH ROW
+EXECUTE FUNCTION dmsr.firmware_trigger_function();
+
+------merchants---------------
+
+CREATE OR REPLACE FUNCTION dmsr.merchants_trigger_function()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    INSERT INTO dmsr.merchants_v (mpid, mid, msid, mname, minfo, bid, mevt, eid, brid, isd, eat, eby, op)
+    VALUES (NEW.mpid, NEW.mid, NEW.msid, NEW.mname, NEW.minfo, NEW.bid, NEW.mevt, NEW.eid, NEW.brid, NEW.isd, NEW.eat, NEW.eby, 'CREATED');
+  ELSIF TG_OP = 'UPDATE' THEN
+    IF NEW.isd = true AND OLD.isd = false THEN
+      INSERT INTO dmsr.merchants_v (mpid, mid, msid, mname, minfo, bid, mevt, eid, brid, isd, eat, eby, op)
+      VALUES (NEW.mpid, NEW.mid, NEW.msid, NEW.mname, NEW.minfo, NEW.bid, NEW.mevt, NEW.eid, NEW.brid, NEW.isd, NEW.eat, NEW.eby, 'DELETED');
+    ELSE
+      INSERT INTO dmsr.merchants_v (mpid, mid, msid, mname, minfo, bid, mevt, eid, brid, isd, eat, eby, op)
+      VALUES (NEW.mpid, NEW.mid, NEW.msid, NEW.mname, NEW.minfo, NEW.bid, NEW.mevt, NEW.eid, NEW.brid, NEW.isd, NEW.eat, NEW.eby, 'UPDATED');
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER merchants_trigger
+AFTER INSERT OR UPDATE ON dmsr.merchants
+FOR EACH ROW
+EXECUTE FUNCTION dmsr.merchants_trigger_function();
+
+
+---------------------mf----------------------------
+
+CREATE OR REPLACE FUNCTION dmsr.mf_trigger_function()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    INSERT INTO dmsr.mf_v (mfid, mfname, mfevt, mfinfo, mfaddr, eid, eat, eby, isd, op)
+    VALUES (NEW.mfid, NEW.mfname, NEW.mfevt, NEW.mfinfo, NEW.mfaddr, NEW.eid, NEW.eat, NEW.eby, NEW.isd, 'CREATED');
+  ELSIF TG_OP = 'UPDATE' THEN
+    IF NEW.isd = true AND OLD.isd = false THEN
+      INSERT INTO dmsr.mf_v (mfid, mfname, mfevt, mfinfo, mfaddr, eid, eat, eby, isd, op)
+      VALUES (NEW.mfid, NEW.mfname, NEW.mfevt, NEW.mfinfo, NEW.mfaddr, NEW.eid, NEW.eat, NEW.eby, NEW.isd, 'DELETED');
+    ELSE
+      INSERT INTO dmsr.mf_v (mfid, mfname, mfevt, mfinfo, mfaddr, eid, eat, eby, isd, op)
+      VALUES (NEW.mfid, NEW.mfname, NEW.mfevt, NEW.mfinfo, NEW.mfaddr, NEW.eid, NEW.eat, NEW.eby, NEW.isd, 'UPDATED');
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER mf_trigger
+AFTER INSERT OR UPDATE ON dmsr.mf
+FOR EACH ROW
+EXECUTE FUNCTION dmsr.mf_trigger_function();
+
+
+
+
+---------------Model---------------
+
+CREATE OR REPLACE FUNCTION dmsr.model_trigger_function()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    INSERT INTO dmsr.model_v (mdid, mfid, fid, mdevt, eid, mdname, eat, eby, isd, op)
+    VALUES (NEW.mdid, NEW.mfid, NEW.fid, NEW.mdevt, NEW.eid, NEW.mdname, NEW.eat, NEW.eby, NEW.isd, 'CREATED');
+  ELSIF TG_OP = 'UPDATE' THEN
+    IF NEW.isd = true AND OLD.isd = false THEN
+      INSERT INTO dmsr.model_v (mdid, mfid, fid, mdevt, eid, mdname, eat, eby, isd, op)
+      VALUES (NEW.mdid, NEW.mfid, NEW.fid, NEW.mdevt, NEW.eid, NEW.mdname, NEW.eat, NEW.eby, NEW.isd, 'DELETED');
+    ELSE
+      INSERT INTO dmsr.model_v (mdid, mfid, fid, mdevt, eid, mdname, eat, eby, isd, op)
+      VALUES (NEW.mdid, NEW.mfid, NEW.fid, NEW.mdevt, NEW.eid, NEW.mdname, NEW.eat, NEW.eby, NEW.isd, 'UPDATED');
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER model_trigger
+AFTER INSERT OR UPDATE ON dmsr.model
+FOR EACH ROW
+EXECUTE FUNCTION dmsr.model_trigger_function();
+
+---------------sb----------
+CREATE OR REPLACE FUNCTION dmsr.sb_trigger_function()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    INSERT INTO dmsr.sb_v (sid, vid, mid, did, bid, brid, sbevt, eid, isd, eat, eby, op)
+    VALUES (NEW.sid, NEW.vid, NEW.mid, NEW.did, NEW.bid, NEW.brid, NEW.sbevt, NEW.eid, NEW.isd, NEW.eat, NEW.eby, 'CREATED');
+  ELSIF TG_OP = 'UPDATE' THEN
+    IF NEW.isd = true AND OLD.isd = false THEN
+      INSERT INTO dmsr.sb_v (sid, vid, mid, did, bid, brid, sbevt, eid, isd, eat, eby, op)
+      VALUES (NEW.sid, NEW.vid, NEW.mid, NEW.did, NEW.bid, NEW.brid, NEW.sbevt, NEW.eid, NEW.isd, NEW.eat, NEW.eby, 'DELETED');
+    ELSE
+      INSERT INTO dmsr.sb_v (sid, vid, mid, did, bid, brid, sbevt, eid, isd, eat, eby, op)
+      VALUES (NEW.sid, NEW.vid, NEW.mid, NEW.did, NEW.bid, NEW.brid, NEW.sbevt, NEW.eid, NEW.isd, NEW.eat, NEW.eby, 'UPDATED');
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER sb_trigger
+AFTER INSERT OR UPDATE ON dmsr.sb
+FOR EACH ROW
+EXECUTE FUNCTION dmsr.sb_trigger_function();
+
+
+--------VPA----------
+
+CREATE OR REPLACE FUNCTION dmsr.vpa_trigger_function()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    INSERT INTO dmsr.vpa_v (vid, vpa, vevt, eid, eat, eby, isd, op)
+    VALUES (NEW.vid, NEW.vpa, NEW.vevt, NEW.eid, NEW.eat, NEW.eby, NEW.isd, 'CREATED');
+  ELSIF TG_OP = 'UPDATE' THEN
+    IF NEW.isd = true AND OLD.isd = false THEN
+      INSERT INTO dmsr.vpa_v (vid, vpa, vevt, eid, eat, eby, isd, op)
+      VALUES (NEW.vid, NEW.vpa, NEW.vevt, NEW.eid, NEW.eat, NEW.eby, NEW.isd, 'DELETED');
+    ELSE
+      INSERT INTO dmsr.vpa_v (vid, vpa, vevt, eid, eat, eby, isd, op)
+      VALUES (NEW.vid, NEW.vpa, NEW.vevt, NEW.eid, NEW.eat, NEW.eby, NEW.isd, 'UPDATED');
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER vpa_trigger
+AFTER INSERT OR UPDATE ON dmsr.vpa
+FOR EACH ROW
+EXECUTE FUNCTION dmsr.vpa_trigger_function();
+
+
+
+-------------------------------------ALTER----------------------------------------
+ALTER TABLE dmsr.firmware
+RENAME COLUMN fdesc TO fname;
+
+ALTER TABLE dmsr.firmware_v
+RENAME COLUMN fdesc TO fname;
+
+ALTER TABLE dmsr.branches
+ADD COLUMN brinfo JSON;
+
+ALTER TABLE dmsr.branches_v
+ADD COLUMN brinfo JSON;
+
+ALTER TABLE dmsr.banks
+ADD COLUMN binfo JSON;
+
+ALTER TABLE dmsr.banks_v
+ADD COLUMN binfo JSON;
+
+ALTER TABLE dmsr.banks
+RENAME COLUMN bcode TO baddr VARCHAR;
+
+ALTER TABLE dmsr.banks_v
+RENAME COLUMN bcode TO baddr VARCHAR;
+
+
+ALTER TABLE dmsr.mf
+ADD COLUMN mfinfo JSON, 
+ADD COLUMN mfaddr VARCHAR;
+
+ALTER TABLE dmsr.mf_v
+ADD COLUMN mfinfo JSON, 
+ADD COLUMN mfaddr VARCHAR;
+
+
+ALTER TABLE dmsr.merchants
+DROP COLUMN mid;
+
+ALTER TABLE dmsr.merchants_v
+DROP COLUMN mid;
+
+
+ALTER TABLE dmsr.model
+RENAME COLUMN mdame to mdname;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- updated indexes
+CREATE INDEX IF NOT EXISTS idx_vpa_vid_vpa ON dmsr.vpa (vid, vpa);
+CREATE INDEX IF NOT EXISTS idx_vpa_v_vid_vpa ON dmsr.vpa_v (vid, vpa);
+CREATE INDEX IF NOT EXISTS idx_mf_mfid_mfname ON dmsr.mf (mfid, mfname);
+CREATE INDEX IF NOT EXISTS idx_mf_v_mfid_mfname ON dmsr.mf_v (mfid, mfname);
+CREATE INDEX IF NOT EXISTS idx_firmware_fid_mfid ON dmsr.firmware (fid, mfid,fname);
+CREATE INDEX IF NOT EXISTS idx_firmware_fid_v_mfid ON dmsr.firmware_v (fid, mfid,fname);
+CREATE INDEX IF NOT EXISTS idx_model_mdid ON dmsr.model (mdid,mdname,mfid,fid);
+CREATE INDEX IF NOT EXISTS idx_model_v_mdid ON dmsr.model_v (mdid,mdname,mfid,fid);
+CREATE INDEX IF NOT EXISTS idx_devices_did_dname ON dmsr.devices (did, dname,mfid,fid,mdid);
+CREATE INDEX IF NOT EXISTS idx_devices_v_did_dname ON dmsr.devices_v (did, dname,mfid,fid,mdid);
+CREATE INDEX IF NOT EXISTS idx_merchants_mid_mname ON dmsr.merchants (mpid, mname,bid);
+CREATE INDEX IF NOT EXISTS idx_merchants_v_mid_mname ON dmsr.merchants_v (mpid, mname,bid);
+CREATE INDEX IF NOT EXISTS idx_banks_bid_bname ON dmsr.banks (bid, bname);
+CREATE INDEX IF NOT EXISTS idx_banks_v_bid_bname ON dmsr.banks_v (bid, bname);
+CREATE INDEX IF NOT EXISTS idx_branches_brid_brname ON dmsr.branches (brid, brname,bid);
+CREATE INDEX IF NOT EXISTS idx_branches_v_brid_brname ON dmsr.branches_v (brid, brname,bid);
+CREATE INDEX IF NOT EXISTS idx_sb_vid_bid_brid_mid ON dmsr.sb (vid, bid, brid, mid);

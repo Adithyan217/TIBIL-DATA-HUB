@@ -1,0 +1,1222 @@
+openapi: 3.0.0
+info:
+  title: Registry-ms
+  description: API for onboarding and retrieving branches, merchants, banks, devices, and VPAs.
+  version: 1.0.0
+
+components:
+  examples:
+    bindDevice:
+      summary: "Example for binding device"
+      value:
+        event_id : 1
+        event: "BIND_DEVICE"
+        event_by: "d@123"
+        edetails:
+          - row_id: 1
+            vpa_id: 30
+            device_id: 30
+          - row_id: 2
+            vpa_id: 31
+            device_id: 31
+    allocateToMerchant:
+      summary: "Example for allocating to merchant"
+      value:
+        event_id : 1
+        event: "ALLOCATE_TO_MERCHANT"
+        event_by: "d@123"
+        edetails:
+          - row_id: 1
+            merchant_id: 13
+            device_id: 21
+    allocateToBank:
+      summary: "Example for allocating to bank"
+      value:
+        event_id : 1
+        event: "ALLOCATE_TO_BANK"
+        event_by: "d@123"
+        edetails:
+          - row_id: 1
+            bank_id: 5
+            device_id: 21
+    allocateToBranch:
+      summary: "Example for allocating to branch"
+      value:
+        event_id : 1
+        event: "ALLOCATE_TO_BRANCH"
+        event_by: "d@123"
+        edetails:
+          - row_id: 1
+            branch_id: 5
+            device_id: 21
+    deactivateDevice:
+      summary: "Example for deactivating device"
+      value:
+        event_id : 1
+        event: "DEACTIVATE_DEVICE"
+        event_by: "d@123"
+        edetails:
+          - row_id: 1
+            device_id: 15
+    deactivateVPA:
+      summary: "Example for deactivating VPA"
+      value:
+        event_id : 1
+        event: "DEACTIVATE_VPA"
+        event_by: "d@123"
+        edetails:
+          - row_id: 1
+            vpa_id: 20
+    deactivateBranch:
+      summary: "Example for deactivating branch"
+      value:
+        event_id : 1
+        event: "DEACTIVATE_BRANCH"
+        event_by: "d@123"
+        edetails:
+          - row_id: 1
+            branch_id: 6
+    deactivateMerchant:
+      summary: "Example for deactivating merchant"
+      value:
+        event_id : 1
+        event: "DEACTIVATE_MERCHANT"
+        event_by: "d@123"
+        edetails:
+          - row_id: 1
+            merchant_id: 13
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: "Unable to onboard the entity"
+    SuccessResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: "Entity Onboarded"
+
+
+paths:
+  /registry/branches:
+    post:
+      tags:
+        - branches
+      summary: Onboard a new branch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_id:
+                  type: integer
+                  example : 1
+                event:
+                  type: string
+                  example: "ONBOARD_BRANCH"
+                event_by:
+                  type: string
+                  example: ob@123
+                edetails:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      row_id:
+                        type: integer
+                        example: 1
+                      bank_id:
+                        type: integer
+                        example: 1
+                      branch_name:
+                        type: string
+                        example: "xyz"
+                      braddr:
+                        type: string
+                        example: "1st Main Road"
+                      brinfo:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            example: "abc"
+                          designation:
+                            type: string
+                            example: "manager"
+                          phno:
+                            type: string
+                            example: "+919876543211"
+                          email:
+                            type: string
+                            example: "xyz@gmail.com"
+      responses:
+        '200':
+          description: Branch onboarded successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  event_id:
+                    type: integer
+                    example: 1
+                  message:
+                    type: string
+                    example: "Branch Onboarding successful"
+        '400':
+          description: Unable to onboard the branch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /registry/branches/get:
+    post:
+      tags:
+        - branches
+      summary: get branches
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bid:
+                  type: integer
+                  example: 1
+      responses:
+        '200':
+          description: Successful retrieval of branches
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  count:
+                    type: integer
+                    example: 1
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        brid:
+                          type: integer
+                          example: 1
+                        brname:
+                          type: string
+                          example: "abc"
+                        braddr:
+                          type: string
+                          example: "1st Main Road"
+                        brinfo:
+                          type: object
+                          example:
+                            name: "john"
+                            phno: "+123456789012"
+                            email: "abc@gmail.com"
+                          
+
+  /registry/merchants:
+    post:
+      tags:
+        - merchants
+      summary: Onboard a new merchant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_id:
+                  type: integer
+                  example : 1
+                event:
+                  type: string
+                  example: "ONBOARD_MERCHANT"
+                event_by:
+                  type: string
+                  example: m@123
+                edetails:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      row_id:
+                        type: integer
+                        example: 1
+                      bank_id:
+                        type: integer
+                        example: 1
+                      branch_id:
+                        type: integer
+                        example: 2
+                      mname:
+                        type: string
+                        example: "XYZ"
+                      minfo:
+                        type: object
+                        properties:
+                          accName:
+                            type: string
+                            example: "abc"
+                          accHolderName:
+                            type: string
+                            example: "manager"
+                          phno:
+                            type: string
+                            example: "+919876543211"
+      responses:
+        '200':
+          description: Branch onboarded successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  event_id:
+                    type: integer
+                    example: 1
+                  message:
+                    type: string
+                    example: "Merchant Onboarding successful"
+        '400':
+          description: Unable to onboard the branch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+
+  /merchants/details/get:
+    post:
+      tags:
+        - merchants
+      summary: Retrieve details of a particular merchant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                merchant_id:
+                  type: string
+                  example: "12345"
+      responses:
+        '200':
+          description: Successful retrieval of merchant details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  count:
+                    type: integer
+                    example: 1
+                  details:
+                    type: object
+                    properties:
+                      mname:
+                        type: string
+                        example: "XYZ"
+                      minfo:
+                        type: object
+                        properties:
+                          accName:
+                            type: string
+                            example: "XYZ Account"
+                          accHolderName:
+                            type: string
+                            example: "Manager"
+                          address:
+                            type: string
+                            example: "123 Main Street"
+
+
+
+
+  /registry/banks:
+    post:
+      tags:
+        - banks
+      summary: Onboard a new bank
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_id:
+                  type: integer
+                  example : 1
+                event:
+                  type: string
+                  example: "ONBOARD_BANK"
+                event_by:
+                  type: string
+                  example: ob@123
+                edetails:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      row_id:
+                        type: integer
+                        example: 1
+                      bank_name:
+                        type: string
+                        example: "xyz"
+                      baddr:
+                        type: string
+                        example: "1st Main Road"
+                      binfo:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            example: "abc"
+                          designation:
+                            type: string
+                            example: "manager"
+                          phno:
+                            type: string
+                            example: "+919876543211"
+                          email:
+                            type: string
+                            example: "xyz@gmail.com"
+      responses:
+        '200':
+          description: Bank onboarded successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  event_id:
+                    type: integer
+                    example: 1
+                  message:
+                    type: string
+                    example: "Bank Onboarding successful"
+        '400':
+          description: Unable to onboard the branch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /registry/banks/get:
+    post:
+      tags:
+        - banks
+      summary: Retrieve all banks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                offset:
+                  type: integer
+                  example: 0
+                limit:
+                  type: integer
+                  example: 10
+
+      responses:
+        '200':
+          description: Successful retrieval of banks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+                  count:
+                    type: integer
+                    example: 1
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        bid:
+                          type: integer
+                          example: 1
+                        bname:
+                          type: string
+                          example: "XYZ"
+                        braddr:
+                          type: string
+                          example: "1st Main Road"
+                        binfo:
+                          type: object
+                          example:
+                            name: "john"
+                            phno: "+123456789012"
+                            email: "abc@gmail.com"
+
+  /registry/devices:
+    post:
+      tags:
+        - devices
+      summary: Onboard a new device
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_id:
+                  type: integer
+                  example : 1
+                event:
+                  type: string
+                  example: "ONBOARD_DEVICE"
+                event_by:
+                  type: string
+                  example: ob@123
+                edetails:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      row_id:
+                        type: integer
+                        example: 1
+                      mfid:
+                        type: integer
+                        example: 1
+                      model_id:
+                        type: integer
+                        example: 1
+                      firmware_id:
+                        type: integer
+                        example: 1
+                      dname:
+                        type: string
+                        example: "100234"
+      responses:
+        '200':
+          description: Device onboarded successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  event_id:
+                    type: integer
+                    example: 1
+                  message:
+                    type: string
+                    example: "Device Onboarding successful"
+        '400':
+          description: Unable to onboard the branch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /registry/devices/get:
+    post:
+      tags:
+        - devices
+      summary: Retrieve all devices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pagination:
+                  type: object
+                  properties:
+                    limit:
+                      type: integer
+                      example: 0
+                    offset:
+                      type: integer
+                      example: 10
+                filter:
+                  type: object
+                  properties:
+                    bid:
+                      type: array
+                      items:
+                        type: integer
+                      example: [1, 2]
+                    brid:
+                      type: array
+                      items:
+                        type: integer
+                      example: [1, 2]
+                    inuse:
+                      type: boolean
+                      example: true
+
+      responses:
+        '200':
+          description: Successful retrieval of devices
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  count:
+                    type: integer
+                    example: 1
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        device_id:
+                          type: string
+                          example: 10345
+                        vpa_id:
+                          type: string
+                          example: "device1"
+                        merchant:
+                          type: string
+                          example: "ABC MERCHANT"
+
+  /registry/device/details/get:
+    post:
+      tags:
+        - devices
+      summary: Retrieve a particular device
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                did:
+                  type: integer
+                  example: 1
+
+      responses:
+        '200':
+          description: Successful retrieval of devices
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        device_name:
+                          type: string
+                          example: "abcjd"
+                        model:
+                          type: string
+                          example: "test 1"
+                        firmware_version:
+                          type: string
+                          example: "v.1.2"
+                        manufacturer:
+                          type: string
+                          example: "mf 21"
+                        allocation_on:
+                          type: string
+                          example: "2024-11-21 17:09:02.604165"
+                        allocated_to:
+                          type: string
+                          example: "xyz"
+                        device_status:
+                          type: string
+                          example: "Available for allocation"
+
+
+
+  /registry/vpas:
+    post:
+      tags:
+        - vpas
+      summary: Generate a new VPA
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_id:
+                  type: integer
+                  example : 1
+                event:
+                  type: string
+                  example: "ONBOARD_VPA"
+                event_by:
+                  type: string
+                  example: ob@123
+                edetails:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      row_id:
+                        type: integer
+                        example: 1
+                      vpa:
+                        type: string
+                        example: "abc@ybl.com"
+                      bank_id:
+                        type: integer
+                        example: 1
+
+      responses:
+        '200':
+          description: VPA onboarded successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Vpa oboarding successful"
+        '400':
+          description: Unable to onboard the branch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /registry/vpas/get:
+    post:
+      tags:
+        - vpas
+      summary: Retrieve all VPAs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                limit:
+                  type: integer
+                  example: 0
+                offset:
+                  type: integer
+                  example: 10
+                bank_id:
+                  type: integer
+                  example: 1
+                branch_id:
+                  type: integer
+                  example: 1
+                criteira:
+                  type: string
+                  enum: [not_in_use,in_use]
+                  example: "not_in_use"
+      responses:
+        '200':
+          description: Successful retrieval of VPAs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    code:
+                      type: integer
+                      example: 200
+                    details:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          device_id:
+                            type: string
+                            example: 10345
+                          vpa_id:
+                            type: string
+                            example: "abc123@ybl"
+                          merchant:
+                            type: string
+                            example: "ABC MERCHANT"
+  /registry/mf:
+    post:
+      tags:
+        - manufacturer
+      summary: Onboard a new manufacturer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_id:
+                  type: integer
+                  example : 1
+                event:
+                  type: string
+                  example: "ONBOARD_MANUFACTURER"
+                event_by:
+                  type: string
+                  example: ob@123
+                edetails:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      row_id:
+                        type: integer
+                        example: 1
+                      mfname:
+                        type: string
+                        example: "manufacturer1"
+                      mfaddr:
+                        type: string
+                        example: "2nd Main Road"
+                      mfinfo:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            example: "abc"
+                          ph_no:
+                            type: string
+                            example: "+91987654321"
+                          email:
+                            type: string
+                            example: "abc@gmail.com"
+
+
+      responses:
+        '200':
+          description: Manufacturer onboarded successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  event_id:
+                    type: integer
+                    example: 1
+                  message:
+                    type: string
+                    example: "Manufacturer onboarding successful"
+        '400':
+          description: Unable to onboard the branch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /registry/mf/get:
+    post:
+      tags:
+        - manufacturer
+      summary: get manufacturer
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                offset:
+                  type: integer
+                  example: 0
+
+                limit:
+                  type: integer
+                  example: 1
+
+
+      responses:
+        '200':
+          description: get Manufacturer successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: integer
+                    example: 2000
+                  count:
+                    type: integer
+                    example: 1
+                  data:
+                    type: object
+                    properties:
+                      mfid:
+                        type: integer
+                      mfname:
+                        type: string
+                      mfaddr:
+                        type: string
+                      mfinfo:
+                        type: object
+                    example:
+                      mfid: 1
+                      mfname: 'abc'
+                      mfaddr: ' 1st Main Road'
+                      mfinfo:
+                        name: 'john'
+                        phno: '+123456789012'
+                        email: 'abc@gmail.com'
+
+
+        '400':
+          description: Unable to get manufacturer
+
+
+
+  /registry/firmwares:
+    post:
+      tags:
+        - firmware
+      summary: Onboard a new firmware
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_id:
+                  type: integer
+                  example : 1
+                event:
+                  type: string
+                  example: "ONBOARD_FIRMWARE"
+                event_by:
+                  type: string
+                  example: ob@123
+                edetails:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      row_id:
+                        type: integer
+                        example: 1
+                      mfid:
+                        type: integer
+                        example: 1
+                      fname:
+                        type: string
+                        example: "firmware1"
+
+
+
+      responses:
+        '200':
+          description: Firmware onboarded successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  event_id:
+                    type: integer
+                    example: 1
+                  message:
+                    type: string
+                    example: "Firmware onboarding successful"
+        '400':
+          description: Unable to onboard the branch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /registry/firmwares/get:
+    post:
+      tags:
+        - firmware
+      summary: get firmware
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                offset:
+                  type: integer
+                  example: 0
+                limit:
+                  type: integer
+                  example: 10
+                mfid:
+                  type: integer
+                  example: 10
+
+      responses:
+        '200':
+          description: get Firmware successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  count:
+                    type: integer
+                    example: 1
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fid:
+                          type: integer
+                          example: 0
+                        fname:
+                          type: string
+                          example: "abc"
+                        eat:
+                          type: string
+                          example: "2024-11-27 06:57:28.09827"
+
+
+        '400':
+          description: Unable to get firmaware
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /registry/models:
+    post:
+      tags:
+        - Device-Model
+      summary: Onboard a new device model
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_id:
+                  type: integer
+                  example : 1
+                event:
+                  type: string
+                  example: "ONBOARD_DEVICE_MODEL"
+                event_by:
+                  type: string
+                  example: ob@123
+                edetails:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      row_id:
+                        type: integer
+                        example: 1
+                      mfid:
+                        type: integer
+                        example: 1
+                      fid:
+                        type: string
+                        example: "firmware1"
+                      model_name:
+                        type: string
+                        example: "model1"
+
+
+
+      responses:
+        '200':
+          description: Device onboarded successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  event_id:
+                    type: integer
+                    example: 1
+                  message:
+                    type: string
+                    example: "Device model onboarding successful"
+        '400':
+          description: Unable to onboard the branch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /registry/models/get:
+    post:
+      tags:
+        - Device-Model
+      summary: get device model
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                offset:
+                  type: integer
+                  example: 0
+                limit:
+                  type: integer
+                  example: 10
+                mfid:
+                  type: integer
+                  example: 10
+
+
+
+      responses:
+        '200':
+          description: get Device successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  count:
+                    type: integer
+                    example: 1
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        mdid:
+                          type: integer
+                          example: 0
+                        mdname:
+                          type: string
+                          example: "abc"
+                        eat:
+                          type: string
+                          example: "2024-11-27 06:57:28.09827"
+
+
+
+        '400':
+          description: Unable to get model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /registry/sb:
+    post:
+      tags:
+        - sb
+      summary: Create a new sb entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            examples:
+              bindDevice:
+                $ref: "#/components/examples/bindDevice"
+              allocateToMerchant:
+                $ref: "#/components/examples/allocateToMerchant"
+              allocateToBank:
+                $ref: "#/components/examples/allocateToBank"
+              allocateToBranch:
+                $ref: "#/components/examples/allocateToBranch"
+              deactivateDevice:
+                $ref: "#/components/examples/deactivateDevice"
+              deactivateVPA:
+                $ref: "#/components/examples/deactivateVPA"
+              deactivateBranch:
+                $ref: "#/components/examples/deactivateBranch"
+              deactivateMerchant:
+                $ref: "#/components/examples/deactivateMerchant"
+      responses:
+        '200':
+          description: SB entry created successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  event_id:
+                    type: integer
+                    example: 1
+                  message:
+                    type: string
+                    example: "SB entry created successfully"
+        '400':
+          description: Unable to create sb entry
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: integer
+                    example: 400
+                  row_id:
+                    type: integer
+                    example: 1
+                  message:
+                    type: string
+                    example: "SB entry failed"

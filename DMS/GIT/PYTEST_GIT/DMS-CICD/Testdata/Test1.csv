@@ -1,0 +1,4 @@
+Testcase ID,Testcase Type,endpoint,method,auth_required,expired_token,headers,payload,params,expected_status_code,expected_response_keys,expected_responce_body
+TC_Soundbox_API_001,Positive,/user/otp,POST,TRUE,FALSE,"{""Content-Type"":""application/json""}","{
+  ""mobile_number"": ""9738350592""
+}",,200,"code,identification",

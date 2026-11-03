@@ -1,0 +1,4 @@
+
+        INSERT INTO registry.upermissions (username,context,context_id)
+        VALUES
+        ('bankadmin2@gmail.com','BANK',1);

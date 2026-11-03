@@ -1,0 +1,80 @@
+
+CREATE OR REPLACE FUNCTION dmsr.mf_validator(mf_name VARCHAR) 
+RETURNS BOOLEAN AS $$
+BEGIN
+   	IF EXISTS (SELECT 1 FROM dmsr.mf WHERE mfname = mf_name ) THEN
+            RETURN FALSE;
+    END IF;
+
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION dmsr.mf_validator_writer(
+    rowid INTEGER,
+    mfname VARCHAR,
+    mfaddr VARCHAR,
+    mfinfo jsonb,
+    eby INTEGER,
+    eid INTEGER
+)
+RETURNS TABLE (row_id INTEGER, status INTEGER, msg TEXT,mf_id INTEGER) AS $$
+DECLARE
+    mfevt dmsr.mfevts := 'MF_ONBOARDED';
+	mf_id INTEGER;
+BEGIN
+    IF dmsr.mf_validator(mfname) THEN
+    	INSERT INTO dmsr.mf (mfname, mfaddr, mfevt, mfinfo, eby, eid)
+    	VALUES (mfname, mfaddr, mfevt, mfinfo, eby, eid)
+		RETURNING mfid INTO mf_id;
+        RETURN QUERY SELECT rowid, 1, 'Insertion Successful',mf_id;
+	ELSE 
+		RETURN QUERY SELECT rowid, 0, 'Validation Failed',0;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION dmsr.mf_iterator(
+	rowid INT[],
+    mf_names TEXT[],
+    mf_addrs TEXT[],
+    mfinfo_list JSONB[],
+    event_bys INT[],
+    eids INT[]
+) 
+RETURNS TABLE (row_id INTEGER, status INTEGER, msg TEXT,mfid INTEGER) AS
+$$
+DECLARE
+    i INT;
+BEGIN
+    FOR i IN 1..array_length(mf_names, 1) LOOP
+  
+        RETURN QUERY SELECT * FROM dmsr.mf_validator_writer(
+			rowid[i],
+            mf_names[i], 
+            mf_addrs[i], 
+            mfinfo_list[i], 
+            event_bys[i], 
+            eids[i]
+        ); 
+    END LOOP; 
+END;
+$$ LANGUAGE plpgsql;
+
+
+SELECT * FROM dmsr.mf_iterator(
+	ARRAY[1,2],
+    ARRAY['test11111', 'test211111111'], 
+    ARRAY['1st Main Road', '2nd Main Road'], 
+    ARRAY[
+        '{"name": "sbi", "designation": "manager", "phno": "+919876543211", "email": "xyz@gmail.com"}',
+        '{"name": "aaa", "designation": "manager", "phno": "+919876543211", "email": "xyz@gmail.com"}'
+    ]::jsonb[], 
+    ARRAY[1, 1], 
+    ARRAY[28, 28]
+);
+

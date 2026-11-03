@@ -1,0 +1,112 @@
+import { onboard_bank } from "./schemas/onboard_bank";
+import { onboard_branch } from "./schemas/onboard_branch";
+import { onboard_device } from "./schemas/onboard_device";
+import { onboard_device_model } from "./schemas/onboard_device_model";
+import { onboard_firmware } from "./schemas/onboard_firmware";
+import { onboard_manufacturer } from "./schemas/onboard_manufacturer";
+import { onboard_merchant } from "./schemas/onboard_merchant";
+import { onboard_vpa } from "./schemas/onboard_vpa";
+import { bind_device } from "./schemas/bind_device";
+import { allocate_to_bank } from "./schemas/allocate_to_bank";
+import { allocate_to_branch } from "./schemas/allocate_to_branch";
+import { allocate_to_merchant } from "./schemas/allocate_to_merchant";
+import { deactivate_branch } from "./schemas/deactivate_branch";
+import { deactivate_merchant } from "./schemas/deactivate_merchant";
+import { deactivate_device } from "./schemas/deactivate_device";
+import { deactivate_vpa } from "./schemas/deactivate_vpa";
+import { update_merchant } from "./schemas/update_merchant";
+import { update_bank } from "./schemas/update_bank";
+import { update_device } from "./schemas/update_device";  
+import { update_branch } from "./schemas/update_branch";
+import { update_manufacturer } from "./schemas/update_manufacturer";
+import { deactivate_bank } from "./schemas/deactivate_banks";
+import { unbind_device } from "./schemas/unbind_device";
+import { delete_vpa } from "./schemas/delete_vpa";
+import { reallocate_to_bank } from "./schemas/reallocate_to_bank";
+import { reallocate_to_branch } from "./schemas/reallocate_to_branch";
+import { reallocate_to_merchant } from "./schemas/reallocate_to_merchant";
+import { device_request } from "./schemas/device_request";
+import { device_request_allocated } from "./schemas/device_request_allocated";
+import { device_request_dispatched } from "./schemas/device_request_dispatched";
+import { device_request_delivered } from "./schemas/device_request_delivered";
+import { onboard_user } from "./schemas/onboard_user";
+import { device_issue } from "./schemas/device_issue";
+import { device_issue_update } from "./schemas/device_issue_update";
+import { update_user } from "./schemas/update_user";
+import { deactivate_user } from "./schemas/deactivate_user";
+import { enable_soundbox } from "./schemas/enable_sounbox";
+import {pair_device} from "./schemas/pair_device";
+import { sim_request } from "./schemas/sim_request";
+import { sim_request_dispatched } from "./schemas/sim_request_dispatched";
+import { sim_request_delivered } from "./schemas/sim_request_delivered";
+import { simulate_payment } from "./schemas/simulate_payment";
+import { intel_event } from "./schemas/intel_events";
+
+export const schemaLoader = [
+  { event: "ONBOARD_BANK", eschema: onboard_bank },
+  { event: "ONBOARD_BRANCH", eschema: onboard_branch },
+  { event: "ONBOARD_DEVICE", eschema: onboard_device },
+  { event: "ONBOARD_FIRMWARE", eschema: onboard_firmware },
+  { event: "ONBOARD_MERCHANT", eschema: onboard_merchant },
+  { event: "ONBOARD_MANUFACTURER", eschema: onboard_manufacturer },
+  { event: "ONBOARD_DEVICE_MODEL", eschema: onboard_device_model },
+  { event: "ONBOARD_VPA", eschema: onboard_vpa },
+  { event: "ALLOCATE_TO_BANK", eschema: allocate_to_bank },
+  { event: "ALLOCATE_TO_BRANCH",eschema: allocate_to_branch },
+  { event: "ALLOCATE_TO_MERCHANT",eschema: allocate_to_merchant },
+  { event: "BIND_DEVICE", eschema: bind_device },
+  { event: "UNBIND_DEVICE", eschema: unbind_device },
+  { event: "DEACTIVATE_BANK", eschema: deactivate_bank },
+  { event: "DEACTIVATE_BRANCH", eschema: deactivate_branch },
+  { event: "DEACTIVATE_MERCHANT", eschema: deactivate_merchant },
+  { event: "DEACTIVATE_DEVICE", eschema: deactivate_device },
+  { event: "DEACTIVATE_VPA", eschema: deactivate_vpa },
+  { event: "UPDATE_MERCHANT", eschema: update_merchant },
+  { event: "UPDATE_BANK", eschema: update_bank },
+  { event: "UPDATE_DEVICE", eschema: update_device },
+  { event: "UPDATE_BRANCH", eschema: update_branch },
+  { event: "UPDATE_MANUFACTURER", eschema: update_manufacturer },
+  { event: "DELETE_VPA", eschema: delete_vpa },
+  { event: "REALLOCATE_TO_BANK", eschema: reallocate_to_bank },
+  { event: "REALLOCATE_TO_BRANCH", eschema: reallocate_to_branch },
+  { event: "REALLOCATE_TO_MERCHANT", eschema: reallocate_to_merchant },
+  { event: "DEVICE_REQUEST", eschema: device_request },
+  { event: "DEVICE_REQUEST_ALLOCATED", eschema: device_request_allocated },
+  { event: "DEVICE_REQUEST_DISPATCHED", eschema: device_request_dispatched },
+  { event: "DEVICE_REQUEST_DELIVERED", eschema: device_request_delivered },
+  { event: "ONBOARD_USER", eschema: onboard_user },
+  { event: "ONBOARD_BANK_RM", eschema: onboard_user },
+  { event: "ONBOARD_BANK_ADMIN", eschema: onboard_user },
+  { event: "ONBOARD_CO_BANK_RM", eschema: onboard_user },
+  { event: "ONBOARD_CO_BANK_ADMIN", eschema: onboard_user },
+  { event: "ONBOARD_MSB", eschema: onboard_user },
+  { event: "DEVICE_ISSUE", eschema: device_issue },
+  { event: "DEVICE_ISSUE_UPDATE", eschema: device_issue_update },
+  { event: "UPDATE_USER", eschema: update_user },
+  { event: "UPDATE_MSB_USER", eschema: update_user },
+  { event: "DEACTIVATE_USER", eschema: deactivate_user},
+  { event: "ENABLE_SOUNDBOX", eschema:enable_soundbox},
+  { event: "PAIR_DEVICE", eschema:pair_device},
+  { event: "SIM_REQUEST", eschema: sim_request },
+  { event: "SIM_REQUEST_DISPATCHED", eschema: sim_request_dispatched },
+  { event: "SIM_REQUEST_DELIVERED", eschema: sim_request_delivered },
+  { event: "SIMULATE_PAYMENT", eschema: simulate_payment },
+  { event: "ONBOARD_BANK_PROCESSED", eschema: intel_event },
+  { event: "ONBOARD_BRANCH_PROCESSED", eschema: intel_event },
+  { event: "ONBOARD_DEVICE_ALLOCATE_TO_BRANCH_PROCESSED", eschema: intel_event },
+  { event: "ONBOARD_MERCHANT_PROCESSED", eschema: intel_event },
+  { event: "DEVICE_ISSUE_PROCESSED", eschema: intel_event },
+  { event: "DEVICE_REQUEST_PROCESSED", eschema: intel_event },
+  { event: "DEVICE_REQUEST_DELIVERED_PROCESSED", eschema: intel_event },
+  { event: "PAYMENT_PROCESSED", eschema: intel_event },
+  { event: "ONBOARD_DEVICE_PROCESSED", eschema: intel_event },
+  { event: "ONBOARD_DEVICE_ALLOCATE_TO_BANK_PROCESSED", eschema: intel_event },
+  { event: "ONBOARD_DEVICE_ALLOCATE_TO_MERCHANT_PROCESSED", eschema: intel_event },
+  { event: "ONBOARD_DEVICE_ONBOARD_DEVICE_PROCESSED", eschema: intel_event },
+  { event: "ALLOCATE_TO_BANK_PROCESSED", eschema: intel_event },
+  { event: "ALLOCATE_TO_BRANCH_PROCESSED", eschema: intel_event },
+  { event: "ALLOCATE_TO_MERCHANT_PROCESSED", eschema: intel_event },
+  { event: "DEVICE_ISSUE_UPDATE_PROCESSED", eschema: intel_event },
+  { event: "DEACTIVATE_DEVICE_PROCESSED", eschema: intel_event }
+
+];

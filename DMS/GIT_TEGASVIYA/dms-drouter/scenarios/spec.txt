@@ -1,0 +1,2 @@
+1.check for the scenario where a device is not loaded but the server is up and running and has started to receieve payments.
+2.

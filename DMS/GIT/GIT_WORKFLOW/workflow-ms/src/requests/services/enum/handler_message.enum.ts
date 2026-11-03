@@ -1,0 +1,7 @@
+export enum handler_message {
+  SUCCESS_CODE = 200,
+  SUCCESS_MESSAGE = "SUCCESS HANDLER CREATED",
+  FAILURE_CODE = 400,
+  NO_RECORDS = "NO RECORDS",
+  ERROR_CODE = 500,
+}

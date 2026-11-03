@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: registry-deployment
+  namespace: dms-uat
+  labels:
+    app: registry-ms
+    environment: uat  
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: registry-ms
+      environment: uat
+  template:
+    metadata:
+      labels:
+        app: registry-ms
+        environment: uat  
+    spec:
+      serviceAccountName: uat-secrets-sa
+      volumes:
+        - name: registry-ms-secrets
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: registry-ms-secrets
+      containers:
+      - name: registry-ms
+        image: DOCKER_IMAGE_PLACEHOLDER
+        volumeMounts:
+            - name: registry-ms-secrets
+              mountPath: /app/src/secrets
+        ports:
+        - containerPort: 3007
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "300Mi"
+          limits:
+            cpu: "500m"
+            memory: "800Mi"  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: registry-ms-service
+  namespace: dms-uat
+spec:
+  selector:
+    app: registry-ms
+    environment: uat  
+  ports:
+    - protocol: TCP
+      port: 8441
+      targetPort: 3007
+  type: NodePort

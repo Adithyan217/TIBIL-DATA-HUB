@@ -1,0 +1,44 @@
+{
+	"folders": [
+		{
+			"path": "workflow-ms"
+		},
+		{
+			"path": "dms-registry-ms"
+		},
+		{
+			"path": "dms-intel-ms"
+		},
+		{
+			"path": "dms-user-ms"
+		},
+		{
+			"path": "dms-drouter"
+		},
+		{
+			"path": "dms-dlistener"
+		},
+		{
+			"path": "dms-dtransformer"
+		},
+		{
+			"path": "dms-msb-listener"
+		},
+		{
+			"path": "dms-msb-ftransit-ms"
+		},
+		{
+			"path": "dms-ptransit-ms"
+		},
+		{
+			"path": "dms-auth-middleware"
+		},
+		{
+			"path": "schema-library"
+		},
+		{
+			"path": "dms-qa"
+		}
+	],
+	"settings": {}
+}

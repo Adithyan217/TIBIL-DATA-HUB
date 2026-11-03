@@ -1,0 +1,15 @@
+Test Case,Scenario,Status,Error Message
+test_api_cases[TU001],N/A,FAIL,AssertionError: Full response does not match expected response.
+test_api_cases[TU002],N/A,FAIL,AssertionError: Full response does not match expected response.
+test_api_cases[TU003],N/A,FAIL,AssertionError: Full response does not match expected response.
+test_api_cases[TU004],N/A,FAIL,"AssertionError: ❌ Expected code 2000, but got 1000."
+test_api_cases[TU005],N/A,FAIL,AssertionError: Full response does not match expected response.
+test_api_cases[TU006],N/A,FAIL,AssertionError: Full response does not match expected response.
+test_api_cases[TU007],N/A,FAIL,AssertionError: Full response does not match expected response.
+test_api_cases[TU008],N/A,FAIL,AssertionError: Full response does not match expected response.
+test_api_cases[TU009],N/A,FAIL,AssertionError: Full response does not match expected response.
+test_api_cases[TU010],N/A,PASS,
+test_api_cases[TU011],N/A,FAIL,AssertionError: Full response does not match expected response.
+test_api_cases[TU012],N/A,PASS,
+test_api_cases[TU013],N/A,FAIL,AssertionError: Full response does not match expected response.
+test_api_cases[TU014],N/A,PASS,
