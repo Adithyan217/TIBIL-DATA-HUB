@@ -1,0 +1,23 @@
+config {
+  type: "table",
+  schema: "gold",
+  name: "gl_dim_gender",
+  tags: ["gold", "hr", "dim"]
+}
+
+WITH base AS (
+  SELECT DISTINCT
+    INITCAP(TRIM(Gender)) AS gender_type
+  FROM ${ref("silver", "sl_hr_master_clean")}
+  WHERE Gender IS NOT NULL
+),
+ordered AS (
+  SELECT
+    ROW_NUMBER() OVER (ORDER BY gender_type) AS gender_id,
+    gender_type
+  FROM base
+)
+SELECT 0 AS gender_id, 'All' AS gender_type
+UNION ALL
+SELECT gender_id, gender_type FROM ordered
+ORDER BY gender_id

@@ -1,0 +1,138 @@
+config {
+  type: "table",
+  schema: "gold",
+  name: "gl_fact_employee",
+  tags: ["gold", "hr", "fact"],
+
+  dependencies: [
+    "gl_dim_department",
+    "gl_dim_designation",
+    "gl_dim_functions",
+    "gl_dim_location",
+    "gl_dim_salary_band",
+    "gl_dim_source",
+    "gl_dim_hire_type",
+    "gl_dim_gender",
+    "gl_dim_project",
+    "gl_dim_feedback_question",
+    "gl_dim_employment_status"
+  ]
+}
+
+/*
+  Fact Table: gl_fact_employee
+  Combines employee master, project, and feedback data from Silver layer,
+  and maps all surrogate keys from corresponding Gold dimension tables.
+*/
+
+WITH base AS (
+  SELECT 
+    ms.Employee_Id,
+    g.gender_id,
+    emps.employment_status_id,
+    ms.DOB,
+    ms.Age,
+    ms.Tenure_Years,
+    ms.Year_Bucket,
+    ms.Active_Flag,
+    ms.Resigned_Date,
+    ms.Joining_Date,
+
+    f.function_id,
+    dep.department_id,
+    des.designation_id,
+    loc.location_id,
+    sb.salary_band_id,
+    so.source_id,
+    h.hire_type_id,
+
+    -- Project & Feedback (from Silver)
+    pc.Start_Date AS project_start_date,
+    pc.End_Date AS project_end_date,
+    pc.Project_Name,
+    fc.Question,
+    fc.Score
+
+  FROM ${ref("silver", "sl_hr_master_clean")} AS ms
+
+  -- Project (Silver)
+  LEFT JOIN ${ref("silver", "sl_hr_project_clean")} AS pc 
+    ON ms.Employee_Id = pc.Emp_ID
+
+  -- Survey / Feedback (Silver)
+  LEFT JOIN ${ref("silver", "sl_hr_feedback_survey_clean")} AS fc 
+    ON ms.Employee_Id = fc.Emp_ID
+
+  -- Gender
+  LEFT JOIN ${ref("gold", "gl_dim_gender")} AS g 
+    ON INITCAP(TRIM(ms.Gender)) = g.gender_type
+
+  -- Employment Status
+  LEFT JOIN ${ref("gold", "gl_dim_employment_status")} AS emps 
+    ON INITCAP(TRIM(ms.Resigned_Type)) = emps.employment_status
+
+  -- Department
+  LEFT JOIN ${ref("gold", "gl_dim_department")} AS dep 
+    ON INITCAP(TRIM(ms.Department)) = dep.department_name
+
+  -- Designation
+  LEFT JOIN ${ref("gold", "gl_dim_designation")} AS des 
+    ON INITCAP(TRIM(ms.Designation)) = des.designation_name
+
+  -- Function
+  LEFT JOIN ${ref("gold", "gl_dim_functions")} AS f 
+    ON INITCAP(TRIM(ms.Functions)) = f.function_name
+
+  -- Location
+  LEFT JOIN ${ref("gold", "gl_dim_location")} AS loc 
+    ON INITCAP(TRIM(ms.Location)) = loc.location_name
+
+  -- Salary Band
+  LEFT JOIN ${ref("gold", "gl_dim_salary_band")} AS sb 
+    ON TRIM(ms.Salary_Band) = sb.salary_band
+
+  -- Source
+  LEFT JOIN ${ref("gold", "gl_dim_source")} AS so 
+    ON INITCAP(TRIM(ms.Source)) = so.source_name
+
+  -- Hire Type
+  LEFT JOIN ${ref("gold", "gl_dim_hire_type")} AS h 
+    ON INITCAP(TRIM(ms.Initial_Hire_Type)) = h.hire_type
+)
+
+SELECT 
+  base.Employee_Id,
+  base.gender_id,
+  base.employment_status_id,
+  base.DOB,
+  base.Joining_Date,
+  base.Resigned_Date,
+  base.Age,
+  base.Tenure_Years,
+  base.Year_Bucket,
+  base.Active_Flag,
+
+  base.function_id,
+  base.department_id,
+  base.designation_id,
+  base.location_id,
+  base.salary_band_id,
+  base.source_id,
+  base.hire_type_id,
+
+  p.project_id,
+  base.project_start_date,
+  base.project_end_date,
+
+  q.question_id,
+  base.Score
+
+FROM base
+
+-- Dim Project
+LEFT JOIN ${ref("gold", "gl_dim_project")} AS p 
+  ON base.Project_Name = p.project_name
+
+-- Dim Feedback
+LEFT JOIN ${ref("gold", "gl_dim_feedback_question")} AS q 
+  ON base.Question = q.question

@@ -1,0 +1,53 @@
+-- Step 1: Drop static table if exists
+DROP TABLE IF EXISTS `tibil155.bronze.br_hr_master_raw`;
+
+-- Step 2: Create external live table from Google Sheets
+CREATE EXTERNAL TABLE `tibil155.bronze.br_hr_master_raw`
+OPTIONS (
+  format = 'GOOGLE_SHEETS',
+  uris = ['https://docs.google.com/spreadsheets/d/1eeWIqOBapVvYlmu6pwQIH1UL1Gm_Nm3qN9Xb1fcSdAQ'],
+  skip_leading_rows = 1,
+  sheet_range = 'Emp Master!A:Q'
+);
+
+-- Step 3: Test with live data
+SELECT * FROM `tibil155.bronze.br_hr_master_raw`;
+
+
+select *from `bronze.br_hr_master_raw`;
+
+------ score ---- 
+-- Step 1: Drop static table if exists
+DROP TABLE IF EXISTS `tibil155.bronze.br_hr_feedback_score`;
+
+-- Step 2: Create external live table from Google Sheets
+CREATE EXTERNAL TABLE `tibil155.bronze.br_hr_feedback_score`
+OPTIONS (
+  format = 'GOOGLE_SHEETS',
+  uris = ['https://docs.google.com/spreadsheets/d/1eeWIqOBapVvYlmu6pwQIH1UL1Gm_Nm3qN9Xb1fcSdAQ'],
+  skip_leading_rows = 1,
+  sheet_range = "'Feedback _Survey'!A:D"
+);
+
+-- Step 3: Test with live data
+SELECT * FROM `tibil155.bronze.br_hr_feedback_score`;
+
+
+
+---- Project Details-----
+-- Step 1: Drop static table if exists
+DROP TABLE IF EXISTS `tibil155.bronze.br_hr_project`;
+
+-- Step 2: Create external live table from Google Sheets
+CREATE EXTERNAL TABLE `tibil155.bronze.br_hr_project`
+OPTIONS (
+  format = 'GOOGLE_SHEETS',
+  uris = ['https://docs.google.com/spreadsheets/d/1eeWIqOBapVvYlmu6pwQIH1UL1Gm_Nm3qN9Xb1fcSdAQ'],
+  skip_leading_rows = 1,
+  sheet_range = 'Project!A:D'
+);
+
+-- Step 3: Test with live data
+SELECT * FROM `tibil155.bronze.br_hr_project`
+
+

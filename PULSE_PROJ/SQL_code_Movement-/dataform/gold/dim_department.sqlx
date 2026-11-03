@@ -1,0 +1,23 @@
+config {
+  type: "table",
+  schema: "gold",
+  name: "gl_dim_department",
+  tags: ["gold", "hr", "dim"]
+}
+
+WITH base AS (
+  SELECT DISTINCT
+    INITCAP(TRIM(Department)) AS department_name
+  FROM ${ref("silver", "sl_hr_master_clean")}
+  WHERE Department IS NOT NULL
+),
+ordered AS (
+  SELECT
+    ROW_NUMBER() OVER (ORDER BY department_name) AS department_id,
+    department_name
+  FROM base
+)
+SELECT 0 AS department_id, 'All' AS department_name
+UNION ALL
+SELECT department_id, department_name FROM ordered
+ORDER BY department_id

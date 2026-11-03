@@ -1,0 +1,44 @@
+-- Silver Layer: Cleans and standardizes the main HR Master table
+config {
+  type: "table",
+  schema: "silver",  // <--- Must be lowercase
+  name: "sl_hr_master_clean",
+  tags: ["silver", "hr"]
+}
+with base as (
+SELECT
+  Employee_Id,
+  INITCAP(Name) AS Name,Gender, Status, DOB,
+  -- Convert Joning_Date (STRING → DATE)
+   Joning_Date AS Joining_Date,
+  EXTRACT(MONTH FROM Resigned_Date) AS Resigned_Month,
+  EXTRACT(YEAR FROM Resigned_Date) AS Resigned_Year,
+  Resigned_Date, Resigned_type, Functions,Department,Designation, Reporting_Manager,
+   Location, tier_Type, Salary_Band,
+  Source, Initial_Hire_Type,
+  -- Derived metrics
+  DATE_DIFF(CURRENT_DATE(), DOB, YEAR) AS Age,
+  DATE_DIFF( COALESCE(Resigned_Date, CURRENT_DATE()),  Joning_Date , YEAR ) AS Tenure_Years,
+    CASE
+  WHEN Resigned_Date IS NULL THEN 'Active'
+  ELSE 'Resigned'
+END AS Active_Flag
+
+FROM
+  ${ref("br_hr_master_raw")}
+WHERE
+  Employee_ID IS NOT NULL
+) 
+select *, 
+CASE
+  WHEN Tenure_Years <= 1 THEN '≤1 Year'
+  WHEN Tenure_Years > 1 AND Tenure_Years <= 3 THEN '>1 to ≤3 Years'
+  WHEN Tenure_Years > 3 AND Tenure_Years <= 5 THEN '>3 to ≤5 Years'
+  WHEN Tenure_Years > 5 AND Tenure_Years <= 7 THEN '>5 to ≤7 Years'
+  ELSE '>7 Years'
+END AS Year_Bucket
+
+ from base
+
+
+

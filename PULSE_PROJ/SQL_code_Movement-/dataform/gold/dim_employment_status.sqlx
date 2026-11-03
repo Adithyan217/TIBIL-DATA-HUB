@@ -1,0 +1,23 @@
+config {
+  type: "table",
+  schema: "gold",
+  name: "gl_dim_employment_status",
+  tags: ["gold", "hr", "dim"]
+}
+
+WITH base AS (
+  SELECT DISTINCT
+    INITCAP(TRIM(Resigned_type)) AS employment_status
+  FROM ${ref("silver", "sl_hr_master_clean")}
+  WHERE Resigned_type IS NOT NULL
+),
+ordered AS (
+  SELECT
+    ROW_NUMBER() OVER (ORDER BY employment_status) AS employment_status_id,
+    employment_status
+  FROM base
+)
+SELECT 0 AS employment_status_id, 'All' AS employment_status
+UNION ALL
+SELECT employment_status_id, employment_status FROM ordered
+ORDER BY employment_status_id

@@ -1,0 +1,301 @@
+/**
+ * Responds to a message in Google Chat.
+ */
+
+function onMessage(event) {
+  const message = event.chat.messagePayload.message;
+  const user = event.chat.user;
+  const text = (message.text || "").trim().toLowerCase();
+
+  const sheet = SpreadsheetApp
+    .openById("1ZMY67AyIOvZWLK9Y2kJkSQ2QZWszbez4-3PL-ye3INg")
+    .getActiveSheet();
+
+  if (text === "hi" || text === "hello" || text === "hey") {
+    return {
+      hostAppDataAction: {
+        chatDataAction: {
+          createMessageAction: {
+            message: {
+              text: `👋 Hi ${user.displayName || "there"}! How can I help you today?`
+            }
+          }
+        }
+      }
+    };
+  }
+
+  // If user just types "addtasks" or "addtasks:"
+  if (text === "addtasks" || text === "addtasks:") {
+    return {
+      hostAppDataAction: {
+        chatDataAction: {
+          createMessageAction: {
+            message: {
+              cardsV2: [
+                {
+                  cardId: "addTaskHelp",
+                  card: {
+                    header: {
+                      title: "📝 Add Task Format",
+                      subtitle: "Use the format below to add tasks"
+                    },
+                    sections: [
+                      {
+                        widgets: [
+                          {
+                            textParagraph: {
+                              text: "➡️ Type your tasks like this:<br><b>Addtasks: task1, task2</b><br><br>Each task will be saved with your email, current date, and status <b>in progress</b>."
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    };
+  }
+
+  // Add tasks
+  if (text.startsWith("addtasks:")) {
+    const tasks = text.replace("addtasks:", "").trim().split(",").map(t => t.trim()).filter(Boolean);
+
+    if (tasks.length === 0) {
+      return {
+        hostAppDataAction: {
+          chatDataAction: {
+            createMessageAction: {
+              message: {
+                text: "⚠️ No tasks provided. Use: Addtasks: task1, task2"
+              }
+            }
+          }
+        }
+      };
+    }
+
+    const userEmail = user.email || "unknown@user.com";
+    const currentDate = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
+
+    const addedTasks = [];
+
+    tasks.forEach(task => {
+      const nextRow = sheet.getLastRow() + 1;
+      const tid = nextRow;
+      const newRow = [tid, task, userEmail, "in progress", currentDate];
+      sheet.appendRow(newRow);
+      addedTasks.push({ tid, task, status: "in progress" });
+    });
+
+    let taskRows = `<b>TID</b> | <b>Task</b> | <b>Status</b><br>`;
+    taskRows += addedTasks.map(t => `${t.tid} | ${t.task} | ${t.status}`).join("<br>");
+
+    return {
+      hostAppDataAction: {
+        chatDataAction: {
+          createMessageAction: {
+            message: {
+              cardsV2: [
+                {
+                  cardId: "taskAdded",
+                  card: {
+                    header: {
+                      title: "✅ Task(s) Added Successfully",
+                      subtitle: `${user.displayName || userEmail}`
+                    },
+                    sections: [{ widgets: [{ textParagraph: { text: taskRows } }] }]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    };
+  }
+
+  // Update tasks
+  if (text.startsWith("updatetasks")) {
+    const parts = text.split(":");
+    if (parts.length < 2) {
+      return {
+        hostAppDataAction: {
+          chatDataAction: {
+            createMessageAction: {
+              message: {
+                cardsV2: [
+                  {
+                    cardId: "updateFormat",
+                    card: {
+                      header: { title: "♻️ Update Task Format" },
+                      sections: [
+                        {
+                          widgets: [
+                            {
+                              textParagraph: {
+                                text: `Use this format to update tasks:<br><br><b>UpdateTasks:</b> 1, 2, 3`
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      };
+    }
+
+    const tids = parts[1].split(",").map(t => parseInt(t.trim())).filter(t => !isNaN(t));
+    const updatedTasks = [];
+    const data = sheet.getDataRange().getValues();
+
+    tids.forEach(tid => {
+      const row = data.findIndex(r => r[0] === tid);
+      if (row !== -1) {
+        sheet.getRange(row + 1, 4).setValue("completed");
+        const task = data[row][1];
+        updatedTasks.push({ tid, task, status: "completed" });
+      }
+    });
+
+    if (updatedTasks.length === 0) {
+      return {
+        hostAppDataAction: {
+          chatDataAction: {
+            createMessageAction: {
+              message: { text: `❌ No matching tasks found for the given TIDs.` }
+            }
+          }
+        }
+      };
+    }
+
+    let taskRows = `<b>TID</b> | <b>Task</b> | <b>Status</b><br>`;
+    taskRows += updatedTasks.map(t => `${t.tid} | ${t.task} | ${t.status}`).join("<br>");
+
+    return {
+      hostAppDataAction: {
+        chatDataAction: {
+          createMessageAction: {
+            message: {
+              cardsV2: [
+                {
+                  cardId: "taskUpdated",
+                  card: {
+                    header: {
+                      title: "✅ Task(s) Updated Successfully",
+                      subtitle: `${user.displayName || user.email}`
+                    },
+                    sections: [{ widgets: [{ textParagraph: { text: taskRows } }] }]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    };
+  }
+
+  // Task list
+  if (text === "tasklist" || text === "tasks") {
+    const userEmail = user.email || "unknown@user.com";
+    const data = sheet.getDataRange().getValues().slice(1); // skip headers
+    const userTasks = data
+      .filter(r => r[2] === userEmail)
+      .map(r => ({ tid: r[0], task: r[1], status: r[3] }));
+
+    if (userTasks.length === 0) {
+      return {
+        hostAppDataAction: {
+          chatDataAction: {
+            createMessageAction: {
+              message: {
+                text: `📭 No tasks found for ${user.displayName || userEmail}.`
+              }
+            }
+          }
+        }
+      };
+    }
+
+    let taskRows = `<b>TID</b> | <b>Task</b> | <b>Status</b><br>`;
+    taskRows += userTasks.map(t => `${t.tid} | ${t.task} | ${t.status}`).join("<br>");
+
+    return {
+      hostAppDataAction: {
+        chatDataAction: {
+          createMessageAction: {
+            message: {
+              cardsV2: [
+                {
+                  cardId: "taskList",
+                  card: {
+                    header: {
+                      title: "📋 Your Task List",
+                      subtitle: `${user.displayName || userEmail}`
+                    },
+                    sections: [{ widgets: [{ textParagraph: { text: taskRows } }] }]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    };
+  }
+
+  // Default fallback response
+  return {
+    hostAppDataAction: {
+      chatDataAction: {
+        createMessageAction: {
+          message: {
+            text: `🤖 I didn’t understand. Try “Addtasks: task1, task2”`
+          }
+        }
+      }
+    }
+  };
+}
+
+/**
+ * Responds to being added to a Google Chat space.
+ */
+function onAddedToSpace(event) {
+  const space = event.chat.addedToSpacePayload.space;
+  const user = event.chat.user;
+
+  const message = space.singleUserBotDm
+    ? `Thanks for adding me to a DM, ${user.displayName || "User"}! Type "hi" to start.`
+    : `Thanks for adding me to ${space.displayName || "this space"}! Type "hi" to begin.`;
+
+  return {
+    hostAppDataAction: {
+      chatDataAction: {
+        createMessageAction: {
+          message: { text: message }
+        }
+      }
+    }
+  };
+}
+
+/**
+ * Responds to being removed from a Google Chat space.
+ */
+function onRemovedFromSpace(event) {
+  const space = event.chat.removedFromSpacePayload.space;
+  console.info(`Chat app removed from ${(space.name || "this chat")}`);
+}
+

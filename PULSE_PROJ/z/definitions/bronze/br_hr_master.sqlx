@@ -1,0 +1,6 @@
+config {
+  type: "declaration",
+  schema: "bronze",
+  name: "br_hr_master_raw",
+  description: "External HR Master data from Google Sheets (Bronze Layer)."
+}

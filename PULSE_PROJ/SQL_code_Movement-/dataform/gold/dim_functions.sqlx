@@ -1,0 +1,23 @@
+config {
+  type: "table",
+  schema: "gold",
+  name: "gl_dim_functions",
+  tags: ["gold", "hr", "dim"]
+}
+
+WITH base AS (
+  SELECT DISTINCT
+    INITCAP(TRIM(Functions)) AS Function_Name
+  FROM ${ref("silver", "sl_hr_master_clean")}
+  WHERE Functions IS NOT NULL
+),
+ordered AS (
+  SELECT
+    ROW_NUMBER() OVER (ORDER BY Function_Name) AS Function_id,
+    Function_Name
+  FROM base
+)
+SELECT 0 AS Function_id, 'All' AS Function_Name
+UNION ALL
+SELECT Function_id, Function_Name FROM ordered
+ORDER BY Function_id

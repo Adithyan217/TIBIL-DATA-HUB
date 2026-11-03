@@ -1,0 +1,6 @@
+config {
+  type: "declaration",
+  schema: "bronze",
+  name: "br_hr_project",
+  description: "External HR Project data from Google Sheets (Bronze Layer)"
+}

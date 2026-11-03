@@ -1,0 +1,24 @@
+config {
+  type: "table",
+  schema: "gold",
+  name: "gl_dim_feedback_question",
+  tags: ["gold", "hr", "feedback", "dimension"]
+}
+
+/*
+  GOLD LAYER:
+  Creates a dimension table for HR Feedback questions.
+  Each question is assigned a unique Question_No.
+*/
+
+WITH questions AS (
+  SELECT DISTINCT
+    Question
+  FROM ${ref("sl_hr_feedback_survey_clean")}
+  WHERE Question IS NOT NULL
+)
+
+SELECT
+  ROW_NUMBER() OVER (ORDER BY Question) AS Question_ID,
+  Question
+FROM questions

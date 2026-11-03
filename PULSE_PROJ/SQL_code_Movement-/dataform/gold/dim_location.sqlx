@@ -1,0 +1,25 @@
+config {
+  type: "table",
+  schema: "gold",
+  name: "gl_dim_location",
+  tags: ["gold", "hr", "dim"]
+}
+
+WITH base AS (
+  SELECT DISTINCT
+    INITCAP(TRIM(Location)) AS location_name,
+    INITCAP(TRIM(Tier_Type)) AS tier_type
+  FROM ${ref("silver", "sl_hr_master_clean")}
+  WHERE Location IS NOT NULL
+),
+ordered AS (
+  SELECT
+    ROW_NUMBER() OVER (ORDER BY location_name) AS location_id,
+    location_name,
+    tier_type
+  FROM base
+)
+SELECT 0 AS location_id, 'All' AS location_name, 'All' AS tier_type
+UNION ALL
+SELECT location_id, location_name, tier_type FROM ordered
+ORDER BY location_id

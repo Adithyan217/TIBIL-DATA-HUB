@@ -1,0 +1,30 @@
+config {
+  type: "table",
+  schema: "gold",
+  name: "gl_dim_emp",
+  tags: ["gold", "hr", "dim"]
+}
+
+WITH emp_base AS (
+  SELECT DISTINCT
+    a.Employee_Id,
+    INITCAP(TRIM(a.Name)) AS employee_name,
+    a.Gender,
+    a.DOB,
+    a.Reporting_Manager,
+    a.Joining_Date,
+    b.Employee_Id AS reporting_manager_id
+  FROM ${ref("silver", "sl_hr_master_clean")} AS a
+  LEFT JOIN ${ref("silver", "sl_hr_master_clean")} AS b
+    ON TRIM(a.Reporting_Manager) = TRIM(b.Name)
+  WHERE a.Employee_Id IS NOT NULL
+)
+SELECT
+  Employee_Id,
+  employee_name,
+  Gender,
+  DOB,
+  Joining_Date,
+  Reporting_Manager,
+  reporting_manager_id
+FROM emp_base

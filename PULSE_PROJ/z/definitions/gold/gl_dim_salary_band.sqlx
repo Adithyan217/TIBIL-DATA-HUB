@@ -1,0 +1,23 @@
+config {
+  type: "table",
+  schema: "gold",
+  name: "gl_dim_salary_band",
+  tags: ["gold", "hr", "dim"]
+}
+
+WITH base AS (
+  SELECT DISTINCT
+    TRIM(Salary_Band) AS salary_band
+  FROM ${ref("silver", "sl_hr_master_clean")}
+  WHERE Salary_Band IS NOT NULL
+),
+ordered AS (
+  SELECT
+    ROW_NUMBER() OVER (ORDER BY salary_band) AS salary_band_id,
+    salary_band
+  FROM base
+)
+SELECT 0 AS salary_band_id, 'All' AS salary_band
+UNION ALL
+SELECT salary_band_id, salary_band FROM ordered
+ORDER BY salary_band_id

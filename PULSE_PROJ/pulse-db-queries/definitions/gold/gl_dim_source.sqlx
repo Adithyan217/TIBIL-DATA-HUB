@@ -1,0 +1,23 @@
+config {
+  type: "table",
+  schema: "gold",
+  name: "gl_dim_source",
+  tags: ["gold", "hr", "dim"]
+}
+
+WITH base AS (
+  SELECT DISTINCT
+    INITCAP(TRIM(Source)) AS source_name
+  FROM ${ref("silver", "sl_hr_master_clean")}
+  WHERE Source IS NOT NULL
+),
+ordered AS (
+  SELECT
+    ROW_NUMBER() OVER (ORDER BY source_name) AS source_id,
+    source_name
+  FROM base
+)
+SELECT 0 AS source_id, 'All' AS source_name
+UNION ALL
+SELECT source_id, source_name FROM ordered
+ORDER BY source_id

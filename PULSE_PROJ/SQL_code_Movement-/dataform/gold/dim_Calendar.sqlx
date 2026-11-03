@@ -1,0 +1,111 @@
+config {
+  type: "table",
+  schema: "gold",
+  name: "gl_dim_calendar",
+  tags: ["gold", "hr", "dim"]
+}
+
+/*
+  Calendar Dimension: Generates a continuous list of dates
+  covering the range of all joining and resignation dates
+  from the hr_master_clean table (Silver Layer)
+*/
+
+WITH date_range AS (
+  SELECT
+    MIN(COALESCE(Joining_Date, DATE '2015-01-01')) AS start_date,
+    MAX(COALESCE(Resigned_Date, CURRENT_DATE())) AS end_date
+  FROM ${ref("silver", "sl_hr_master_clean")}
+),
+
+calendar AS (
+  SELECT
+    day AS calendar_date
+  FROM UNNEST(
+    GENERATE_DATE_ARRAY(
+      (SELECT start_date FROM date_range),
+      (SELECT end_date FROM date_range),
+      INTERVAL 1 DAY
+    )
+  ) AS day
+)
+
+SELECT
+  calendar_date,
+
+  -- Basic Date Parts
+  EXTRACT(YEAR FROM calendar_date) AS calendar_year,
+  EXTRACT(MONTH FROM calendar_date) AS calendar_month,
+  FORMAT_DATE('%b', calendar_date) AS month_name,
+  EXTRACT(DAY FROM calendar_date) AS calendar_day,
+  EXTRACT(QUARTER FROM calendar_date) AS calendar_quarter,
+  FORMAT_DATE('%A', calendar_date) AS day_name,
+  
+  CASE
+    WHEN EXTRACT(DAYOFWEEK FROM calendar_date) IN (1, 7) THEN 'Weekend'
+    ELSE 'Weekday'
+  END AS day_type,
+
+  -- Fiscal Year (April to March)
+  CASE
+    WHEN EXTRACT(MONTH FROM calendar_date) >= 4 
+      THEN EXTRACT(YEAR FROM calendar_date)
+    ELSE EXTRACT(YEAR FROM calendar_date) - 1
+  END AS fiscal_year,
+
+  CASE
+    WHEN EXTRACT(MONTH FROM calendar_date) >= 4 
+      THEN EXTRACT(MONTH FROM calendar_date) - 3
+    ELSE EXTRACT(MONTH FROM calendar_date) + 9
+  END AS fiscal_month_number,
+
+  CASE
+    WHEN EXTRACT(MONTH FROM calendar_date) = 4 THEN 'Apr'
+    WHEN EXTRACT(MONTH FROM calendar_date) = 5 THEN 'May'
+    WHEN EXTRACT(MONTH FROM calendar_date) = 6 THEN 'Jun'
+    WHEN EXTRACT(MONTH FROM calendar_date) = 7 THEN 'Jul'
+    WHEN EXTRACT(MONTH FROM calendar_date) = 8 THEN 'Aug'
+    WHEN EXTRACT(MONTH FROM calendar_date) = 9 THEN 'Sep'
+    WHEN EXTRACT(MONTH FROM calendar_date) = 10 THEN 'Oct'
+    WHEN EXTRACT(MONTH FROM calendar_date) = 11 THEN 'Nov'
+    WHEN EXTRACT(MONTH FROM calendar_date) = 12 THEN 'Dec'
+    WHEN EXTRACT(MONTH FROM calendar_date) = 1 THEN 'Jan'
+    WHEN EXTRACT(MONTH FROM calendar_date) = 2 THEN 'Feb'
+    WHEN EXTRACT(MONTH FROM calendar_date) = 3 THEN 'Mar'
+  END AS fiscal_month_name,
+
+  -- NEW FY Format: FY 24-25
+  CONCAT(
+    'FY-',
+    SUBSTR(
+      CASE 
+        WHEN EXTRACT(MONTH FROM calendar_date) >= 4 
+          THEN CAST(EXTRACT(YEAR FROM calendar_date) AS STRING)
+        ELSE CAST(EXTRACT(YEAR FROM calendar_date) - 1 AS STRING)
+      END,
+      3,
+      2
+    ),
+    '-',
+    SUBSTR(
+      CASE 
+        WHEN EXTRACT(MONTH FROM calendar_date) >= 4 
+          THEN CAST(EXTRACT(YEAR FROM calendar_date) + 1 AS STRING)
+        ELSE CAST(EXTRACT(YEAR FROM calendar_date) AS STRING)
+      END,
+      3,
+      2
+    )
+  ) AS FY,
+
+  -- Year-Quarter (Calendar)
+  CONCAT(
+    CAST(EXTRACT(YEAR FROM calendar_date) AS STRING),
+    '-Q',
+    CAST(EXTRACT(QUARTER FROM calendar_date) AS STRING)
+  ) AS year_quarter,
+
+  CAST(FORMAT_DATE('%Y%m', calendar_date) AS INT64) AS year_month
+
+FROM calendar
+ORDER BY calendar_date

@@ -1,0 +1,6 @@
+config {
+  type: "declaration",
+  schema: "bronze",
+  name: "br_hr_feedback_score",
+  description: "External HR Feedback data from Google Sheets (Bronze Layer)."
+}

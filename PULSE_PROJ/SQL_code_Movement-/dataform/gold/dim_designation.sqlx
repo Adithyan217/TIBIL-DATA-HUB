@@ -1,0 +1,23 @@
+config {
+  type: "table",
+  schema: "gold",
+  name: "gl_dim_designation",
+  tags: ["gold", "hr", "dim"]
+}
+
+WITH base AS (
+  SELECT DISTINCT
+    INITCAP(TRIM(Designation)) AS designation_name
+  FROM ${ref("silver", "sl_hr_master_clean")}
+  WHERE Designation IS NOT NULL
+),
+ordered AS (
+  SELECT
+    ROW_NUMBER() OVER (ORDER BY designation_name) AS designation_id,
+    designation_name
+  FROM base
+)
+SELECT 0 AS designation_id, 'All' AS designation_name
+UNION ALL
+SELECT designation_id, designation_name FROM ordered
+ORDER BY designation_id

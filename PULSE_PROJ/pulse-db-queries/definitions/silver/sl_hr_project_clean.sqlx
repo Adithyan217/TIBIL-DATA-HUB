@@ -1,0 +1,29 @@
+config {
+  type: "table",
+  schema: "silver",
+  name: "sl_hr_project_clean",
+  tags: ["silver", "hr", "project"]
+}
+
+/*
+  Silver Layer:
+  Cleans and standardizes project data from the Bronze Layer.
+*/
+
+SELECT
+  TRIM(Emp_Id) AS emp_id,
+  INITCAP(TRIM(Project_Name)) AS project_name,
+  Start_Date,
+  End_Date,
+  DATE_DIFF(
+    COALESCE(End_Date, CURRENT_DATE()),
+    Start_Date,
+    DAY
+  ) AS project_duration_days,
+  CASE 
+    WHEN COALESCE(End_Date, CURRENT_DATE()) >= CURRENT_DATE()
+      THEN 'Active'
+    ELSE 'Closed'
+  END AS project_status
+FROM ${ref("br_hr_project")}
+WHERE Project_Name IS NOT NULL

@@ -1,0 +1,34 @@
+config {
+  type: "table",
+  schema: "silver",
+  name: "sl_hr_feedback_survey_clean",
+  tags: ["silver", "hr", "feedback"]
+}
+
+/*
+  Silver Layer:
+  Converts wide feedback data into normalized (unpivoted) format
+  with columns: Emp_id, Question, Score
+*/
+
+SELECT
+  Emp_id,
+  'Compensation & Benefits' AS Question,
+  SAFE_CAST(`Compensation___Benefits` AS INT64) AS Score
+FROM ${ref("br_hr_feedback_score")}
+
+UNION ALL
+
+SELECT
+  Emp_id,
+  'Team and Work environment' AS Question,
+  SAFE_CAST(`Team_and_Work_environment` AS INT64) AS Score
+FROM ${ref("br_hr_feedback_score")}
+
+UNION ALL
+
+SELECT
+  Emp_id,
+  'Organisation Culture' AS Question,
+  SAFE_CAST(`Organisation_Culture` AS INT64) AS Score
+FROM ${ref("br_hr_feedback_score")}

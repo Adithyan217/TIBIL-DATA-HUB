@@ -1,0 +1,126 @@
+CREATE OR REPLACE TABLE FUNCTION `pulse-dev-477810.KPIs.fn_project_attrition` (
+    p_gender STRING,
+    p_function STRING,
+    p_department STRING,
+    p_designation STRING,
+    p_location STRING,
+    p_employment_status STRING
+)
+RETURNS TABLE<
+    project_name STRING,
+    Numerator_Count INT64,
+    Denominator_Count INT64,
+    Attrition_Pct FLOAT64,
+    gender_type STRING,
+    Function_Name STRING,
+    department_name STRING,
+    designation_name STRING,
+    location_name STRING,
+    employment_status STRING
+>
+AS (
+
+/****************************************************************
+ STEP 1 → Base Data
+****************************************************************/
+WITH base AS (
+    SELECT
+        fe.employee_id,
+        pj.project_name,
+        pj.project_id,
+
+        fe.project_start_date,
+        COALESCE(fe.project_end_date, CURRENT_DATE()) AS project_end_date,
+
+        fe.resigned_date,
+        fe.Active_Flag,
+
+        g.gender_type,
+        fn.Function_Name,
+        d.department_name,
+        ds.designation_name,
+        l.location_name,
+        es.employment_status
+
+    FROM pulse-dev-477810.gold.gl_fact_employee fe
+
+    LEFT JOIN pulse-dev-477810.gold.gl_dim_project pj
+        ON fe.project_id = pj.project_id
+
+    LEFT JOIN pulse-dev-477810.gold.gl_dim_gender g 
+        ON fe.gender_id = g.gender_id
+
+    LEFT JOIN pulse-dev-477810.gold.gl_dim_functions fn 
+        ON fe.function_id = fn.function_id
+
+    LEFT JOIN pulse-dev-477810.gold.gl_dim_department d 
+        ON fe.department_id = d.department_id
+
+    LEFT JOIN pulse-dev-477810.gold.gl_dim_designation ds 
+        ON fe.designation_id = ds.designation_id
+
+    LEFT JOIN pulse-dev-477810.gold.gl_dim_location l 
+        ON fe.location_id = l.location_id
+
+    LEFT JOIN pulse-dev-477810.gold.gl_dim_employment_status es 
+        ON fe.employment_status_id = es.employment_status_id
+
+    WHERE pj.project_id != 0   -- DO NOT include 0 = 'All'
+),
+
+/****************************************************************
+ STEP 2 → Apply Slicers
+****************************************************************/
+filtered AS (
+    SELECT *
+    FROM base
+    WHERE (p_gender IS NULL OR p_gender = 'All' OR gender_type = p_gender)
+      AND (p_function IS NULL OR p_function = 'All' OR Function_Name = p_function)
+      AND (p_department IS NULL OR p_department = 'All' OR department_name = p_department)
+      AND (p_designation IS NULL OR p_designation = 'All' OR designation_name = p_designation)
+      AND (p_location IS NULL OR p_location = 'All' OR location_name = p_location)
+      AND (p_employment_status IS NULL OR p_employment_status = 'All'
+           OR employment_status = p_employment_status)
+),
+
+/****************************************************************
+ STEP 3 → Calculate Project-Level Attrition
+****************************************************************/
+agg AS (
+    SELECT
+        project_name,
+
+        /* Numerator:
+           Employees who resigned during the project period */
+        COUNT(DISTINCT IF(
+            resigned_date BETWEEN project_start_date AND project_end_date,
+            employee_id,
+            NULL
+        )) AS Numerator_Count,
+
+        /* Denominator:
+           ALL employees who ever worked on this project (ignoring dates) */
+        COUNT(DISTINCT employee_id) AS Denominator_Count
+
+    FROM filtered
+    GROUP BY project_name
+)
+
+SELECT
+    project_name,
+    Numerator_Count,
+    Denominator_Count,
+    SAFE_DIVIDE(Numerator_Count, Denominator_Count) * 100 AS Attrition_Pct,
+
+    /* Output slicer labels */
+    (CASE WHEN p_gender = 'All' THEN 'All' ELSE p_gender END) AS gender_type,
+    (CASE WHEN p_function = 'All' THEN 'All' ELSE p_function END) AS Function_Name,
+    (CASE WHEN p_department = 'All' THEN 'All' ELSE p_department END) AS department_name,
+    (CASE WHEN p_designation = 'All' THEN 'All' ELSE p_designation END) AS designation_name,
+    (CASE WHEN p_location = 'All' THEN 'All' ELSE p_location END) AS location_name,
+    (CASE WHEN p_employment_status = 'All' THEN 'All' ELSE p_employment_status END) AS employment_status
+
+FROM agg
+ORDER BY project_name
+
+);

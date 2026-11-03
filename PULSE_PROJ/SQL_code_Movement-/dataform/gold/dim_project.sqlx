@@ -1,0 +1,33 @@
+config {
+  type: "table",
+  schema: "gold",
+  name: "gl_dim_project",
+  tags: ["gold", "hr", "dim"]
+}
+
+/*
+  Gold Layer:
+  Dimension table containing unique Project IDs and Project Names.
+  Adds 'All' option for Power BI parameter binding.
+*/
+
+WITH base AS (
+  SELECT DISTINCT
+    INITCAP(TRIM(project_name)) AS project_name
+  FROM ${ref("silver", "sl_hr_project_clean")}
+  WHERE project_name IS NOT NULL
+),
+ordered AS (
+  SELECT
+    ROW_NUMBER() OVER (ORDER BY project_name) AS project_id,
+    project_name
+  FROM base
+)
+
+-- Add "All" row at the top
+SELECT 0 AS project_id, 'All' AS project_name
+UNION ALL
+SELECT project_id, project_name
+FROM ordered
+ORDER BY project_id
+

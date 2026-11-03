@@ -1,0 +1,249 @@
+--Quarter Attrition with parameters 
+
+CREATE OR REPLACE TABLE FUNCTION tibil155.KPIs.fn_quarter_attrition (
+  p_fy STRING,                -- FY parameter (e.g. 'FY-24-25')
+  p_gender_type STRING,
+  p_function_name STRING,
+  p_department_name STRING,
+  p_designation_name STRING,
+  p_location_name STRING,
+  p_employment_status STRING
+)
+RETURNS TABLE<
+  FY STRING,
+  FY_Q STRING,
+  Q_Attrition FLOAT64,
+  gender_type STRING,
+  Function_Name STRING,
+  department_name STRING,
+  designation_name STRING,
+  location_name STRING,
+  employment_status STRING
+>
+AS (
+
+
+/**********************************************************************
+ STEP 0: MAP INPUT PARAMETERS → DIM IDs  (NULL means ALL)
+**********************************************************************/
+WITH param_ids AS (
+  SELECT
+    /* FY filter */
+    CASE 
+      WHEN p_fy IS NULL OR p_fy = 'All' THEN NULL
+      ELSE p_fy
+    END AS fy_label_param,
+
+    CASE 
+      WHEN p_gender_type IS NULL OR p_gender_type = 'All' THEN NULL
+      ELSE (SELECT gender_id FROM tibil155.gold.gl_dim_gender WHERE gender_type = p_gender_type)
+    END AS gender_id,
+
+    CASE 
+      WHEN p_function_name IS NULL OR p_function_name = 'All' THEN NULL
+      ELSE (SELECT Function_id FROM tibil155.gold.gl_dim_functions WHERE Function_Name = p_function_name)
+    END AS function_id,
+
+    CASE 
+      WHEN p_department_name IS NULL OR p_department_name = 'All' THEN NULL
+      ELSE (SELECT department_id FROM tibil155.gold.gl_dim_department WHERE department_name = p_department_name)
+    END AS department_id,
+
+    CASE 
+      WHEN p_designation_name IS NULL OR p_designation_name = 'All' THEN NULL
+      ELSE (SELECT designation_id FROM tibil155.gold.gl_dim_designation WHERE designation_name = p_designation_name)
+    END AS designation_id,
+
+    CASE 
+      WHEN p_location_name IS NULL OR p_location_name = 'All' THEN NULL
+      ELSE (SELECT location_id FROM tibil155.gold.gl_dim_location WHERE location_name = p_location_name)
+    END AS location_id,
+
+    CASE 
+      WHEN p_employment_status IS NULL OR p_employment_status = 'All' THEN NULL
+      ELSE (SELECT employment_status_id FROM tibil155.gold.gl_dim_employment_status 
+            WHERE employment_status = p_employment_status)
+    END AS employment_status_id
+),
+
+
+/**********************************************************************
+ STEP 1: EMPLOYEE BASE
+**********************************************************************/
+emp AS (
+  SELECT
+    fe.employee_id,
+    fe.gender_id,
+    fe.function_id,
+    fe.department_id,
+    fe.designation_id,
+    fe.location_id,
+    fe.employment_status_id,
+    de.Joining_Date,
+    fe.resigned_date
+  FROM (
+    SELECT DISTINCT * FROM tibil155.gold.gl_fact_employee
+  ) fe
+  LEFT JOIN tibil155.gold.gl_dim_emp de
+        ON fe.employee_id = de.employee_id
+),
+
+
+/**********************************************************************
+ STEP 2: APPLY FILTERS
+**********************************************************************/
+filtered AS (
+  SELECT e.*
+  FROM emp e
+  CROSS JOIN param_ids p
+  WHERE (p.gender_id IS NULL OR e.gender_id = p.gender_id)
+    AND (p.function_id IS NULL OR e.function_id = p.function_id)
+    AND (p.department_id IS NULL OR e.department_id = p.department_id)
+    AND (p.designation_id IS NULL OR e.designation_id = p.designation_id)
+    AND (p.location_id IS NULL OR e.location_id = p.location_id)
+    AND (p.employment_status_id IS NULL OR e.employment_status_id = p.employment_status_id)
+),
+
+
+/**********************************************************************
+ STEP 3: FY DETECTION BASED ON DATA
+**********************************************************************/
+fy_raw AS (
+  SELECT DISTINCT
+    CASE WHEN EXTRACT(MONTH FROM Joining_Date) >= 4 
+         THEN EXTRACT(YEAR FROM Joining_Date)
+         ELSE EXTRACT(YEAR FROM Joining_Date) - 1 END AS fy_start_year
+  FROM filtered
+
+  UNION DISTINCT
+
+  SELECT DISTINCT
+    CASE WHEN EXTRACT(MONTH FROM resigned_date) >= 4 
+         THEN EXTRACT(YEAR FROM resigned_date)
+         ELSE EXTRACT(YEAR FROM resigned_date) - 1 END AS fy_start_year
+  FROM filtered
+),
+
+fy_dates AS (
+  SELECT
+    fy_start_year,
+    DATE(fy_start_year, 4, 1) AS fy_start,
+    DATE(fy_start_year + 1, 3, 31) AS fy_end,
+    CONCAT(
+      'FY-',
+      LPAD(CAST(MOD(fy_start_year,100) AS STRING), 2, '0'),
+      '-',
+      LPAD(CAST(MOD(fy_start_year+1,100) AS STRING), 2, '0')
+    ) AS fy_label
+  FROM fy_raw
+),
+
+
+/**********************************************************************
+ STEP 4: APPLY FY PARAMETER FILTER 
+**********************************************************************/
+fy_filtered AS (
+  SELECT *
+  FROM fy_dates
+  CROSS JOIN param_ids p
+  WHERE (p.fy_label_param IS NULL OR fy_label = p.fy_label_param)
+),
+
+
+/**********************************************************************
+ STEP 5: EXPAND INTO QUARTERS
+**********************************************************************/
+quarters AS (
+  SELECT DISTINCT
+    fy_label,
+    
+    /* Quarter label */
+    CASE
+      WHEN EXTRACT(MONTH FROM m) BETWEEN 4 AND 6 THEN 'Q1'
+      WHEN EXTRACT(MONTH FROM m) BETWEEN 7 AND 9 THEN 'Q2'
+      WHEN EXTRACT(MONTH FROM m) BETWEEN 10 AND 12 THEN 'Q3'
+      ELSE 'Q4'
+    END AS quarter_label,
+
+    /* Quarter start */
+    CASE
+      WHEN EXTRACT(MONTH FROM m) BETWEEN 4 AND 6 THEN DATE(EXTRACT(YEAR FROM m),4,1)
+      WHEN EXTRACT(MONTH FROM m) BETWEEN 7 AND 9 THEN DATE(EXTRACT(YEAR FROM m),7,1)
+      WHEN EXTRACT(MONTH FROM m) BETWEEN 10 AND 12 THEN DATE(EXTRACT(YEAR FROM m),10,1)
+      ELSE DATE(EXTRACT(YEAR FROM m),1,1)
+    END AS q_start,
+
+    /* Quarter end */
+    CASE
+      WHEN EXTRACT(MONTH FROM m) BETWEEN 4 AND 6 THEN DATE(EXTRACT(YEAR FROM m),7,1)
+      WHEN EXTRACT(MONTH FROM m) BETWEEN 7 AND 9 THEN DATE(EXTRACT(YEAR FROM m),10,1)
+      WHEN EXTRACT(MONTH FROM m) BETWEEN 10 AND 12 THEN DATE(EXTRACT(YEAR FROM m)+1,1,1)
+      ELSE DATE(EXTRACT(YEAR FROM m),4,1)
+    END AS q_end
+
+  FROM fy_filtered,
+  UNNEST(GENERATE_DATE_ARRAY(fy_start, fy_end, INTERVAL 1 MONTH)) AS m
+),
+
+
+/**********************************************************************
+ STEP 6: QUARTER ATTRITION CALCULATION (4 steps)
+**********************************************************************/
+qcalc AS (
+  SELECT
+    fy_label,
+    quarter_label,
+    q_start,
+    q_end,
+
+    -- STEP B: Start Headcount 
+    (SELECT COUNT(*) FROM filtered e
+     WHERE e.Joining_Date < q_start
+       AND (e.resigned_date IS NULL OR e.resigned_date >= q_start)
+    ) AS start_hc,
+
+    -- STEP A: Resigned in the Quarter
+    (SELECT COUNT(*) FROM filtered e
+     WHERE e.resigned_date >= q_start
+       AND e.resigned_date < q_end
+    ) AS resigned_cnt,
+
+    -- STEP C: End Headcount
+    (SELECT COUNT(*) FROM filtered e
+     WHERE e.Joining_Date < q_end
+       AND (e.resigned_date IS NULL OR e.resigned_date >= q_end)
+    ) AS end_hc
+
+  FROM quarters
+),
+
+
+/**********************************************************************
+ STEP 7: FINAL QUARTER ATTRITION (STEP D)
+**********************************************************************/
+final_q AS (
+  SELECT
+    fy_label AS FY,
+    fy_label || '-' || quarter_label AS FY_Q,
+    SAFE_DIVIDE(resigned_cnt, (start_hc + end_hc)/2.0) AS Q_Attrition
+  FROM qcalc
+)
+
+
+/**********************************************************************
+ STEP 8: FINAL OUTPUT
+**********************************************************************/
+SELECT
+  FY,
+  right(FY_Q,2) as FY_Q,
+  Q_Attrition,
+  p_gender_type AS gender_type,
+  p_function_name AS Function_Name,
+  p_department_name AS department_name,
+  p_designation_name AS designation_name,
+  p_location_name AS location_name,
+  p_employment_status AS employment_status
+FROM final_q
+ORDER BY FY, FY_Q
+
+);

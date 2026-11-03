@@ -1,0 +1,155 @@
+CREATE OR REPLACE TABLE FUNCTION tibil155.KPIs.fn_cy_resigned_metrics (
+    p_month STRING,             -- ✅ NEW MONTH PARAMETER
+    p_gender_type STRING,
+    p_function_name STRING,
+    p_department_name STRING,
+    p_designation_name STRING,
+    p_location_name STRING,
+    p_employment_status STRING
+)
+RETURNS TABLE<
+    employee_id STRING,
+    FY STRING,
+    CY INT64,
+    Quarter STRING,
+    Month_Name STRING,          -- ✅ SHOW MONTH IN OUTPUT
+    gender_type STRING,
+    Function_Name STRING,
+    department_name STRING,
+    designation_name STRING,
+    location_name STRING,
+    employment_status STRING
+>
+AS (
+
+/**********************************************************
+ STEP 1 → Base (Fact + Dimension Names)
+**********************************************************/
+WITH base AS (
+    SELECT
+        CAST(fe.employee_id AS STRING) AS employee_id,
+        fe.resigned_date,
+
+        fe.gender_id,
+        g.gender_type,
+
+        fe.function_id,
+        fn.Function_Name,
+
+        fe.department_id,
+        d.department_name,
+
+        fe.designation_id,
+        ds.designation_name,
+
+        fe.location_id,
+        l.location_name,
+
+        fe.employment_status_id,
+        es.employment_status
+
+    FROM tibil155.gold.gl_fact_employee fe
+    LEFT JOIN tibil155.gold.gl_dim_gender g ON fe.gender_id = g.gender_id
+    LEFT JOIN tibil155.gold.gl_dim_functions fn ON fe.function_id = fn.Function_id
+    LEFT JOIN tibil155.gold.gl_dim_department d ON fe.department_id = d.department_id
+    LEFT JOIN tibil155.gold.gl_dim_designation ds ON fe.designation_id = ds.designation_id
+    LEFT JOIN tibil155.gold.gl_dim_location l ON fe.location_id = l.location_id
+    LEFT JOIN tibil155.gold.gl_dim_employment_status es ON fe.employment_status_id = es.employment_status_id
+
+    WHERE fe.employment_status_id IN (2,3)
+),
+
+/**********************************************************
+ STEP 2 → Calculate FY
+**********************************************************/
+with_fy AS (
+    SELECT
+        *,
+        CONCAT(
+            'FY-',
+            LPAD(CAST(MOD(
+                CASE WHEN EXTRACT(MONTH FROM resigned_date) >= 4
+                     THEN EXTRACT(YEAR FROM resigned_date)
+                     ELSE EXTRACT(YEAR FROM resigned_date) - 1 END
+            ,100) AS STRING),2,'0'),
+            '-',
+            LPAD(CAST(MOD(
+                CASE WHEN EXTRACT(MONTH FROM resigned_date) >= 4
+                     THEN EXTRACT(YEAR FROM resigned_date) + 1
+                     ELSE EXTRACT(YEAR FROM resigned_date) END
+            ,100) AS STRING),2,'0')
+        ) AS FY_label
+    FROM base
+),
+
+/**********************************************************
+ STEP 3 → Filter CURRENT FY only
+**********************************************************/
+cy_filtered AS (
+    SELECT *
+    FROM with_fy
+    WHERE (
+        CASE 
+            WHEN EXTRACT(MONTH FROM resigned_date) >= 4
+                THEN EXTRACT(YEAR FROM resigned_date)
+            ELSE EXTRACT(YEAR FROM resigned_date) - 1
+        END
+    ) = (
+        CASE 
+            WHEN EXTRACT(MONTH FROM CURRENT_DATE()) >= 4
+                THEN EXTRACT(YEAR FROM CURRENT_DATE())
+            ELSE EXTRACT(YEAR FROM CURRENT_DATE()) - 1
+        END
+    )
+),
+
+/**********************************************************
+ STEP 4 → Apply slicer filters (Month added)
+**********************************************************/
+filtered AS (
+    SELECT *
+    FROM cy_filtered
+    WHERE (p_month IS NULL OR p_month = 'All' 
+           OR FORMAT_DATE('%B', resigned_date) = p_month)
+
+      AND (p_gender_type IS NULL OR p_gender_type = 'All' OR gender_type = p_gender_type)
+      AND (p_function_name IS NULL OR p_function_name = 'All' OR Function_Name = p_function_name)
+      AND (p_department_name IS NULL OR p_department_name = 'All' OR department_name = p_department_name)
+      AND (p_designation_name IS NULL OR p_designation_name = 'All' OR designation_name = p_designation_name)
+      AND (p_location_name IS NULL OR p_location_name = 'All' OR location_name = p_location_name)
+      AND (p_employment_status IS NULL OR p_employment_status = 'All' OR employment_status = p_employment_status)
+),
+
+/**********************************************************
+ STEP 5 → Final Output (Month added)
+**********************************************************/
+final_output AS (
+    SELECT DISTINCT
+        employee_id,
+        FY_label AS FY,
+        1 AS CY,
+
+        CASE
+            WHEN EXTRACT(MONTH FROM resigned_date) BETWEEN 4 AND 6 THEN 'Q1'
+            WHEN EXTRACT(MONTH FROM resigned_date) BETWEEN 7 AND 9 THEN 'Q2'
+            WHEN EXTRACT(MONTH FROM resigned_date) BETWEEN 10 AND 12 THEN 'Q3'
+            ELSE 'Q4'
+        END AS Quarter,
+
+        FORMAT_DATE('%B', resigned_date) AS Month_Name,   -- ✅ ADDED IN OUTPUT
+
+        gender_type,
+        Function_Name,
+        department_name,
+        designation_name,
+        location_name,
+        employment_status
+
+    FROM filtered
+)
+
+SELECT *
+FROM final_output
+ORDER BY FY, Quarter, Month_Name, gender_type, Function_Name
+
+);

@@ -1,0 +1,25 @@
+config {
+  type: "table",
+  schema: "gold",
+  name: "gl_dim_hire_type",
+  tags: ["gold", "hr", "dim"]
+}
+
+WITH base AS (
+  SELECT DISTINCT
+    INITCAP(TRIM(Initial_Hire_Type)) AS hire_type
+  FROM ${ref("silver", "sl_hr_master_clean")}
+  WHERE Initial_Hire_Type IS NOT NULL
+),
+ordered AS (
+  SELECT
+    ROW_NUMBER() OVER (ORDER BY hire_type) AS hire_type_id,
+    hire_type
+  FROM base
+)
+SELECT 0 AS hire_type_id, 'All' AS hire_type
+UNION ALL
+SELECT hire_type_id, hire_type FROM ordered
+ORDER BY hire_type_id
+
+
